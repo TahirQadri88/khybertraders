@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Khyber Traders - Wholesale Veterinary Pharmacy (Specifically for Dairy and Cattle Industry) located in Karachi.">
+    <title>Khyber Traders | Wholesale Veterinary Pharmacy</title>
+    
+    <!-- Premium Fonts: Inter (Clean) & Playfair Display (Elegant) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Inter"', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            maroon: '#600000', /* Deep Corporate Maroon */
+                            gold: '#C5A059',   /* Muted Metallic Gold */
+                            black: '#121212',
+                            gray: '#f9fafb',
+                        }
+                    },
+                    backgroundImage: {
+                        'hero-gradient': "linear-gradient(to right, rgba(18, 18, 18, 0.9), rgba(96, 0, 0, 0.8)), url('https://images.unsplash.com/photo-1516746924681-4f243a0562e1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80')",
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Smooth Fade In */
+        .fade-in { animation: fadeIn 0.8s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-white text-gray-800 antialiased selection:bg-brand-gold selection:text-white">
+
+    <!-- Admin Trigger (Invisible) -->
+    <button onclick="toggleLoginModal()" class="fixed top-0 right-0 z-50 p-4 opacity-0 hover:opacity-100 cursor-default">
+        <i class="fas fa-lock text-gray-300"></i>
+    </button>
+
+    <!-- Top Bar -->
+    <div class="bg-brand-black text-gray-400 text-xs py-3 border-b border-gray-800">
+        <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-2">
+            <div class="flex gap-6">
+                <span><i class="fas fa-phone-alt text-brand-gold mr-2"></i> +92 335 2999006</span>
+                <span class="hidden md:inline"><i class="fas fa-map-marker-alt text-brand-gold mr-2"></i> Marriot Road, Karachi</span>
+            </div>
+            <div class="flex gap-6 font-medium tracking-wide">
+                <a href="https://animalhealth.pk" class="hover:text-white transition">animalhealth.pk</a>
+                <span class="text-gray-700">|</span>
+                <a href="http://www.khybertraders.com.pk" class="hover:text-white transition">khybertraders.com.pk</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-100 shadow-sm">
+        <div class="container mx-auto px-6 py-5 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <!-- Logo Monogram -->
+                <div class="w-10 h-10 bg-brand-maroon text-brand-gold flex items-center justify-center font-serif font-bold text-xl rounded-sm">KT</div>
+                <div class="flex flex-col">
+                    <span class="text-xl font-serif font-bold text-brand-black leading-none">Khyber Traders</span>
+                    <span class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium">Wholesale Veterinary Pharmacy</span>
+                </div>
+            </div>
+            
+            <div class="hidden md:flex gap-8 text-sm font-medium text-gray-600">
+                <a href="#about" class="hover:text-brand-maroon transition">Profile</a>
+                <a href="#products" class="hover:text-brand-maroon transition">Products</a>
+                <a href="#contact" class="hover:text-brand-maroon transition">Contact</a>
+            </div>
+
+            <a href="https://wa.me/923352999006" class="md:hidden text-brand-maroon text-xl"><i class="fab fa-whatsapp"></i></a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative bg-hero-gradient bg-cover bg-center h-[600px] flex items-center">
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="max-w-2xl fade-in">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="h-px w-10 bg-brand-gold"></div>
+                    <span class="text-brand-gold text-xs font-bold uppercase tracking-widest">A Legacy of Three Generations</span>
+                </div>
+                <h1 class="text-5xl md:text-7xl font-serif font-bold text-white mb-6 leading-tight">
+                    Wholesale Veterinary <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold to-yellow-200">Pharmacy</span>
+                </h1>
+                <p class="text-gray-300 text-lg font-light leading-relaxed mb-10 max-w-lg">
+                    Khyber Traders is a Wholesale Vet Pharmacy (Specifically for Dairy and Cattle Industry) located in Karachi.
+                </p>
+                <div class="flex gap-4">
+                    <a href="https://wa.me/923352999006" class="bg-brand-maroon text-white font-medium py-3 px-8 rounded-sm hover:bg-red-900 transition shadow-lg">
+                        Contact for Wholesale
+                    </a>
+                    <a href="#about" class="border border-white/20 text-white font-medium py-3 px-8 rounded-sm hover:bg-white hover:text-brand-black transition">
+                        View Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Professional Scope Section -->
+    <section id="about" class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h2 class="text-3xl font-serif font-bold text-brand-black mb-6">Our Profile</h2>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                         We are a dedicated "Wholesale Veterinary Pharmacy" situated at Medicine Market's famous "Katchi Gali" Near the historical Denso Hall Building Karachi, serving the Dairy and Cattle industry with authentic medicines and vaccines for more than 3 decades!
+                    </p>
+                    
+                    <div class="space-y-4 mt-8">
+                        <div class="flex items-start gap-4">
+                            <div class="p-2 bg-gray-50 rounded text-brand-maroon"><i class="fas fa-check"></i></div>
+                            <div>
+                                <h4 class="font-bold text-sm uppercase text-gray-900">LARGE RUMINANTS / CATTLE</h4>
+                                <p class="text-sm text-gray-500">Comprehensive range for Cows & Buffalos.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="p-2 bg-gray-50 rounded text-brand-maroon"><i class="fas fa-check"></i></div>
+                            <div>
+                                <h4 class="font-bold text-sm uppercase text-gray-900">SMALL RUMINANTS / SHEEP & GOATS</h4>
+                                <p class="text-sm text-gray-500">Specialized care for Sheep & Goats.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 p-4 bg-gray-50 border-l-4 border-gray-300 text-xs text-gray-500">
+                        <strong>Note:</strong> We strictly do not deal in Pets (Dogs/Cats), Birds, or Wild Animals.
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div class="bg-gray-100 p-8 text-center rounded-sm">
+                        <i class="fas fa-pills text-4xl text-brand-maroon mb-4"></i>
+                        <h3 class="font-bold text-gray-900">Medicines</h3>
+                    </div>
+                    <div class="bg-gray-100 p-8 text-center rounded-sm">
+                        <i class="fas fa-syringe text-4xl text-brand-gold mb-4"></i>
+                        <h3 class="font-bold text-gray-900">Vaccines</h3>
+                    </div>
+                    <div class="bg-gray-100 p-8 text-center rounded-sm">
+                        <i class="fas fa-mortar-pestle text-4xl text-gray-600 mb-4"></i>
+                        <h3 class="font-bold text-gray-900">Feed Additives</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Wholesale Product Grid -->
+    <section id="products" class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-10">
+                <h3 class="text-2xl font-serif font-bold text-brand-black">Latest Stock & Information</h3>
+                <p class="text-gray-500 text-sm mt-2">Verified Wholesale Rates</p>
+            </div>
+            
+            <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Javascript Injects Here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer / Location -->
+    <footer id="contact" class="bg-brand-black text-white pt-20 pb-10">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row gap-12">
+                <div class="md:w-1/3">
+                    <div class="text-2xl font-serif font-bold mb-6">Khyber Traders</div>
+                    <div class="space-y-4 text-gray-400 text-sm">
+                        <p class="flex gap-3"><i class="fas fa-map-pin text-brand-gold mt-1"></i> Shop A2, Noori Center, Katchi Gali No 2,<br>Near Denso Hall, Marriot Road, Karachi.</p>
+                        <p class="flex gap-3"><i class="fas fa-phone text-brand-gold mt-1"></i> +92 335 2999006</p>
+                        <p class="flex gap-3"><i class="fas fa-clock text-brand-gold mt-1"></i> 12:30 PM – 8:00 PM (Mon-Sat)</p>
+                    </div>
+                    
+                    <div class="flex gap-4 mt-8">
+                        <a href="https://www.facebook.com/khybertraderskhi/" class="w-10 h-10 border border-gray-700 rounded-full flex items-center justify-center hover:bg-brand-maroon hover:border-brand-maroon transition"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/animalhealthpk/" class="w-10 h-10 border border-gray-700 rounded-full flex items-center justify-center hover:bg-brand-maroon hover:border-brand-maroon transition"><i class="fab fa-instagram"></i></a>
+                        <a href="https://wa.me/923352999006" class="w-10 h-10 border border-gray-700 rounded-full flex items-center justify-center hover:bg-brand-maroon hover:border-brand-maroon transition"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+
+                <div class="md:w-2/3">
+                    <div class="h-64 bg-gray-800 rounded-sm overflow-hidden relative grayscale hover:grayscale-0 transition duration-700">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3619.9678654321!2d67.0000!3d24.8600!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3eb33e0178cf47f1%3A0xde96e6a5be7b36de!2sKhyber%20Traders!5e0!3m2!1sen!2s!4v1600000000000!5m2!1sen!2s" 
+                        class="absolute inset-0 w-full h-full border-0" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-16 pt-8 text-center text-xs text-gray-500">
+                <p>&copy; 2024 Khyber Traders. All rights reserved.</p>
+                <div class="mt-2 flex justify-center gap-4">
+                    <a href="https://animalhealth.pk" class="hover:text-brand-gold">animalhealth.pk</a>
+                    <a href="http://www.khybertraders.com.pk" class="hover:text-brand-gold">khybertraders.com.pk</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Admin Panel -->
+    <div id="admin-panel" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-[60]">
+        <div class="bg-white p-8 rounded shadow-2xl w-full max-w-md">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-serif font-bold text-2xl text-brand-maroon">Manager Portal</h3>
+                <button onclick="document.getElementById('admin-panel').classList.add('hidden')" class="text-gray-400 hover:text-red-500"><i class="fas fa-times"></i></button>
+            </div>
+            <p class="text-sm text-gray-500 mb-4">Use this form to add products, cards, or information to the main page.</p>
+            <form id="add-product-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Title / Product Name</label>
+                    <input type="text" id="prod-name" class="w-full border border-gray-300 p-3 rounded-sm focus:border-brand-maroon outline-none" placeholder="e.g. Oxytetracycline" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Description / Category</label>
+                    <input type="text" id="prod-desc" class="w-full border border-gray-300 p-3 rounded-sm focus:border-brand-maroon outline-none" placeholder="e.g. Medicine">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Image URL</label>
+                    <input type="text" id="prod-img" class="w-full border border-gray-300 p-3 rounded-sm focus:border-brand-maroon outline-none" placeholder="https://...">
+                </div>
+                <button type="submit" class="w-full bg-brand-maroon text-white font-bold py-3 rounded-sm hover:bg-black transition">Add Card to Site</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 bg-white/95 hidden flex items-center justify-center z-[60]">
+        <div class="w-full max-w-xs text-center">
+            <div class="text-brand-maroon text-4xl mb-4"><i class="fas fa-user-shield"></i></div>
+            <h3 class="font-serif font-bold text-2xl mb-8">Secure Access</h3>
+            <input type="email" id="email" class="w-full border-b border-gray-300 p-3 mb-2 outline-none text-center bg-transparent" placeholder="Email">
+            <input type="password" id="password" class="w-full border-b border-gray-300 p-3 mb-8 outline-none text-center bg-transparent" placeholder="Password">
+            <button onclick="handleLogin()" class="bg-brand-black text-white px-8 py-3 rounded-sm font-bold text-sm tracking-widest hover:bg-brand-maroon transition">AUTHENTICATE</button>
+            <button onclick="toggleLoginModal()" class="block w-full mt-6 text-xs text-gray-400">Return to Site</button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed top-6 right-6 hidden bg-brand-black text-white px-6 py-4 shadow-2xl z-[70] text-sm font-medium flex items-center gap-3"></div>
+
+    <!-- MAIN LOGIC -->
+    <script type="module">
+        // Import REALTIME DATABASE instead of Firestore to avoid billing error
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // ==========================================
+        // --- PASTE YOUR FIREBASE CONFIG HERE ---
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "REPLACE_WITH_YOUR_API_KEY",
+            authDomain: "REPLACE_WITH_YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "REPLACE_WITH_YOUR_PROJECT_ID",
+            storageBucket: "REPLACE_WITH_YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "REPLACE_WITH_YOUR_SENDER_ID",
+            appId: "REPLACE_WITH_YOUR_APP_ID"
+        };
+        // ==========================================
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app); // Realtime Database
+        const auth = getAuth(app);
+        const prodRef = ref(db, 'products');
+
+        // UI References
+        const prodGrid = document.getElementById("products-grid");
+
+        // Listen for Data
+        onValue(prodRef, (snapshot) => {
+            prodGrid.innerHTML = "";
+            const data = snapshot.val();
+            
+            if (!data) {
+                // Keep grid empty or show message if needed
+                return;
+            }
+
+            // Convert object to array and reverse to show newest first
+            const productList = Object.entries(data).map(([id, val]) => ({ id, ...val })).reverse();
+
+            productList.forEach(p => {
+                const isAdmin = document.body.classList.contains('is-admin');
+                const deleteBtn = isAdmin ? 
+                    `<button onclick="window.del('${p.id}')" class="absolute top-2 right-2 bg-white/90 text-red-600 w-8 h-8 flex items-center justify-center rounded-full shadow hover:bg-red-600 hover:text-white z-20 transition"><i class="fas fa-trash-alt text-xs"></i></button>` : '';
+                
+                const imgUrl = (p.img && p.img.startsWith('http')) ? p.img : 'https://placehold.co/600x600/f3f4f6/C5A059?text=Khyber+Traders';
+
+                // Render as Standard Card
+                prodGrid.innerHTML += `
+                <div class="bg-white group relative">
+                    ${deleteBtn}
+                    <div class="h-64 overflow-hidden bg-gray-50 relative mb-4">
+                        <img src="${imgUrl}" alt="${p.name}" class="w-full h-full object-cover mix-blend-multiply transition duration-700 group-hover:scale-105">
+                    </div>
+                    <div>
+                        <p class="text-xs text-brand-gold font-bold uppercase tracking-wider mb-1">${p.desc || 'Info'}</p>
+                        <h4 class="font-serif font-bold text-lg text-brand-black leading-tight mb-3">${p.name}</h4>
+                        <a href="https://wa.me/923352999006?text=Inquiry: ${encodeURIComponent(p.name)}" target="_blank" class="inline-block text-sm font-medium text-gray-400 hover:text-brand-maroon transition border-b border-transparent hover:border-brand-maroon">
+                            Request Details
+                        </a>
+                    </div>
+                </div>`;
+            });
+        });
+
+        // Add Product/Card Logic
+        document.getElementById("add-product-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            if(!auth.currentUser) return showToast("Session Expired");
+
+            const name = document.getElementById("prod-name").value;
+            const desc = document.getElementById("prod-desc").value;
+            const img = document.getElementById("prod-img").value;
+
+            try {
+                await push(prodRef, { name, desc, img, date: Date.now() });
+                e.target.reset();
+                showToast("Card Added Successfully");
+                document.getElementById('admin-panel').classList.add('hidden');
+            } catch(e) { showToast(e.message); }
+        });
+
+        window.del = async (id) => {
+            if(confirm("Permanently delete this item?")) await remove(ref(db, `products/${id}`));
+        };
+
+        // Auth
+        window.toggleLoginModal = () => document.getElementById('login-modal').classList.toggle('hidden');
+        window.handleLogin = () => signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value)
+            .then(() => { toggleLoginModal(); showToast("Welcome Manager"); })
+            .catch(() => showToast("Access Denied"));
+
+        onAuthStateChanged(auth, u => {
+            if(u) {
+                document.body.classList.add("is-admin");
+                document.getElementById('admin-panel').classList.remove("hidden");
+            } else {
+                document.body.classList.remove("is-admin");
+                document.getElementById('admin-panel').classList.add("hidden");
+            }
+        });
+
+        window.showToast = (msg) => {
+            const t = document.getElementById("toast");
+            t.innerHTML = `<i class="fas fa-info-circle text-brand-gold"></i> ${msg}`;
+            t.classList.remove("hidden");
+            setTimeout(() => t.classList.add("hidden"), 3000);
+        };
+    </script>
+</body>
+</html>
