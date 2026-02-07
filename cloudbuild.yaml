@@ -1,0 +1,10 @@
+steps:
+  # Install Node.js dependencies
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['ci']
+  # Run the build script
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['run', 'build']
+  # Deploy to Firebase Hosting
+  - name: 'us-docker.pkg.dev/firebase-cli/us/firebase'
+    args: ['deploy', '--project=khyber-traders', '--only=hosting']
