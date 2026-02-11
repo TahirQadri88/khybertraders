@@ -3,9 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Khyber Traders - Wholesale Veterinary Pharmacy (Specifically for Dairy and Cattle Industry) located in Karachi.">
+    <meta name="description" content="Khyber Traders - Wholesale Veterinary Pharmacy. Specialized in Dairy and Cattle Industry solutions.">
+    
+    <!-- SOCIAL SHARE PREVIEW -->
+    <meta property="og:title" content="Khyber Traders | Wholesale Veterinary Pharmacy">
+    <meta property="og:description" content="Authentic Medicines for the Modern Dairy Industry. Click to view our inventory.">
+    <meta property="og:image" content="https://i.ibb.co/VvMGj8n/khyber-traders-card.jpg"> 
+    <meta property="og:url" content="https://animalhealth.pk">
+    <meta property="og:type" content="website">
+
     <title>Khyber Traders | Wholesale Veterinary Pharmacy</title>
     
+    <!-- DOMAIN TRAFFIC CONTROLLER -->
+    <script>
+        const currentDomain = window.location.hostname;
+        if (currentDomain.includes('khybertraders.com.pk')) {
+            window.location.replace("https://animalhealth.pk" + window.location.search);
+        }
+    </script>
+
     <!-- Premium Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -21,14 +37,13 @@
                     },
                     colors: {
                         brand: {
-                            maroon: '#500000', /* Darker, richer maroon */
-                            gold: '#D4AF37',   /* True Metallic Gold */
-                            dark: '#0a0a0a',   /* Near black */
+                            maroon: '#500000', 
+                            gold: '#D4AF37',   
+                            dark: '#0a0a0a',   
                             light: '#f4f4f5',
                         }
                     },
                     backgroundImage: {
-                        /* Cinematic Dark Dairy Theme */
                         'hero-gradient': "linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80')",
                     },
                     boxShadow: {
@@ -43,13 +58,12 @@
         .fade-in { animation: fadeIn 1s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Modern Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #500000; border-radius: 4px; }
         
         /* Slider Styles */
-        .slider-wrapper { position: relative; width: 100%; height: 100%; overflow: hidden; background: #fff; }
+        .slider-wrapper { position: relative; width: 100%; height: 100%; overflow: hidden; background: #fff; cursor: zoom-in; }
         .slide { display: none; width: 100%; height: 100%; object-fit: contain; }
         .slide.active { display: block; animation: fadeEffect 0.5s; }
         @keyframes fadeEffect { from {opacity: .4} to {opacity: 1} }
@@ -74,9 +88,24 @@
             transition: all 0.3s;
         }
         .dot.active { background: #D4AF37; width: 18px; border-radius: 3px; }
+
+        /* Lightbox */
+        #lightbox { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); justify-content: center; align-items: center; }
+        #lightbox img { max-width: 90%; max-height: 90%; object-fit: contain; box-shadow: 0 0 20px rgba(212, 175, 55, 0.5); border: 2px solid #D4AF37; }
+        #lightbox-close { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 40px; cursor: pointer; transition: 0.3s; }
+        #lightbox-close:hover { color: #D4AF37; }
+
+        /* Link Loader Overlay */
+        #link-loader { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index: 9000; justify-content: center; align-items: center; flex-direction: column; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased selection:bg-brand-maroon selection:text-white">
+
+    <!-- Loading Overlay for Direct Links -->
+    <div id="link-loader">
+        <i class="fas fa-circle-notch fa-spin text-brand-gold text-5xl mb-4"></i>
+        <p class="text-brand-dark font-serif font-bold text-xl">Searching Inventory...</p>
+    </div>
 
     <!-- Top Bar -->
     <div class="bg-brand-dark text-gray-400 text-[11px] uppercase tracking-widest py-3 border-b border-gray-900">
@@ -86,7 +115,7 @@
                 <span class="hidden md:inline"><i class="fas fa-map-marker-alt text-brand-gold mr-2"></i> Medicine Market, Karachi</span>
             </div>
             <div class="flex gap-6 font-semibold">
-                <a href="https://animalhealth.pk" class="hover:text-white transition duration-300">animalhealth.pk</a>
+                <a href="https://animalhealth.pk" class="text-brand-gold hover:text-white transition duration-300">animalhealth.pk</a>
             </div>
         </div>
     </div>
@@ -98,7 +127,7 @@
                 <div class="w-12 h-12 bg-brand-maroon text-brand-gold flex items-center justify-center font-serif font-bold text-2xl shadow-lg">KT</div>
                 <div class="flex flex-col">
                     <span class="text-xl font-serif font-bold text-brand-dark leading-none tracking-tight">Khyber Traders</span>
-                    <span class="text-[10px] uppercase tracking-[0.25em] text-brand-maroon font-bold mt-1">Wholesale Pharmacy</span>
+                    <span class="text-[10px] uppercase tracking-[0.25em] text-brand-maroon font-bold mt-1">Wholesale Veterinary Pharmacy</span>
                 </div>
             </div>
             
@@ -129,7 +158,7 @@
                 </p>
                 <div class="flex flex-col sm:flex-row gap-5 justify-center">
                     <a href="https://wa.me/923352999006" class="bg-brand-gold text-brand-dark font-bold py-4 px-10 hover:bg-white hover:text-brand-maroon transition duration-300 shadow-glow">
-                        Contact for Rates
+                        Contact
                     </a>
                     <a href="#products" class="border border-white/30 text-white font-bold py-4 px-10 hover:bg-white hover:text-brand-dark transition duration-300 backdrop-blur-sm">
                         View Collection
@@ -141,7 +170,6 @@
 
     <!-- About Section -->
     <section id="about" class="py-24 bg-white relative overflow-hidden">
-        <!-- Decorative bg element -->
         <div class="absolute top-0 right-0 w-1/3 h-full bg-gray-50 -skew-x-12 opacity-50 z-0 pointer-events-none"></div>
         
         <div class="container mx-auto px-6 relative z-10">
@@ -158,7 +186,6 @@
                     <p class="text-gray-600 mb-8 leading-relaxed">
                         Serving the Dairy and Cattle industry with authentic medicines and vaccines for more than 3 decades! We bridge the gap between top manufacturers and farms.
                     </p>
-                    
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-10">
                         <div class="flex items-center gap-4 p-4 border border-gray-100 hover:border-brand-gold transition duration-300 shadow-sm">
                             <div class="text-brand-gold text-2xl"><i class="fas fa-cow"></i></div>
@@ -168,37 +195,47 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-4 p-4 border border-gray-100 hover:border-brand-gold transition duration-300 shadow-sm">
-                            <div class="text-brand-gold text-2xl"><i class="fas fa-layer-group"></i></div>
+                            <div class="text-brand-gold text-2xl"><i class="fas fa-paw"></i></div>
                             <div>
                                 <h4 class="font-bold text-xs uppercase text-brand-dark">Small Ruminants</h4>
                                 <p class="text-xs text-gray-500">Sheep & Goats</p>
                             </div>
                         </div>
                     </div>
-                    
                     <div class="mt-8 text-xs text-red-500 font-semibold uppercase tracking-wide">
                         * Note: We do not deal in Pets, Birds, or Wild Animals.
                     </div>
                 </div>
                 
+                <!-- TILES GRID -->
                 <div class="grid grid-cols-2 gap-6">
-                    <div class="space-y-6 mt-12">
-                        <div class="bg-brand-dark text-white p-8 text-center shadow-2xl">
-                            <i class="fas fa-map-marked-alt text-4xl text-brand-gold mb-4"></i>
+                    <!-- Column 1 -->
+                    <div class="space-y-6">
+                        <!-- Katchi Gali Tile -->
+                        <div class="bg-brand-dark text-white p-8 text-center shadow-2xl flex flex-col justify-center items-center h-48">
+                            <i class="fas fa-map-marked-alt text-4xl text-brand-gold mb-2"></i>
                             <h3 class="font-bold text-sm tracking-widest">KATCHI GALI</h3>
+                            <p class="text-[9px] text-brand-gold mt-1 uppercase tracking-wide opacity-80">(Wholesale Medicine Market of Karachi)</p>
                         </div>
-                        <div class="bg-gray-100 p-8 text-center border border-gray-200">
-                            <i class="fas fa-boxes text-4xl text-gray-400 mb-4"></i>
-                            <h3 class="font-bold text-sm tracking-widest text-gray-600">WHOLESALE</h3>
+                        
+                        <!-- Authentic Tile (Colored Maroon) -->
+                        <div class="bg-brand-maroon p-8 text-center shadow-lg transform hover:-translate-y-1 transition duration-300 h-48 flex flex-col justify-center items-center">
+                            <i class="fas fa-shield-alt text-4xl text-brand-gold mb-2"></i>
+                            <h3 class="font-bold text-sm tracking-widest text-white">AUTHENTIC & RELIABLE</h3>
                         </div>
                     </div>
+
+                    <!-- Column 2 -->
                     <div class="space-y-6">
-                        <div class="bg-gray-100 p-8 text-center border border-gray-200">
-                            <i class="fas fa-shield-alt text-4xl text-gray-400 mb-4"></i>
-                            <h3 class="font-bold text-sm tracking-widest text-gray-600">VERIFIED</h3>
+                         <!-- Wholesale Tile (Colored Gold) -->
+                         <div class="bg-brand-gold p-8 text-center shadow-lg transform hover:-translate-y-1 transition duration-300 h-48 flex flex-col justify-center items-center">
+                            <i class="fas fa-boxes text-4xl text-brand-maroon mb-2"></i>
+                            <h3 class="font-bold text-sm tracking-widest text-brand-dark">WHOLESALE</h3>
                         </div>
-                        <div class="bg-brand-maroon text-white p-8 text-center shadow-2xl">
-                            <i class="fas fa-history text-4xl text-brand-gold mb-4"></i>
+
+                        <!-- Legacy Tile (Dark Gray) -->
+                        <div class="bg-gray-800 text-white p-8 text-center shadow-2xl h-48 flex flex-col justify-center items-center">
+                            <i class="fas fa-history text-4xl text-gray-400 mb-2"></i>
                             <h3 class="font-bold text-sm tracking-widest">LEGACY</h3>
                         </div>
                     </div>
@@ -278,24 +315,32 @@
                     <h3 id="modal-title" class="text-4xl font-serif font-bold text-brand-dark capitalize">Category Name</h3>
                     <p class="text-brand-gold text-sm font-bold uppercase tracking-widest mt-2">Available Collection</p>
                 </div>
+                <!-- Dynamic Grid or Single Item View -->
                 <div id="modal-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"></div>
             </div>
         </div>
     </div>
 
+    <!-- LIGHTBOX -->
+    <div id="lightbox" onclick="closeLightbox()">
+        <span id="lightbox-close">&times;</span>
+        <img id="lightbox-img" src="">
+    </div>
+
     <!-- MAIN LOGIC -->
     <script>
-        // ==========================================
-        // CONNECTED SHEET ID
-        // ==========================================
-        
         const SHEET_ID = '1-s7frQnY1Muh4XOizcz2V3KnkkHV8owNWYzyDrYFSic'; 
-
-        // ==========================================
+        const BASE_URL = 'https://animalhealth.pk'; 
 
         let allProducts = [];
 
         async function fetchProducts() {
+            // Check for direct link immediately to show loader
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('item')) {
+                document.getElementById('link-loader').style.display = 'flex';
+            }
+
             const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
             
             try {
@@ -303,13 +348,55 @@
                 const text = await response.text();
                 allProducts = parseCSV(text);
                 generateTiles();
+                
+                // WAIT AND CHECK LINK
+                waitAndCheckLink();
+
             } catch (error) {
                 console.error("Error:", error);
+                document.getElementById('link-loader').style.display = 'none'; // Hide loader on error
                 document.getElementById('tiles-container').innerHTML = `
                     <div class='col-span-full text-center py-10'>
                         <p class='text-red-500 font-bold'>Unable to load data.</p>
                         <p class='text-gray-500 text-sm mt-2'>Please ensure you have gone to:<br>File > Share > Publish to web > CSV > Publish</p>
                     </div>`;
+            }
+        }
+
+        // --- ULTRA-AGGRESSIVE NORMALIZER ---
+        function aggressiveNormalize(str) {
+            if(!str) return '';
+            return decodeURIComponent(str)
+                .toLowerCase()
+                .replace(/[^a-z0-9]/g, ''); 
+        }
+
+        function waitAndCheckLink() {
+            const checkInterval = setInterval(() => {
+                if (allProducts.length > 0) {
+                    clearInterval(checkInterval);
+                    checkForDirectLink();
+                }
+            }, 100); 
+        }
+
+        function checkForDirectLink() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const rawItemName = urlParams.get('item');
+            
+            if (rawItemName) {
+                const target = aggressiveNormalize(rawItemName);
+                const product = allProducts.find(p => aggressiveNormalize(p.name) === target);
+                
+                document.getElementById('link-loader').style.display = 'none'; 
+
+                if (product) {
+                    openCategoryModal(product.category, product.name);
+                } else {
+                    console.log("Product not found (Aggressive Search):", target);
+                }
+            } else {
+                 document.getElementById('link-loader').style.display = 'none';
             }
         }
 
@@ -325,10 +412,8 @@
                 
                 if (matches && matches.length >= 2) {
                     const clean = matches.map(m => m ? m.replace(/^"|"$/g, '').trim() : '');
-                    
                     const rawImg = clean[3] || '';
-                    const images = rawImg.split(',').map(url => url.trim()).filter(url => url.length > 0);
-
+                    const images = rawImg.split(',').map(url => url.trim()).filter(url => url.length > 5);
                     result.push({
                         category: clean[0].toLowerCase().trim(), 
                         name: clean[1],
@@ -344,23 +429,17 @@
             const uniqueCats = [...new Set(allProducts.map(p => p.category))];
             const container = document.getElementById('tiles-container');
             container.innerHTML = "";
-
             if(uniqueCats.length === 0) {
                  container.innerHTML = "<p class='text-center col-span-full text-gray-400'>Inventory is updating...</p>";
                  return;
             }
-
             uniqueCats.forEach(cat => {
                 if(!cat) return;
-                
-                // Smart Icon & Color Logic (Updated for sleek theme)
                 let icon = 'fa-box-open';
-                
                 if(cat.includes('med')) icon = 'fa-pills';
                 else if(cat.includes('vac')) icon = 'fa-syringe';
                 else if(cat.includes('feed') || cat.includes('nutri')) icon = 'fa-wheat';
                 else if(cat.includes('surg') || cat.includes('inst')) icon = 'fa-scalpel';
-
                 container.innerHTML += `
                 <div onclick="openCategoryModal('${cat}')" class="group cursor-pointer bg-white p-10 shadow-sleek hover:shadow-2xl transition duration-500 transform hover:-translate-y-2 relative overflow-hidden border-b-4 border-transparent hover:border-brand-gold">
                     <div class="absolute top-0 right-0 p-4 opacity-5 text-9xl text-brand-maroon group-hover:scale-110 transition duration-700 pointer-events-none">
@@ -380,19 +459,24 @@
             });
         }
 
-        window.openCategoryModal = (category) => {
+        window.openCategoryModal = (category, specificItemName = null) => {
             const modal = document.getElementById('category-modal');
             const grid = document.getElementById('modal-grid');
             const title = document.getElementById('modal-title');
             
-            title.innerText = category;
-            const filtered = allProducts.filter(p => p.category === category);
+            title.innerText = specificItemName ? 'Product Details' : category;
+            
+            let filtered = allProducts.filter(p => p.category === category);
+            if(specificItemName) {
+                // Strict Name Match using Aggressive Normalizer
+                filtered = allProducts.filter(p => aggressiveNormalize(p.name) === aggressiveNormalize(specificItemName));
+                if(filtered.length === 0) filtered = allProducts.filter(p => p.category === category);
+            }
             
             grid.innerHTML = "";
             
             filtered.forEach((p, index) => {
-                
-                // NOTICE CARD (No Image)
+                // NOTICE CARD
                 if (p.images.length === 0) {
                     grid.innerHTML += `
                     <div class="bg-brand-gold/10 border-l-4 border-brand-gold p-6 relative group hover:shadow-lg transition">
@@ -402,36 +486,35 @@
                     </div>`;
                     return;
                 }
-
-                // PRODUCT CARD (With Slider)
+                
+                // PRODUCT CARD
                 let sliderHtml = '';
-                const slides = p.images.map((img, i) => `<img src="${img}" class="slide ${i===0?'active':''}" id="slide-${index}-${i}">`).join('');
-                
-                let btns = '';
-                let dots = '';
-                
+                const slides = p.images.map((img, i) => 
+                    `<img src="${img}" class="slide ${i===0?'active':''}" id="slide-${index}-${i}" onclick="openLightbox('${img}')" onerror="this.src='https://placehold.co/600x400?text=No+Image'">`
+                ).join('');
+                let btns = '', dots = '';
                 if (p.images.length > 1) {
-                    btns = `
-                        <button class="slider-btn prev-btn" onclick="changeSlide(event, ${index}, -1, ${p.images.length})"><i class="fas fa-chevron-left"></i></button>
-                        <button class="slider-btn next-btn" onclick="changeSlide(event, ${index}, 1, ${p.images.length})"><i class="fas fa-chevron-right"></i></button>
-                    `;
-                    dots = `
-                        <div class="slider-dots">
-                            ${p.images.map((_, i) => `<div class="dot ${i===0?'active':''}" id="dot-${index}-${i}" onclick="goToSlide(event, ${index}, ${i})"></div>`).join('')}
-                        </div>
-                    `;
+                    btns = `<button class="slider-btn prev-btn" onclick="changeSlide(event, ${index}, -1, ${p.images.length})"><i class="fas fa-chevron-left"></i></button>
+                            <button class="slider-btn next-btn" onclick="changeSlide(event, ${index}, 1, ${p.images.length})"><i class="fas fa-chevron-right"></i></button>`;
+                    dots = `<div class="slider-dots">${p.images.map((_, i) => `<div class="dot ${i===0?'active':''}" id="dot-${index}-${i}" onclick="goToSlide(event, ${index}, ${i})"></div>`).join('')}</div>`;
                 }
+                sliderHtml = `<div class="slider-wrapper" id="slider-${index}" data-current="0" title="Click to Zoom">${slides}${btns}${dots}</div>`;
 
-                sliderHtml = `
-                    <div class="slider-wrapper" id="slider-${index}" data-current="0">
-                        ${slides}
-                        ${btns}
-                        ${dots}
-                    </div>
-                `;
+                const firstImg = p.images.length > 0 ? p.images[0] : 'No Image';
+                const uniqueLink = `${BASE_URL}/?item=${encodeURIComponent(p.name)}`;
 
-                const shareText = `Check out ${p.name} at Khyber Traders:`;
-                const shareUrl = `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + window.location.href)}`;
+                const messageText = `*WHOLESALE INQUIRY @ KHYBER TRADERS*
+━━━━━━━━━━━━━━━━━━
+📦 *Product:* ${p.name}
+📂 *Category:* ${p.category.toUpperCase()}
+📝 *Details:* ${p.desc}
+━━━━━━━━━━━━━━━━━━
+🖼 *Reference:* ${firstImg}
+🔗 *Web Link:* ${uniqueLink}`;
+
+                const encodedMsg = encodeURIComponent(messageText);
+                const shareUrl = `https://wa.me/?text=${encodedMsg}`;
+                const inquireUrl = `https://wa.me/923352999006?text=${encodedMsg}`;
 
                 grid.innerHTML += `
                 <div class="bg-white group relative shadow-sm hover:shadow-2xl transition duration-500 border border-gray-100">
@@ -445,7 +528,7 @@
                             <a href="${shareUrl}" target="_blank" class="flex-1 bg-white border border-gray-200 text-gray-600 py-3 text-[10px] font-bold uppercase tracking-widest text-center hover:bg-gray-50 transition">
                                 <i class="fas fa-share mr-1"></i> Share
                             </a>
-                            <a href="https://wa.me/923352999006?text=Inquiry: ${encodeURIComponent(p.name)}" target="_blank" class="flex-1 bg-brand-maroon text-white py-3 text-[10px] font-bold uppercase tracking-widest text-center hover:bg-brand-dark transition shadow-lg">
+                            <a href="${inquireUrl}" target="_blank" class="flex-1 bg-brand-maroon text-white py-3 text-[10px] font-bold uppercase tracking-widest text-center hover:bg-brand-dark transition shadow-lg">
                                 Inquire
                             </a>
                         </div>
@@ -455,43 +538,24 @@
             modal.classList.remove('hidden');
         };
 
-        // Slider Navigation
-        window.changeSlide = (e, cardIndex, direction, total) => {
-            e.stopPropagation();
-            let current = parseInt(document.getElementById(`slider-${cardIndex}`).dataset.current);
-            let next = current + direction;
-            if (next >= total) next = 0;
-            if (next < 0) next = total - 1;
-            updateSlider(cardIndex, current, next);
-        };
+        window.changeSlide = (e, cardIndex, direction, total) => { e.stopPropagation(); let current = parseInt(document.getElementById(`slider-${cardIndex}`).dataset.current); let next = current + direction; if (next >= total) next = 0; if (next < 0) next = total - 1; updateSlider(cardIndex, current, next); };
+        window.goToSlide = (e, cardIndex, next) => { e.stopPropagation(); let current = parseInt(document.getElementById(`slider-${cardIndex}`).dataset.current); updateSlider(cardIndex, current, next); }
+        function updateSlider(cardIndex, current, next) { const currentSlide = document.getElementById(`slide-${cardIndex}-${current}`); const currentDot = document.getElementById(`dot-${cardIndex}-${current}`); if (currentSlide) currentSlide.classList.remove('active'); if (currentDot) currentDot.classList.remove('active'); const nextSlide = document.getElementById(`slide-${cardIndex}-${next}`); const nextDot = document.getElementById(`dot-${cardIndex}-${next}`); if (nextSlide) nextSlide.classList.add('active'); if (nextDot) nextDot.classList.add('active'); document.getElementById(`slider-${cardIndex}`).dataset.current = next; }
+        window.closeCategoryModal = () => { document.getElementById('category-modal').classList.add('hidden'); };
 
-        window.goToSlide = (e, cardIndex, next) => {
-            e.stopPropagation();
-            let current = parseInt(document.getElementById(`slider-${cardIndex}`).dataset.current);
-            updateSlider(cardIndex, current, next);
+        window.openLightbox = (src) => {
+            const lb = document.getElementById('lightbox');
+            const img = document.getElementById('lightbox-img');
+            img.src = src;
+            lb.style.display = 'flex';
         }
-
-        function updateSlider(cardIndex, current, next) {
-            const currentSlide = document.getElementById(`slide-${cardIndex}-${current}`);
-            const currentDot = document.getElementById(`dot-${cardIndex}-${current}`);
-            
-            if (currentSlide) currentSlide.classList.remove('active');
-            if (currentDot) currentDot.classList.remove('active');
-            
-            const nextSlide = document.getElementById(`slide-${cardIndex}-${next}`);
-            const nextDot = document.getElementById(`dot-${cardIndex}-${next}`);
-            
-            if (nextSlide) nextSlide.classList.add('active');
-            if (nextDot) nextDot.classList.add('active');
-            
-            document.getElementById(`slider-${cardIndex}`).dataset.current = next;
+        window.closeLightbox = () => {
+            document.getElementById('lightbox').style.display = 'none';
         }
-
-        window.closeCategoryModal = () => {
-            document.getElementById('category-modal').classList.add('hidden');
-        };
 
         fetchProducts();
     </script>
 </body>
 </html>
+
+
