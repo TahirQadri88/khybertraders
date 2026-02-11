@@ -6,8 +6,8 @@
     <meta name="description" content="Khyber Traders - Wholesale Veterinary Pharmacy (Specifically for Dairy and Cattle Industry) located in Karachi.">
     <title>Khyber Traders | Wholesale Veterinary Pharmacy</title>
     
-    <!-- Premium Fonts: Inter (Clean) & Playfair Display (Elegant) -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -16,352 +16,482 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['"Inter"', 'sans-serif'],
+                        sans: ['"Manrope"', 'sans-serif'],
                         serif: ['"Playfair Display"', 'serif'],
                     },
                     colors: {
                         brand: {
-                            maroon: '#600000', /* Deep Corporate Maroon */
-                            gold: '#C5A059',   /* Muted Metallic Gold */
-                            black: '#121212',
-                            gray: '#f9fafb',
+                            maroon: '#500000', /* Darker, richer maroon */
+                            gold: '#D4AF37',   /* True Metallic Gold */
+                            dark: '#0a0a0a',   /* Near black */
+                            light: '#f4f4f5',
                         }
                     },
                     backgroundImage: {
-                        'hero-gradient': "linear-gradient(to right, rgba(18, 18, 18, 0.9), rgba(96, 0, 0, 0.8)), url('https://images.unsplash.com/photo-1516746924681-4f243a0562e1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80')",
+                        /* Cinematic Dark Dairy Theme */
+                        'hero-gradient': "linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80')",
+                    },
+                    boxShadow: {
+                        'sleek': '0 4px 20px -2px rgba(0, 0, 0, 0.1)',
+                        'glow': '0 0 15px rgba(212, 175, 55, 0.3)',
                     }
                 }
             }
         }
     </script>
     <style>
-        /* Smooth Fade In */
-        .fade-in { animation: fadeIn 0.8s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 1s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Modern Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #500000; border-radius: 4px; }
+        
+        /* Slider Styles */
+        .slider-wrapper { position: relative; width: 100%; height: 100%; overflow: hidden; background: #fff; }
+        .slide { display: none; width: 100%; height: 100%; object-fit: contain; }
+        .slide.active { display: block; animation: fadeEffect 0.5s; }
+        @keyframes fadeEffect { from {opacity: .4} to {opacity: 1} }
+
+        .slider-btn { 
+            position: absolute; top: 50%; transform: translateY(-50%); 
+            background: rgba(255,255,255,0.9); color: #000; border: none; 
+            width: 32px; height: 32px; border-radius: 50%;
+            cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .slider-btn:hover { background: #D4AF37; color: white; }
+        .prev-btn { left: 10px; }
+        .next-btn { right: 10px; }
+        
+        .slider-dots { 
+            position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); 
+            display: flex; gap: 6px; z-index: 10; 
+        }
+        .dot { 
+            width: 6px; height: 6px; background: rgba(0,0,0,0.2); border-radius: 50%; cursor: pointer;
+            transition: all 0.3s;
+        }
+        .dot.active { background: #D4AF37; width: 18px; border-radius: 3px; }
     </style>
 </head>
-<body class="bg-white text-gray-800 antialiased selection:bg-brand-gold selection:text-white">
-
-    <!-- Admin Trigger (Invisible) -->
-    <button onclick="toggleLoginModal()" class="fixed top-0 right-0 z-50 p-4 opacity-0 hover:opacity-100 cursor-default">
-        <i class="fas fa-lock text-gray-300"></i>
-    </button>
+<body class="bg-gray-50 text-gray-800 antialiased selection:bg-brand-maroon selection:text-white">
 
     <!-- Top Bar -->
-    <div class="bg-brand-black text-gray-400 text-xs py-3 border-b border-gray-800">
+    <div class="bg-brand-dark text-gray-400 text-[11px] uppercase tracking-widest py-3 border-b border-gray-900">
         <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-2">
             <div class="flex gap-6">
                 <span><i class="fas fa-phone-alt text-brand-gold mr-2"></i> +92 335 2999006</span>
-                <span class="hidden md:inline"><i class="fas fa-map-marker-alt text-brand-gold mr-2"></i> Marriot Road, Karachi</span>
+                <span class="hidden md:inline"><i class="fas fa-map-marker-alt text-brand-gold mr-2"></i> Medicine Market, Karachi</span>
             </div>
-            <div class="flex gap-6 font-medium tracking-wide">
-                <a href="https://animalhealth.pk" class="hover:text-white transition">animalhealth.pk</a>
-                <span class="text-gray-700">|</span>
-                <a href="http://www.khybertraders.com.pk" class="hover:text-white transition">khybertraders.com.pk</a>
+            <div class="flex gap-6 font-semibold">
+                <a href="https://animalhealth.pk" class="hover:text-white transition duration-300">animalhealth.pk</a>
             </div>
         </div>
     </div>
 
     <!-- Navigation -->
-    <nav class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-100 shadow-sm">
-        <div class="container mx-auto px-6 py-5 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <!-- Logo Monogram -->
-                <div class="w-10 h-10 bg-brand-maroon text-brand-gold flex items-center justify-center font-serif font-bold text-xl rounded-sm">KT</div>
+    <nav class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-brand-maroon text-brand-gold flex items-center justify-center font-serif font-bold text-2xl shadow-lg">KT</div>
                 <div class="flex flex-col">
-                    <span class="text-xl font-serif font-bold text-brand-black leading-none">Khyber Traders</span>
-                    <span class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-medium">Wholesale Veterinary Pharmacy</span>
+                    <span class="text-xl font-serif font-bold text-brand-dark leading-none tracking-tight">Khyber Traders</span>
+                    <span class="text-[10px] uppercase tracking-[0.25em] text-brand-maroon font-bold mt-1">Wholesale Pharmacy</span>
                 </div>
             </div>
             
-            <div class="hidden md:flex gap-8 text-sm font-medium text-gray-600">
-                <a href="#about" class="hover:text-brand-maroon transition">Profile</a>
-                <a href="#products" class="hover:text-brand-maroon transition">Products</a>
-                <a href="#contact" class="hover:text-brand-maroon transition">Contact</a>
+            <div class="hidden md:flex gap-10 text-xs font-bold uppercase tracking-widest text-gray-500">
+                <a href="#about" class="hover:text-brand-maroon transition duration-300">Profile</a>
+                <a href="#products" class="hover:text-brand-maroon transition duration-300">Products</a>
+                <a href="#contact" class="hover:text-brand-maroon transition duration-300">Contact</a>
             </div>
 
-            <a href="https://wa.me/923352999006" class="md:hidden text-brand-maroon text-xl"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://wa.me/923352999006" class="md:hidden text-brand-maroon text-2xl"><i class="fab fa-whatsapp"></i></a>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <header class="relative bg-hero-gradient bg-cover bg-center h-[600px] flex items-center">
+    <header class="relative bg-hero-gradient bg-cover bg-center h-[700px] flex items-center justify-center text-center">
         <div class="container mx-auto px-6 relative z-10">
-            <div class="max-w-2xl fade-in">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="h-px w-10 bg-brand-gold"></div>
-                    <span class="text-brand-gold text-xs font-bold uppercase tracking-widest">A Legacy of Three Generations</span>
+            <div class="max-w-4xl mx-auto fade-in">
+                <div class="inline-block border border-brand-gold/50 px-6 py-2 mb-8 backdrop-blur-sm bg-black/30">
+                    <span class="text-brand-gold text-xs font-bold uppercase tracking-[0.2em]">A Legacy of Three Generations</span>
                 </div>
-                <h1 class="text-5xl md:text-7xl font-serif font-bold text-white mb-6 leading-tight">
-                    Wholesale Veterinary <br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold to-yellow-200">Pharmacy</span>
+                <h1 class="text-5xl md:text-7xl font-serif font-bold text-white mb-8 leading-tight drop-shadow-lg">
+                    The Gold Standard in <br>
+                    <span class="italic text-brand-gold">Veterinary Health</span>
                 </h1>
-                <p class="text-gray-300 text-lg font-light leading-relaxed mb-10 max-w-lg">
-                    Khyber Traders is a Wholesale Vet Pharmacy (Specifically for Dairy and Cattle Industry) located in Karachi.
+                <p class="text-gray-200 text-lg font-light leading-relaxed mb-12 max-w-2xl mx-auto">
+                    Specialized wholesale solutions for the Dairy and Cattle Industry. 
+                    Authenticity, Reliability, and History located in the heart of Karachi.
                 </p>
-                <div class="flex gap-4">
-                    <a href="https://wa.me/923352999006" class="bg-brand-maroon text-white font-medium py-3 px-8 rounded-sm hover:bg-red-900 transition shadow-lg">
-                        Contact for Wholesale
+                <div class="flex flex-col sm:flex-row gap-5 justify-center">
+                    <a href="https://wa.me/923352999006" class="bg-brand-gold text-brand-dark font-bold py-4 px-10 hover:bg-white hover:text-brand-maroon transition duration-300 shadow-glow">
+                        Contact for Rates
                     </a>
-                    <a href="#about" class="border border-white/20 text-white font-medium py-3 px-8 rounded-sm hover:bg-white hover:text-brand-black transition">
-                        View Profile
+                    <a href="#products" class="border border-white/30 text-white font-bold py-4 px-10 hover:bg-white hover:text-brand-dark transition duration-300 backdrop-blur-sm">
+                        View Collection
                     </a>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Professional Scope Section -->
-    <section id="about" class="py-20 bg-white">
-        <div class="container mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+    <!-- About Section -->
+    <section id="about" class="py-24 bg-white relative overflow-hidden">
+        <!-- Decorative bg element -->
+        <div class="absolute top-0 right-0 w-1/3 h-full bg-gray-50 -skew-x-12 opacity-50 z-0 pointer-events-none"></div>
+        
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
                 <div>
-                    <h2 class="text-3xl font-serif font-bold text-brand-black mb-6">Our Profile</h2>
-                    <p class="text-gray-600 mb-6 leading-relaxed">
-                         We are a dedicated "Wholesale Veterinary Pharmacy" situated at Medicine Market's famous "Katchi Gali" Near the historical Denso Hall Building Karachi, serving the Dairy and Cattle industry with authentic medicines and vaccines for more than 3 decades!
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="h-1 w-12 bg-brand-maroon"></div>
+                        <span class="text-brand-maroon font-bold uppercase tracking-widest text-sm">About Us</span>
+                    </div>
+                    <h2 class="text-4xl font-serif font-bold text-brand-dark mb-8 leading-tight">Authentic Medicines for the <br>Modern Dairy Industry</h2>
+                    <p class="text-gray-600 mb-6 leading-relaxed text-lg font-light">
+                         We are a dedicated <strong>"Wholesale Veterinary Pharmacy"</strong> situated at Medicine Market's famous <strong>"Katchi Gali"</strong> Near the historical Denso Hall Building Karachi. 
+                    </p>
+                    <p class="text-gray-600 mb-8 leading-relaxed">
+                        Serving the Dairy and Cattle industry with authentic medicines and vaccines for more than 3 decades! We bridge the gap between top manufacturers and farms.
                     </p>
                     
-                    <div class="space-y-4 mt-8">
-                        <div class="flex items-start gap-4">
-                            <div class="p-2 bg-gray-50 rounded text-brand-maroon"><i class="fas fa-check"></i></div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-10">
+                        <div class="flex items-center gap-4 p-4 border border-gray-100 hover:border-brand-gold transition duration-300 shadow-sm">
+                            <div class="text-brand-gold text-2xl"><i class="fas fa-cow"></i></div>
                             <div>
-                                <h4 class="font-bold text-sm uppercase text-gray-900">LARGE RUMINANTS / CATTLE</h4>
-                                <p class="text-sm text-gray-500">Comprehensive range for Cows & Buffalos.</p>
+                                <h4 class="font-bold text-xs uppercase text-brand-dark">Large Ruminants</h4>
+                                <p class="text-xs text-gray-500">Cows & Buffalos</p>
                             </div>
                         </div>
-                        <div class="flex items-start gap-4">
-                            <div class="p-2 bg-gray-50 rounded text-brand-maroon"><i class="fas fa-check"></i></div>
+                        <div class="flex items-center gap-4 p-4 border border-gray-100 hover:border-brand-gold transition duration-300 shadow-sm">
+                            <div class="text-brand-gold text-2xl"><i class="fas fa-layer-group"></i></div>
                             <div>
-                                <h4 class="font-bold text-sm uppercase text-gray-900">SMALL RUMINANTS / SHEEP & GOATS</h4>
-                                <p class="text-sm text-gray-500">Specialized care for Sheep & Goats.</p>
+                                <h4 class="font-bold text-xs uppercase text-brand-dark">Small Ruminants</h4>
+                                <p class="text-xs text-gray-500">Sheep & Goats</p>
                             </div>
                         </div>
                     </div>
-
-                    <div class="mt-8 p-4 bg-gray-50 border-l-4 border-gray-300 text-xs text-gray-500">
-                        <strong>Note:</strong> We strictly do not deal in Pets (Dogs/Cats), Birds, or Wild Animals.
+                    
+                    <div class="mt-8 text-xs text-red-500 font-semibold uppercase tracking-wide">
+                        * Note: We do not deal in Pets, Birds, or Wild Animals.
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    <div class="bg-gray-100 p-8 text-center rounded-sm">
-                        <i class="fas fa-pills text-4xl text-brand-maroon mb-4"></i>
-                        <h3 class="font-bold text-gray-900">Medicines</h3>
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="space-y-6 mt-12">
+                        <div class="bg-brand-dark text-white p-8 text-center shadow-2xl">
+                            <i class="fas fa-map-marked-alt text-4xl text-brand-gold mb-4"></i>
+                            <h3 class="font-bold text-sm tracking-widest">KATCHI GALI</h3>
+                        </div>
+                        <div class="bg-gray-100 p-8 text-center border border-gray-200">
+                            <i class="fas fa-boxes text-4xl text-gray-400 mb-4"></i>
+                            <h3 class="font-bold text-sm tracking-widest text-gray-600">WHOLESALE</h3>
+                        </div>
                     </div>
-                    <div class="bg-gray-100 p-8 text-center rounded-sm">
-                        <i class="fas fa-syringe text-4xl text-brand-gold mb-4"></i>
-                        <h3 class="font-bold text-gray-900">Vaccines</h3>
-                    </div>
-                    <div class="bg-gray-100 p-8 text-center rounded-sm">
-                        <i class="fas fa-mortar-pestle text-4xl text-gray-600 mb-4"></i>
-                        <h3 class="font-bold text-gray-900">Feed Additives</h3>
+                    <div class="space-y-6">
+                        <div class="bg-gray-100 p-8 text-center border border-gray-200">
+                            <i class="fas fa-shield-alt text-4xl text-gray-400 mb-4"></i>
+                            <h3 class="font-bold text-sm tracking-widest text-gray-600">VERIFIED</h3>
+                        </div>
+                        <div class="bg-brand-maroon text-white p-8 text-center shadow-2xl">
+                            <i class="fas fa-history text-4xl text-brand-gold mb-4"></i>
+                            <h3 class="font-bold text-sm tracking-widest">LEGACY</h3>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Wholesale Product Grid -->
-    <section id="products" class="py-20 bg-white">
+    <!-- Products Section -->
+    <section id="products" class="py-24 bg-brand-light border-y border-gray-200">
         <div class="container mx-auto px-6">
-            <div class="text-center mb-10">
-                <h3 class="text-2xl font-serif font-bold text-brand-black">Latest Stock & Information</h3>
-                <p class="text-gray-500 text-sm mt-2">Verified Wholesale Rates</p>
+            <div class="text-center mb-16">
+                <span class="text-brand-maroon font-bold uppercase tracking-widest text-xs">Catalog</span>
+                <h2 class="text-4xl font-serif font-bold text-brand-dark mt-3">Product Categories</h2>
+                <div class="h-1 w-20 bg-brand-gold mx-auto mt-6"></div>
             </div>
-            
-            <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                <!-- Javascript Injects Here -->
+
+            <!-- Dynamic Tiles Loaded Here -->
+            <div id="tiles-container" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="col-span-full text-center py-10">
+                    <i class="fas fa-circle-notch fa-spin text-brand-gold text-3xl"></i>
+                    <p class="text-gray-400 mt-4 font-light">Retrieving secure inventory data...</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer / Location -->
-    <footer id="contact" class="bg-brand-black text-white pt-20 pb-10">
+    <!-- Footer -->
+    <footer id="contact" class="bg-brand-dark text-white pt-24 pb-12">
         <div class="container mx-auto px-6">
-            <div class="flex flex-col md:flex-row gap-12">
-                <div class="md:w-1/3">
-                    <div class="text-2xl font-serif font-bold mb-6">Khyber Traders</div>
-                    <div class="space-y-4 text-gray-400 text-sm">
-                        <p class="flex gap-3"><i class="fas fa-map-pin text-brand-gold mt-1"></i> Shop A2, Noori Center, Katchi Gali No 2,<br>Near Denso Hall, Marriot Road, Karachi.</p>
-                        <p class="flex gap-3"><i class="fas fa-phone text-brand-gold mt-1"></i> +92 335 2999006</p>
-                        <p class="flex gap-3"><i class="fas fa-clock text-brand-gold mt-1"></i> 12:30 PM – 8:00 PM (Mon-Sat)</p>
+            <div class="flex flex-col lg:flex-row gap-16">
+                <div class="lg:w-1/3">
+                    <div class="text-3xl font-serif font-bold mb-8 text-white">Khyber Traders</div>
+                    <div class="space-y-6 text-gray-400 text-sm font-light">
+                        <p class="flex gap-4 items-start">
+                            <i class="fas fa-map-pin text-brand-gold mt-1"></i> 
+                            <span>Shop A2, Noori Center, Katchi Gali No 2,<br>Near Denso Hall, Marriot Road, Karachi.</span>
+                        </p>
+                        <p class="flex gap-4 items-center">
+                            <i class="fas fa-phone text-brand-gold"></i> 
+                            <span>+92 335 2999006</span>
+                        </p>
+                        <p class="flex gap-4 items-center">
+                            <i class="fas fa-clock text-brand-gold"></i> 
+                            <span>12:30 PM – 8:00 PM (Mon-Sat)</span>
+                        </p>
                     </div>
-                    
-                    <div class="flex gap-4 mt-8">
-                        <a href="https://www.facebook.com/khybertraderskhi/" class="w-10 h-10 border border-gray-700 rounded-full flex items-center justify-center hover:bg-brand-maroon hover:border-brand-maroon transition"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://www.instagram.com/animalhealthpk/" class="w-10 h-10 border border-gray-700 rounded-full flex items-center justify-center hover:bg-brand-maroon hover:border-brand-maroon transition"><i class="fab fa-instagram"></i></a>
-                        <a href="https://wa.me/923352999006" class="w-10 h-10 border border-gray-700 rounded-full flex items-center justify-center hover:bg-brand-maroon hover:border-brand-maroon transition"><i class="fab fa-whatsapp"></i></a>
+                    <div class="flex gap-4 mt-10">
+                        <a href="https://www.facebook.com/khybertraderskhi/" class="w-12 h-12 bg-gray-800 rounded-sm flex items-center justify-center hover:bg-brand-maroon transition duration-300 text-white"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/animalhealthpk/" class="w-12 h-12 bg-gray-800 rounded-sm flex items-center justify-center hover:bg-brand-maroon transition duration-300 text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="https://wa.me/923352999006" class="w-12 h-12 bg-gray-800 rounded-sm flex items-center justify-center hover:bg-brand-maroon transition duration-300 text-white"><i class="fab fa-whatsapp"></i></a>
+                        <a href="https://maps.app.goo.gl/Bno7agdf2HcHZjKS9" target="_blank" class="w-12 h-12 bg-brand-gold rounded-sm flex items-center justify-center hover:bg-white hover:text-brand-dark transition duration-300 text-brand-dark shadow-glow" title="View on Map"><i class="fas fa-location-arrow"></i></a>
                     </div>
                 </div>
-
-                <div class="md:w-2/3">
-                    <div class="h-64 bg-gray-800 rounded-sm overflow-hidden relative grayscale hover:grayscale-0 transition duration-700">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3619.9678654321!2d67.0000!3d24.8600!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3eb33e0178cf47f1%3A0xde96e6a5be7b36de!2sKhyber%20Traders!5e0!3m2!1sen!2s!4v1600000000000!5m2!1sen!2s" 
+                <div class="lg:w-2/3">
+                    <div class="h-80 w-full bg-gray-800 rounded-sm overflow-hidden relative filter grayscale hover:grayscale-0 transition duration-700 border border-gray-700">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3619.932404646706!2d67.0003335!3d24.8576856!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3eb33e0178cf47f1%3A0xde96e6a5be7b36de!2sKhyber%20Traders!5e0!3m2!1sen!2s" 
                         class="absolute inset-0 w-full h-full border-0" allowfullscreen="" loading="lazy"></iframe>
                     </div>
                 </div>
             </div>
-
-            <div class="border-t border-gray-800 mt-16 pt-8 text-center text-xs text-gray-500">
+            <div class="border-t border-gray-800 mt-20 pt-8 text-center text-[10px] uppercase tracking-widest text-gray-600">
                 <p>&copy; 2024 Khyber Traders. All rights reserved.</p>
-                <div class="mt-2 flex justify-center gap-4">
-                    <a href="https://animalhealth.pk" class="hover:text-brand-gold">animalhealth.pk</a>
-                    <a href="http://www.khybertraders.com.pk" class="hover:text-brand-gold">khybertraders.com.pk</a>
-                </div>
             </div>
         </div>
     </footer>
 
-    <!-- Admin Panel -->
-    <div id="admin-panel" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-[60]">
-        <div class="bg-white p-8 rounded shadow-2xl w-full max-w-md">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="font-serif font-bold text-2xl text-brand-maroon">Manager Portal</h3>
-                <button onclick="document.getElementById('admin-panel').classList.add('hidden')" class="text-gray-400 hover:text-red-500"><i class="fas fa-times"></i></button>
+    <!-- CATEGORY POPUP MODAL -->
+    <div id="category-modal" class="fixed inset-0 bg-black/95 hidden z-[100] overflow-y-auto backdrop-blur-sm transition-opacity duration-300">
+        <div class="min-h-screen px-4 text-center">
+            <div class="fixed inset-0" onclick="closeCategoryModal()"></div>
+            <div class="inline-block w-full max-w-6xl p-8 my-12 text-left align-middle transition-all transform bg-white shadow-2xl relative border-t-4 border-brand-maroon">
+                <button onclick="closeCategoryModal()" class="absolute top-6 right-6 text-gray-300 hover:text-brand-maroon text-2xl z-10 transition">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="mb-10 border-b pb-6">
+                    <h3 id="modal-title" class="text-4xl font-serif font-bold text-brand-dark capitalize">Category Name</h3>
+                    <p class="text-brand-gold text-sm font-bold uppercase tracking-widest mt-2">Available Collection</p>
+                </div>
+                <div id="modal-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"></div>
             </div>
-            <p class="text-sm text-gray-500 mb-4">Use this form to add products, cards, or information to the main page.</p>
-            <form id="add-product-form" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Title / Product Name</label>
-                    <input type="text" id="prod-name" class="w-full border border-gray-300 p-3 rounded-sm focus:border-brand-maroon outline-none" placeholder="e.g. Oxytetracycline" required>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Description / Category</label>
-                    <input type="text" id="prod-desc" class="w-full border border-gray-300 p-3 rounded-sm focus:border-brand-maroon outline-none" placeholder="e.g. Medicine">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Image URL</label>
-                    <input type="text" id="prod-img" class="w-full border border-gray-300 p-3 rounded-sm focus:border-brand-maroon outline-none" placeholder="https://...">
-                </div>
-                <button type="submit" class="w-full bg-brand-maroon text-white font-bold py-3 rounded-sm hover:bg-black transition">Add Card to Site</button>
-            </form>
         </div>
     </div>
-
-    <!-- Login Modal -->
-    <div id="login-modal" class="fixed inset-0 bg-white/95 hidden flex items-center justify-center z-[60]">
-        <div class="w-full max-w-xs text-center">
-            <div class="text-brand-maroon text-4xl mb-4"><i class="fas fa-user-shield"></i></div>
-            <h3 class="font-serif font-bold text-2xl mb-8">Secure Access</h3>
-            <input type="email" id="email" class="w-full border-b border-gray-300 p-3 mb-2 outline-none text-center bg-transparent" placeholder="Email">
-            <input type="password" id="password" class="w-full border-b border-gray-300 p-3 mb-8 outline-none text-center bg-transparent" placeholder="Password">
-            <button onclick="handleLogin()" class="bg-brand-black text-white px-8 py-3 rounded-sm font-bold text-sm tracking-widest hover:bg-brand-maroon transition">AUTHENTICATE</button>
-            <button onclick="toggleLoginModal()" class="block w-full mt-6 text-xs text-gray-400">Return to Site</button>
-        </div>
-    </div>
-
-    <!-- Toast -->
-    <div id="toast" class="fixed top-6 right-6 hidden bg-brand-black text-white px-6 py-4 shadow-2xl z-[70] text-sm font-medium flex items-center gap-3"></div>
 
     <!-- MAIN LOGIC -->
-    <script type="module">
-        // Import REALTIME DATABASE instead of Firestore to avoid billing error
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
-        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    <script>
+        // ==========================================
+        // CONNECTED SHEET ID
+        // ==========================================
+        
+        const SHEET_ID = '1-s7frQnY1Muh4XOizcz2V3KnkkHV8owNWYzyDrYFSic'; 
 
         // ==========================================
-        // --- PASTE YOUR FIREBASE CONFIG HERE ---
-        // ==========================================
-        const firebaseConfig = {
-            apiKey: "REPLACE_WITH_YOUR_API_KEY",
-            authDomain: "REPLACE_WITH_YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "REPLACE_WITH_YOUR_PROJECT_ID",
-            storageBucket: "REPLACE_WITH_YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "REPLACE_WITH_YOUR_SENDER_ID",
-            appId: "REPLACE_WITH_YOUR_APP_ID"
-        };
-        // ==========================================
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app); // Realtime Database
-        const auth = getAuth(app);
-        const prodRef = ref(db, 'products');
+        let allProducts = [];
 
-        // UI References
-        const prodGrid = document.getElementById("products-grid");
-
-        // Listen for Data
-        onValue(prodRef, (snapshot) => {
-            prodGrid.innerHTML = "";
-            const data = snapshot.val();
+        async function fetchProducts() {
+            const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
             
-            if (!data) {
-                // Keep grid empty or show message if needed
-                return;
+            try {
+                const response = await fetch(url);
+                const text = await response.text();
+                allProducts = parseCSV(text);
+                generateTiles();
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById('tiles-container').innerHTML = `
+                    <div class='col-span-full text-center py-10'>
+                        <p class='text-red-500 font-bold'>Unable to load data.</p>
+                        <p class='text-gray-500 text-sm mt-2'>Please ensure you have gone to:<br>File > Share > Publish to web > CSV > Publish</p>
+                    </div>`;
+            }
+        }
+
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n');
+            const result = [];
+            for (let i = 1; i < lines.length; i++) {
+                const row = lines[i];
+                if (!row) continue;
+                
+                const regex = /"([^"]*)"|([^,]+)|(?<=,)(?=,)/g; 
+                const matches = row.match(regex);
+                
+                if (matches && matches.length >= 2) {
+                    const clean = matches.map(m => m ? m.replace(/^"|"$/g, '').trim() : '');
+                    
+                    const rawImg = clean[3] || '';
+                    const images = rawImg.split(',').map(url => url.trim()).filter(url => url.length > 0);
+
+                    result.push({
+                        category: clean[0].toLowerCase().trim(), 
+                        name: clean[1],
+                        desc: clean[2] || '',
+                        images: images
+                    });
+                }
+            }
+            return result;
+        }
+
+        function generateTiles() {
+            const uniqueCats = [...new Set(allProducts.map(p => p.category))];
+            const container = document.getElementById('tiles-container');
+            container.innerHTML = "";
+
+            if(uniqueCats.length === 0) {
+                 container.innerHTML = "<p class='text-center col-span-full text-gray-400'>Inventory is updating...</p>";
+                 return;
             }
 
-            // Convert object to array and reverse to show newest first
-            const productList = Object.entries(data).map(([id, val]) => ({ id, ...val })).reverse();
-
-            productList.forEach(p => {
-                const isAdmin = document.body.classList.contains('is-admin');
-                const deleteBtn = isAdmin ? 
-                    `<button onclick="window.del('${p.id}')" class="absolute top-2 right-2 bg-white/90 text-red-600 w-8 h-8 flex items-center justify-center rounded-full shadow hover:bg-red-600 hover:text-white z-20 transition"><i class="fas fa-trash-alt text-xs"></i></button>` : '';
+            uniqueCats.forEach(cat => {
+                if(!cat) return;
                 
-                const imgUrl = (p.img && p.img.startsWith('http')) ? p.img : 'https://placehold.co/600x600/f3f4f6/C5A059?text=Khyber+Traders';
+                // Smart Icon & Color Logic (Updated for sleek theme)
+                let icon = 'fa-box-open';
+                
+                if(cat.includes('med')) icon = 'fa-pills';
+                else if(cat.includes('vac')) icon = 'fa-syringe';
+                else if(cat.includes('feed') || cat.includes('nutri')) icon = 'fa-wheat';
+                else if(cat.includes('surg') || cat.includes('inst')) icon = 'fa-scalpel';
 
-                // Render as Standard Card
-                prodGrid.innerHTML += `
-                <div class="bg-white group relative">
-                    ${deleteBtn}
-                    <div class="h-64 overflow-hidden bg-gray-50 relative mb-4">
-                        <img src="${imgUrl}" alt="${p.name}" class="w-full h-full object-cover mix-blend-multiply transition duration-700 group-hover:scale-105">
+                container.innerHTML += `
+                <div onclick="openCategoryModal('${cat}')" class="group cursor-pointer bg-white p-10 shadow-sleek hover:shadow-2xl transition duration-500 transform hover:-translate-y-2 relative overflow-hidden border-b-4 border-transparent hover:border-brand-gold">
+                    <div class="absolute top-0 right-0 p-4 opacity-5 text-9xl text-brand-maroon group-hover:scale-110 transition duration-700 pointer-events-none">
+                        <i class="fas ${icon}"></i>
                     </div>
-                    <div>
-                        <p class="text-xs text-brand-gold font-bold uppercase tracking-wider mb-1">${p.desc || 'Info'}</p>
-                        <h4 class="font-serif font-bold text-lg text-brand-black leading-tight mb-3">${p.name}</h4>
-                        <a href="https://wa.me/923352999006?text=Inquiry: ${encodeURIComponent(p.name)}" target="_blank" class="inline-block text-sm font-medium text-gray-400 hover:text-brand-maroon transition border-b border-transparent hover:border-brand-maroon">
-                            Request Details
-                        </a>
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 bg-gray-50 text-brand-dark rounded-none flex items-center justify-center text-3xl mb-8 group-hover:bg-brand-maroon group-hover:text-brand-gold transition duration-300">
+                            <i class="fas ${icon}"></i>
+                        </div>
+                        <h3 class="text-2xl font-serif font-bold text-brand-dark mb-3 capitalize">${cat}</h3>
+                        <p class="text-gray-400 text-sm font-light">Access our complete wholesale collection.</p>
+                        <div class="mt-8 flex items-center text-brand-maroon font-bold text-xs uppercase tracking-widest group-hover:text-brand-gold transition">
+                            View Products <i class="fas fa-long-arrow-alt-right ml-2"></i>
+                        </div>
                     </div>
                 </div>`;
             });
-        });
+        }
 
-        // Add Product/Card Logic
-        document.getElementById("add-product-form").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            if(!auth.currentUser) return showToast("Session Expired");
+        window.openCategoryModal = (category) => {
+            const modal = document.getElementById('category-modal');
+            const grid = document.getElementById('modal-grid');
+            const title = document.getElementById('modal-title');
+            
+            title.innerText = category;
+            const filtered = allProducts.filter(p => p.category === category);
+            
+            grid.innerHTML = "";
+            
+            filtered.forEach((p, index) => {
+                
+                // NOTICE CARD (No Image)
+                if (p.images.length === 0) {
+                    grid.innerHTML += `
+                    <div class="bg-brand-gold/10 border-l-4 border-brand-gold p-6 relative group hover:shadow-lg transition">
+                        <div class="absolute top-4 right-4 text-brand-gold opacity-50"><i class="fas fa-bullhorn text-2xl"></i></div>
+                        <h4 class="font-bold text-brand-maroon text-lg mb-2">${p.name}</h4>
+                        <p class="text-sm text-gray-700 leading-relaxed font-light">${p.desc}</p>
+                    </div>`;
+                    return;
+                }
 
-            const name = document.getElementById("prod-name").value;
-            const desc = document.getElementById("prod-desc").value;
-            const img = document.getElementById("prod-img").value;
+                // PRODUCT CARD (With Slider)
+                let sliderHtml = '';
+                const slides = p.images.map((img, i) => `<img src="${img}" class="slide ${i===0?'active':''}" id="slide-${index}-${i}">`).join('');
+                
+                let btns = '';
+                let dots = '';
+                
+                if (p.images.length > 1) {
+                    btns = `
+                        <button class="slider-btn prev-btn" onclick="changeSlide(event, ${index}, -1, ${p.images.length})"><i class="fas fa-chevron-left"></i></button>
+                        <button class="slider-btn next-btn" onclick="changeSlide(event, ${index}, 1, ${p.images.length})"><i class="fas fa-chevron-right"></i></button>
+                    `;
+                    dots = `
+                        <div class="slider-dots">
+                            ${p.images.map((_, i) => `<div class="dot ${i===0?'active':''}" id="dot-${index}-${i}" onclick="goToSlide(event, ${index}, ${i})"></div>`).join('')}
+                        </div>
+                    `;
+                }
 
-            try {
-                await push(prodRef, { name, desc, img, date: Date.now() });
-                e.target.reset();
-                showToast("Card Added Successfully");
-                document.getElementById('admin-panel').classList.add('hidden');
-            } catch(e) { showToast(e.message); }
-        });
+                sliderHtml = `
+                    <div class="slider-wrapper" id="slider-${index}" data-current="0">
+                        ${slides}
+                        ${btns}
+                        ${dots}
+                    </div>
+                `;
 
-        window.del = async (id) => {
-            if(confirm("Permanently delete this item?")) await remove(ref(db, `products/${id}`));
+                const shareText = `Check out ${p.name} at Khyber Traders:`;
+                const shareUrl = `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + window.location.href)}`;
+
+                grid.innerHTML += `
+                <div class="bg-white group relative shadow-sm hover:shadow-2xl transition duration-500 border border-gray-100">
+                    <div class="h-64 overflow-hidden relative bg-gray-50 border-b border-gray-100">
+                        ${sliderHtml}
+                    </div>
+                    <div class="p-6">
+                        <h4 class="font-bold text-brand-dark leading-tight mb-2 text-lg font-serif">${p.name}</h4>
+                        <p class="text-xs text-gray-500 mb-6 h-8 overflow-hidden leading-relaxed">${p.desc}</p>
+                        <div class="flex gap-3">
+                            <a href="${shareUrl}" target="_blank" class="flex-1 bg-white border border-gray-200 text-gray-600 py-3 text-[10px] font-bold uppercase tracking-widest text-center hover:bg-gray-50 transition">
+                                <i class="fas fa-share mr-1"></i> Share
+                            </a>
+                            <a href="https://wa.me/923352999006?text=Inquiry: ${encodeURIComponent(p.name)}" target="_blank" class="flex-1 bg-brand-maroon text-white py-3 text-[10px] font-bold uppercase tracking-widest text-center hover:bg-brand-dark transition shadow-lg">
+                                Inquire
+                            </a>
+                        </div>
+                    </div>
+                </div>`;
+            });
+            modal.classList.remove('hidden');
         };
 
-        // Auth
-        window.toggleLoginModal = () => document.getElementById('login-modal').classList.toggle('hidden');
-        window.handleLogin = () => signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value)
-            .then(() => { toggleLoginModal(); showToast("Welcome Manager"); })
-            .catch(() => showToast("Access Denied"));
-
-        onAuthStateChanged(auth, u => {
-            if(u) {
-                document.body.classList.add("is-admin");
-                document.getElementById('admin-panel').classList.remove("hidden");
-            } else {
-                document.body.classList.remove("is-admin");
-                document.getElementById('admin-panel').classList.add("hidden");
-            }
-        });
-
-        window.showToast = (msg) => {
-            const t = document.getElementById("toast");
-            t.innerHTML = `<i class="fas fa-info-circle text-brand-gold"></i> ${msg}`;
-            t.classList.remove("hidden");
-            setTimeout(() => t.classList.add("hidden"), 3000);
+        // Slider Navigation
+        window.changeSlide = (e, cardIndex, direction, total) => {
+            e.stopPropagation();
+            let current = parseInt(document.getElementById(`slider-${cardIndex}`).dataset.current);
+            let next = current + direction;
+            if (next >= total) next = 0;
+            if (next < 0) next = total - 1;
+            updateSlider(cardIndex, current, next);
         };
+
+        window.goToSlide = (e, cardIndex, next) => {
+            e.stopPropagation();
+            let current = parseInt(document.getElementById(`slider-${cardIndex}`).dataset.current);
+            updateSlider(cardIndex, current, next);
+        }
+
+        function updateSlider(cardIndex, current, next) {
+            const currentSlide = document.getElementById(`slide-${cardIndex}-${current}`);
+            const currentDot = document.getElementById(`dot-${cardIndex}-${current}`);
+            
+            if (currentSlide) currentSlide.classList.remove('active');
+            if (currentDot) currentDot.classList.remove('active');
+            
+            const nextSlide = document.getElementById(`slide-${cardIndex}-${next}`);
+            const nextDot = document.getElementById(`dot-${cardIndex}-${next}`);
+            
+            if (nextSlide) nextSlide.classList.add('active');
+            if (nextDot) nextDot.classList.add('active');
+            
+            document.getElementById(`slider-${cardIndex}`).dataset.current = next;
+        }
+
+        window.closeCategoryModal = () => {
+            document.getElementById('category-modal').classList.add('hidden');
+        };
+
+        fetchProducts();
     </script>
 </body>
 </html>
