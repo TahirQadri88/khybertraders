@@ -1,34 +1,31 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth" prefix="og: http://ogp.me/ns#">
 <head>
-    <!-- 1. WHATSAPP & SOCIAL PREVIEW (ABSOLUTE TOP PRIORITY) -->
+    <!-- 1. WHATSAPP & SOCIAL CRAWLER PREREQUISITES (MUST BE AT THE VERY TOP) -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Khyber Traders | Wholesale Veterinary Pharmacy</title>
-    <meta name="description" content="Khyber Traders - Wholesale Veterinary Pharmacy. Specialized in Dairy and Cattle Industry solutions.">
-
-    <!-- Open Graph Metadata -->
-    <meta property="og:site_name" content="Khyber Traders">
+    <!-- Thumbnail Image Meta (1200x630px, <300KB) -->
+    <link rel="image_src" href="https://i.ibb.co/VvMGj8n/khyber-traders-card.jpg">
+    <meta itemprop="image" content="https://i.ibb.co/VvMGj8n/khyber-traders-card.jpg">
+    
     <meta property="og:title" content="Khyber Traders | Wholesale Veterinary Pharmacy">
     <meta property="og:description" content="Authentic Medicines for the Modern Dairy Industry. Open to get updates about trending products !">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://animalhealth.pk">
-    
-    <!-- Thumbnail Image (1200x630px Recommended) -->
     <meta property="og:image" content="https://i.ibb.co/VvMGj8n/khyber-traders-card.jpg">
     <meta property="og:image:secure_url" content="https://i.ibb.co/VvMGj8n/khyber-traders-card.jpg">
     <meta property="og:image:type" content="image/jpeg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
+    
+    <meta property="og:url" content="https://animalhealth.pk">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Khyber Traders">
 
-    <!-- Twitter Preview -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Khyber Traders | Wholesale Veterinary Pharmacy">
-    <meta name="twitter:description" content="Open to get updates about trending products !">
-    <meta name="twitter:image" content="https://i.ibb.co/VvMGj8n/khyber-traders-card.jpg">
+    <title>Khyber Traders | Wholesale Veterinary Pharmacy</title>
+    <link rel="canonical" href="https://animalhealth.pk">
+    <meta name="description" content="Khyber Traders - Wholesale Veterinary Pharmacy. Specialized in Dairy and Cattle Industry solutions.">
 
-    <!-- 2. DOMAIN & TRAFFIC CONTROLLER -->
+    <!-- 2. DOMAIN REDIRECT -->
     <script>
         const currentDomain = window.location.hostname;
         if (currentDomain.includes('khybertraders.com.pk')) {
@@ -40,7 +37,7 @@
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
-    <!-- 4. PREMIUM FONTS & STYLING -->
+    <!-- 4. FONTS & STYLES -->
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -78,10 +75,12 @@
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #500000; border-radius: 4px; }
+        
         .slider-wrapper { position: relative; width: 100%; height: 100%; overflow: hidden; background: #fff; cursor: zoom-in; }
         .slide { display: none; width: 100%; height: 100%; object-fit: contain; }
         .slide.active { display: block; animation: fadeEffect 0.5s; }
         @keyframes fadeEffect { from {opacity: .4} to {opacity: 1} }
+
         .slider-btn { 
             position: absolute; top: 50%; transform: translateY(-50%); 
             background: rgba(255,255,255,0.9); color: #000; border: none; 
@@ -90,17 +89,20 @@
             transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         .slider-btn:hover { background: #D4AF37; color: white; }
+        
         #lightbox { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); justify-content: center; align-items: center; }
         #lightbox img { max-width: 90%; max-height: 90%; object-fit: contain; border: 2px solid #D4AF37; }
         #link-loader { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index: 9000; justify-content: center; align-items: center; flex-direction: column; }
+        
         #social-card-template { position: fixed; top: 0; left: -9999px; width: 1080px; height: 1350px; background: white; display: flex; flex-direction: column; }
+        
         .formatted-text { white-space: pre-wrap; word-wrap: break-word; }
         .formatted-text strong { color: #500000; font-weight: 700; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased selection:bg-brand-maroon selection:text-white">
 
-    <!-- Loading Overlay -->
+    <!-- Loading Overlay for Item Links -->
     <div id="link-loader">
         <i class="fas fa-circle-notch fa-spin text-brand-gold text-5xl mb-4"></i>
         <p class="text-brand-dark font-serif font-bold text-xl">Searching Inventory...</p>
@@ -154,8 +156,8 @@
                     Authenticity, Reliability, and History located in the heart of Karachi.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-5 justify-center">
-                    <a href="https://wa.me/923352999006" class="bg-brand-gold text-brand-dark font-bold py-4 px-10 hover:bg-white hover:text-brand-maroon transition duration-300 shadow-glow">Contact</a>
-                    <a href="#products" class="border border-white/30 text-white font-bold py-4 px-10 hover:bg-white transition duration-300 backdrop-blur-sm">View Collection</a>
+                    <a href="https://wa.me/923352999006" class="bg-brand-gold text-brand-dark font-bold py-4 px-10 hover:bg-white transition duration-300 shadow-glow">Contact</a>
+                    <a href="#products" class="border border-white/30 text-white font-bold py-4 px-10 hover:bg-white hover:text-brand-dark transition duration-300 backdrop-blur-sm">View Collection</a>
                 </div>
             </div>
         </div>
@@ -202,9 +204,6 @@
                                 <li><i class="fas fa-check text-brand-gold mr-2"></i>Fattening Herds</li>
                             </ul>
                         </div>
-                    </div>
-                    <div class="mt-8 text-xs text-red-500 font-semibold uppercase tracking-wide">
-                        * Note: We do not deal in Pets, Birds, or Wild Animals.
                     </div>
                 </div>
                 
@@ -346,6 +345,7 @@
             } catch (error) { console.error(error); }
         }
 
+        // CSV Parser for complex cells
         function parseCSV(str) {
             const arr = []; let quote = false; let col = 0, c = 0;
             arr[col] = []; arr[col][c] = "";
@@ -358,12 +358,12 @@
                 else if (cc == '\n' && !quote) { ++col; c = 0; arr[col] = []; arr[col][c] = ""; }
                 else { arr[col][c] += cc; }
             }
-            const result = [];
+            const res = [];
             for (let i = 1; i < arr.length; i++) {
                 if (!arr[i] || arr[i].length < 2) continue;
-                result.push({ category: arr[i][0].toLowerCase().trim(), name: arr[i][1], desc: arr[i][2] || '', images: (arr[i][3] || '').split(',').map(u => u.trim()).filter(u => u.length > 5) });
+                res.push({ category: arr[i][0].toLowerCase().trim(), name: arr[i][1], desc: arr[i][2] || '', images: (arr[i][3] || '').split(',').map(u => u.trim()).filter(u => u.length > 5) });
             }
-            return result;
+            return res;
         }
 
         function formatText(text) {
