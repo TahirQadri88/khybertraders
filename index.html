@@ -22,6 +22,9 @@
         }
     </script>
 
+    <!-- IMAGE GENERATOR LIBRARY -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
     <!-- Premium Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -97,6 +100,18 @@
 
         /* Link Loader Overlay */
         #link-loader { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index: 9000; justify-content: center; align-items: center; flex-direction: column; }
+
+        /* Hidden Social Card Canvas (4:5 Aspect Ratio) */
+        #social-card-template {
+            position: fixed; top: 0; left: -9999px; /* Hide offscreen */
+            width: 1080px; height: 1350px;
+            background: white;
+            display: flex; flex-direction: column;
+            z-index: 50;
+        }
+        
+        /* Custom SVG classes */
+        .icon-custom { fill: currentColor; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased selection:bg-brand-maroon selection:text-white">
@@ -186,20 +201,30 @@
                     <p class="text-gray-600 mb-8 leading-relaxed">
                         Serving the Dairy and Cattle industry with authentic medicines and vaccines for more than 3 decades! We bridge the gap between top manufacturers and farms.
                     </p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-10">
-                        <div class="flex items-center gap-4 p-4 border border-gray-100 hover:border-brand-gold transition duration-300 shadow-sm">
-                            <div class="text-brand-gold text-2xl"><i class="fas fa-cow"></i></div>
-                            <div>
-                                <h4 class="font-bold text-xs uppercase text-brand-dark">Large Ruminants</h4>
-                                <p class="text-xs text-gray-500">Cows & Buffalos</p>
-                            </div>
+                    
+                    <!-- NEW SUBHEADING -->
+                    <p class="text-brand-maroon font-serif font-bold text-lg mt-10 mb-4 border-l-4 border-brand-gold pl-4">
+                        Khyber Traders AnimalHealth.Pk specifically deals in the medicine and some instruments for :
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <!-- LARGE RUMINANTS (BULLETS) -->
+                        <div class="p-6 border border-gray-100 hover:border-brand-gold transition duration-300 shadow-sm bg-gray-50/50">
+                            <h4 class="font-bold text-sm uppercase text-brand-dark mb-3 border-b border-brand-gold/30 pb-2">Large Ruminants</h4>
+                            <ul class="text-xs text-gray-600 space-y-1 font-medium">
+                                <li><i class="fas fa-check text-brand-gold mr-2"></i>Cows &amp; Buffaloes</li>
+                                <li><i class="fas fa-check text-brand-gold mr-2"></i>Calves &amp; Bulls</li>
+                                <li><i class="fas fa-check text-brand-gold mr-2"></i>Dairy &amp; Beef Cattle</li>
+                            </ul>
                         </div>
-                        <div class="flex items-center gap-4 p-4 border border-gray-100 hover:border-brand-gold transition duration-300 shadow-sm">
-                            <div class="text-brand-gold text-2xl"><i class="fas fa-paw"></i></div>
-                            <div>
-                                <h4 class="font-bold text-xs uppercase text-brand-dark">Small Ruminants</h4>
-                                <p class="text-xs text-gray-500">Sheep & Goats</p>
-                            </div>
+                        <!-- SMALL RUMINANTS (BULLETS) -->
+                        <div class="p-6 border border-gray-100 hover:border-brand-gold transition duration-300 shadow-sm bg-gray-50/50">
+                             <h4 class="font-bold text-sm uppercase text-brand-dark mb-3 border-b border-brand-gold/30 pb-2">Small Ruminants</h4>
+                             <ul class="text-xs text-gray-600 space-y-1 font-medium">
+                                <li><i class="fas fa-check text-brand-gold mr-2"></i>Sheep &amp; Goats</li>
+                                <li><i class="fas fa-check text-brand-gold mr-2"></i>Lambs &amp; Kids</li>
+                                <li><i class="fas fa-check text-brand-gold mr-2"></i>Fattening Herds</li>
+                            </ul>
                         </div>
                     </div>
                     <div class="mt-8 text-xs text-red-500 font-semibold uppercase tracking-wide">
@@ -266,38 +291,35 @@
     <!-- Footer -->
     <footer id="contact" class="bg-brand-dark text-white pt-24 pb-12">
         <div class="container mx-auto px-6">
-            <div class="flex flex-col lg:flex-row gap-16">
-                <div class="lg:w-1/3">
-                    <div class="text-3xl font-serif font-bold mb-8 text-white">Khyber Traders</div>
-                    <div class="space-y-6 text-gray-400 text-sm font-light">
-                        <p class="flex gap-4 items-start">
-                            <i class="fas fa-map-pin text-brand-gold mt-1"></i> 
-                            <span>Shop A2, Noori Center, Katchi Gali No 2,<br>Near Denso Hall, Marriot Road, Karachi.</span>
-                        </p>
-                        <p class="flex gap-4 items-center">
-                            <i class="fas fa-phone text-brand-gold"></i> 
-                            <span>+92 335 2999006</span>
-                        </p>
-                        <p class="flex gap-4 items-center">
-                            <i class="fas fa-clock text-brand-gold"></i> 
-                            <span>12:30 PM – 8:00 PM (Mon-Sat)</span>
-                        </p>
+            <div class="flex flex-col items-center gap-10">
+                <div class="w-full max-w-3xl text-center md:text-left md:flex md:justify-between md:items-start md:gap-16">
+                    <div class="mb-8 md:mb-0">
+                        <div class="text-3xl font-serif font-bold mb-8 text-white">Khyber Traders</div>
+                        <div class="space-y-6 text-gray-400 text-sm font-light">
+                            <p class="flex gap-4 items-start justify-center md:justify-start">
+                                <i class="fas fa-map-pin text-brand-gold mt-1"></i> 
+                                <span>Shop A2, Noori Center, Katchi Gali No 2,<br>Near Denso Hall, Marriot Road, Karachi.</span>
+                            </p>
+                            <p class="flex gap-4 items-center justify-center md:justify-start">
+                                <i class="fas fa-phone text-brand-gold"></i> 
+                                <span>+92 335 2999006</span>
+                            </p>
+                            <p class="flex gap-4 items-center justify-center md:justify-start">
+                                <i class="fas fa-clock text-brand-gold"></i> 
+                                <span>12:30 PM – 8:00 PM (Mon-Sat)</span>
+                            </p>
+                        </div>
                     </div>
-                    <div class="flex gap-4 mt-10">
+                    
+                    <div class="flex gap-4 justify-center md:justify-start mt-2">
                         <a href="https://www.facebook.com/khybertraderskhi/" class="w-12 h-12 bg-gray-800 rounded-sm flex items-center justify-center hover:bg-brand-maroon transition duration-300 text-white"><i class="fab fa-facebook-f"></i></a>
                         <a href="https://www.instagram.com/animalhealthpk/" class="w-12 h-12 bg-gray-800 rounded-sm flex items-center justify-center hover:bg-brand-maroon transition duration-300 text-white"><i class="fab fa-instagram"></i></a>
                         <a href="https://wa.me/923352999006" class="w-12 h-12 bg-gray-800 rounded-sm flex items-center justify-center hover:bg-brand-maroon transition duration-300 text-white"><i class="fab fa-whatsapp"></i></a>
                         <a href="https://maps.app.goo.gl/Bno7agdf2HcHZjKS9" target="_blank" class="w-12 h-12 bg-brand-gold rounded-sm flex items-center justify-center hover:bg-white hover:text-brand-dark transition duration-300 text-brand-dark shadow-glow" title="View on Map"><i class="fas fa-location-arrow"></i></a>
                     </div>
                 </div>
-                <div class="lg:w-2/3">
-                    <div class="h-80 w-full bg-gray-800 rounded-sm overflow-hidden relative filter grayscale hover:grayscale-0 transition duration-700 border border-gray-700">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3619.932404646706!2d67.0003335!3d24.8576856!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3eb33e0178cf47f1%3A0xde96e6a5be7b36de!2sKhyber%20Traders!5e0!3m2!1sen!2s" 
-                        class="absolute inset-0 w-full h-full border-0" allowfullscreen="" loading="lazy"></iframe>
-                    </div>
-                </div>
             </div>
-            <div class="border-t border-gray-800 mt-20 pt-8 text-center text-[10px] uppercase tracking-widest text-gray-600">
+            <div class="border-t border-gray-800 mt-16 pt-8 text-center text-[10px] uppercase tracking-widest text-gray-600">
                 <p>&copy; 2024 Khyber Traders. All rights reserved.</p>
             </div>
         </div>
@@ -327,6 +349,48 @@
         <img id="lightbox-img" src="">
     </div>
 
+    <!-- HIDDEN SOCIAL CARD TEMPLATE (4:5 Ratio) -->
+    <div id="social-card-template">
+        <!-- Header -->
+        <div class="h-32 bg-brand-maroon flex items-center justify-between px-12">
+            <div class="text-white">
+                <h1 class="font-serif font-bold text-4xl">Khyber Traders</h1>
+                <p class="text-brand-gold uppercase tracking-[0.2em] text-sm mt-1">Wholesale Veterinary Pharmacy</p>
+            </div>
+            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center">
+                <span class="text-brand-maroon font-serif font-bold text-3xl">KT</span>
+            </div>
+        </div>
+        
+        <!-- Image Area -->
+        <div class="flex-1 bg-gray-50 flex items-center justify-center p-12 overflow-hidden relative">
+             <img id="card-img" src="" class="max-h-full max-w-full object-contain drop-shadow-2xl" crossorigin="anonymous">
+             <!-- Watermark removed for cleaner look -->
+        </div>
+
+        <!-- Details -->
+        <div class="bg-white p-12 border-t-8 border-brand-gold">
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <span id="card-cat" class="text-brand-maroon font-bold uppercase tracking-widest text-sm mb-2 block">CATEGORY</span>
+                    <h2 id="card-name" class="text-5xl font-serif font-bold text-brand-dark leading-tight">Product Name</h2>
+                </div>
+            </div>
+            <p id="card-desc" class="text-gray-600 text-2xl leading-relaxed font-light mb-10 border-l-4 border-gray-200 pl-6">
+                Product description goes here.
+            </p>
+            
+            <div class="flex items-center justify-between mt-8 pt-8 border-t border-gray-100">
+                <div class="text-gray-400 text-lg font-bold">
+                    <i class="fas fa-map-marker-alt text-brand-gold mr-2"></i> Katchi Gali, Karachi
+                </div>
+                <div class="text-brand-maroon text-2xl font-bold">
+                    animalhealth.pk
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- MAIN LOGIC -->
     <script>
         const SHEET_ID = '1-s7frQnY1Muh4XOizcz2V3KnkkHV8owNWYzyDrYFSic'; 
@@ -335,7 +399,6 @@
         let allProducts = [];
 
         async function fetchProducts() {
-            // Check for direct link immediately to show loader
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('item')) {
                 document.getElementById('link-loader').style.display = 'flex';
@@ -348,13 +411,10 @@
                 const text = await response.text();
                 allProducts = parseCSV(text);
                 generateTiles();
-                
-                // WAIT AND CHECK LINK
                 waitAndCheckLink();
-
             } catch (error) {
                 console.error("Error:", error);
-                document.getElementById('link-loader').style.display = 'none'; // Hide loader on error
+                document.getElementById('link-loader').style.display = 'none'; 
                 document.getElementById('tiles-container').innerHTML = `
                     <div class='col-span-full text-center py-10'>
                         <p class='text-red-500 font-bold'>Unable to load data.</p>
@@ -363,12 +423,9 @@
             }
         }
 
-        // --- ULTRA-AGGRESSIVE NORMALIZER ---
         function aggressiveNormalize(str) {
             if(!str) return '';
-            return decodeURIComponent(str)
-                .toLowerCase()
-                .replace(/[^a-z0-9]/g, ''); 
+            return decodeURIComponent(str).toLowerCase().replace(/[^a-z0-9]/g, ''); 
         }
 
         function waitAndCheckLink() {
@@ -383,18 +440,11 @@
         function checkForDirectLink() {
             const urlParams = new URLSearchParams(window.location.search);
             const rawItemName = urlParams.get('item');
-            
             if (rawItemName) {
                 const target = aggressiveNormalize(rawItemName);
                 const product = allProducts.find(p => aggressiveNormalize(p.name) === target);
-                
                 document.getElementById('link-loader').style.display = 'none'; 
-
-                if (product) {
-                    openCategoryModal(product.category, product.name);
-                } else {
-                    console.log("Product not found (Aggressive Search):", target);
-                }
+                if (product) openCategoryModal(product.category, product.name);
             } else {
                  document.getElementById('link-loader').style.display = 'none';
             }
@@ -406,10 +456,8 @@
             for (let i = 1; i < lines.length; i++) {
                 const row = lines[i];
                 if (!row) continue;
-                
                 const regex = /"([^"]*)"|([^,]+)|(?<=,)(?=,)/g; 
                 const matches = row.match(regex);
-                
                 if (matches && matches.length >= 2) {
                     const clean = matches.map(m => m ? m.replace(/^"|"$/g, '').trim() : '');
                     const rawImg = clean[3] || '';
@@ -450,7 +498,7 @@
                             <i class="fas ${icon}"></i>
                         </div>
                         <h3 class="text-2xl font-serif font-bold text-brand-dark mb-3 capitalize">${cat}</h3>
-                        <p class="text-gray-400 text-sm font-light">Access our complete wholesale collection.</p>
+                        <p class="text-gray-400 text-sm font-light">Open to get details !</p>
                         <div class="mt-8 flex items-center text-brand-maroon font-bold text-xs uppercase tracking-widest group-hover:text-brand-gold transition">
                             View Products <i class="fas fa-long-arrow-alt-right ml-2"></i>
                         </div>
@@ -468,7 +516,6 @@
             
             let filtered = allProducts.filter(p => p.category === category);
             if(specificItemName) {
-                // Strict Name Match using Aggressive Normalizer
                 filtered = allProducts.filter(p => aggressiveNormalize(p.name) === aggressiveNormalize(specificItemName));
                 if(filtered.length === 0) filtered = allProducts.filter(p => p.category === category);
             }
@@ -476,7 +523,6 @@
             grid.innerHTML = "";
             
             filtered.forEach((p, index) => {
-                // NOTICE CARD
                 if (p.images.length === 0) {
                     grid.innerHTML += `
                     <div class="bg-brand-gold/10 border-l-4 border-brand-gold p-6 relative group hover:shadow-lg transition">
@@ -487,7 +533,6 @@
                     return;
                 }
                 
-                // PRODUCT CARD
                 let sliderHtml = '';
                 const slides = p.images.map((img, i) => 
                     `<img src="${img}" class="slide ${i===0?'active':''}" id="slide-${index}-${i}" onclick="openLightbox('${img}')" onerror="this.src='https://placehold.co/600x400?text=No+Image'">`
@@ -503,14 +548,13 @@
                 const firstImg = p.images.length > 0 ? p.images[0] : 'No Image';
                 const uniqueLink = `${BASE_URL}/?item=${encodeURIComponent(p.name)}`;
 
-                const messageText = `*WHOLESALE INQUIRY @ KHYBER TRADERS*
-━━━━━━━━━━━━━━━━━━
-📦 *Product:* ${p.name}
+                // UPDATED MESSAGE FORMAT (REMOVED GREETING)
+                const messageText = `📦 *Product:* ${p.name}
 📂 *Category:* ${p.category.toUpperCase()}
 📝 *Details:* ${p.desc}
 ━━━━━━━━━━━━━━━━━━
-🖼 *Reference:* ${firstImg}
-🔗 *Web Link:* ${uniqueLink}`;
+🔗 *Web Link:* ${uniqueLink}
+🖼 *Product Image Link:* ${firstImg}`;
 
                 const encodedMsg = encodeURIComponent(messageText);
                 const shareUrl = `https://wa.me/?text=${encodedMsg}`;
@@ -524,11 +568,14 @@
                     <div class="p-6">
                         <h4 class="font-bold text-brand-dark leading-tight mb-2 text-lg font-serif">${p.name}</h4>
                         <p class="text-xs text-gray-500 mb-6 h-8 overflow-hidden leading-relaxed">${p.desc}</p>
-                        <div class="flex gap-3">
-                            <a href="${shareUrl}" target="_blank" class="flex-1 bg-white border border-gray-200 text-gray-600 py-3 text-[10px] font-bold uppercase tracking-widest text-center hover:bg-gray-50 transition">
-                                <i class="fas fa-share mr-1"></i> Share
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="shareCardImage('${p.name.replace(/'/g, "\\'")}', '${p.category}', '${p.desc.replace(/'/g, "\\'")}', '${firstImg}')" class="col-span-2 bg-brand-gold text-brand-dark py-3 text-[10px] font-bold uppercase tracking-widest text-center hover:bg-white border border-brand-gold transition shadow-md mb-2">
+                                <i class="fas fa-camera mr-1"></i> Share Card Image
+                            </button>
+                            <a href="${shareUrl}" target="_blank" class="bg-white border border-gray-200 text-gray-600 py-3 text-[10px] font-bold uppercase tracking-widest text-center hover:bg-gray-50 transition">
+                                <i class="fas fa-share mr-1"></i> Share Link
                             </a>
-                            <a href="${inquireUrl}" target="_blank" class="flex-1 bg-brand-maroon text-white py-3 text-[10px] font-bold uppercase tracking-widest text-center hover:bg-brand-dark transition shadow-lg">
+                            <a href="${inquireUrl}" target="_blank" class="bg-brand-maroon text-white py-3 text-[10px] font-bold uppercase tracking-widest text-center hover:bg-brand-dark transition shadow-lg">
                                 Inquire
                             </a>
                         </div>
@@ -537,6 +584,49 @@
             });
             modal.classList.remove('hidden');
         };
+
+        // --- CARD GENERATOR LOGIC ---
+        window.shareCardImage = (name, cat, desc, imgUrl) => {
+            document.getElementById('card-name').innerText = name;
+            document.getElementById('card-cat').innerText = cat;
+            document.getElementById('card-desc').innerText = desc || 'Contact for details.';
+            
+            const img = document.getElementById('card-img');
+            img.src = imgUrl;
+
+            const cardElement = document.getElementById('social-card-template');
+            
+            img.onload = () => {
+                html2canvas(cardElement, {
+                    useCORS: true, 
+                    scale: 1, 
+                }).then(canvas => {
+                    canvas.toBlob(blob => {
+                        const file = new File([blob], "khyber-traders-card.png", { type: "image/png" });
+                        if (navigator.share) {
+                            navigator.share({
+                                files: [file],
+                                title: 'Khyber Traders Product',
+                                text: `Check out ${name} at Khyber Traders!`
+                            }).catch(err => {
+                                console.log("Share failed (desktop?), downloading instead.", err);
+                                downloadImage(canvas);
+                            });
+                        } else {
+                            downloadImage(canvas);
+                            alert("Image downloaded! You can now share it on WhatsApp.");
+                        }
+                    });
+                });
+            };
+        };
+
+        function downloadImage(canvas) {
+            const link = document.createElement('a');
+            link.download = 'khyber-traders-product.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
 
         window.changeSlide = (e, cardIndex, direction, total) => { e.stopPropagation(); let current = parseInt(document.getElementById(`slider-${cardIndex}`).dataset.current); let next = current + direction; if (next >= total) next = 0; if (next < 0) next = total - 1; updateSlider(cardIndex, current, next); };
         window.goToSlide = (e, cardIndex, next) => { e.stopPropagation(); let current = parseInt(document.getElementById(`slider-${cardIndex}`).dataset.current); updateSlider(cardIndex, current, next); }
