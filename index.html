@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth" prefix="og: http://ogp.me/ns#">
 <head>
-    <!-- 1. WHATSAPP & SOCIAL CRAWLER PREREQUISITES -->
+    <!-- 1. WHATSAPP & SOCIAL CRAWLER PREREQUISITES (TOP PRIORITY) -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
@@ -21,15 +21,30 @@
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Khyber Traders">
     
-    <meta name="description" content="Khyber Traders - Wholesale Veterinary Pharmacy. Specialized in Dairy and Cattle Industry solutions. Serving the heart of Karachi for over 3 decades.">
+    <meta name="description" content="Khyber Traders - Wholesale Veterinary Pharmacy. Specialized in Dairy and Cattle Industry solutions.">
 
-    <!-- Twitter Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Khyber Traders | Wholesale Veterinary Pharmacy">
-    <meta name="twitter:description" content="Open to get updates about trending products !">
-    <meta name="twitter:image" content="https://tahirqadri88.github.io/khybertraders/images/website%20banner.jpg">
+    <!-- 2. TRACKING STATION (GA4 INTEGRATED) -->
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GZN53B9YMP"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-GZN53B9YMP');
+    </script>
 
-    <!-- 2. DOMAIN TRAFFIC CONTROLLER -->
+    <!-- Microsoft Clarity (UX & Heatmaps) -->
+    <!-- Replace 'YOUR_CLARITY_PROJECT_ID' once you have it -->
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "YOUR_CLARITY_PROJECT_ID");
+    </script>
+
+    <!-- 3. DOMAIN TRAFFIC CONTROLLER -->
     <script>
         const currentDomain = window.location.hostname;
         if (currentDomain.includes('khybertraders.com.pk')) {
@@ -37,11 +52,11 @@
         }
     </script>
 
-    <!-- 3. LIBRARIES -->
+    <!-- 4. LIBRARIES -->
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
-    <!-- 4. RESTORED PERFECTED STYLING -->
+    <!-- 5. PERFECTED STYLING & FONTS -->
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -50,25 +65,10 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['"Manrope"', 'sans-serif'],
-                        serif: ['"Playfair Display"', 'serif'],
-                    },
-                    colors: {
-                        brand: {
-                            maroon: '#500000', 
-                            gold: '#D4AF37',   
-                            dark: '#0a0a0a',   
-                            light: '#f4f4f5',
-                        }
-                    },
-                    backgroundImage: {
-                        'hero-gradient': "linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80')",
-                    },
-                    boxShadow: {
-                        'sleek': '0 4px 20px -2px rgba(0, 0, 0, 0.1)',
-                        'glow': '0 0 15px rgba(212, 175, 55, 0.3)',
-                    }
+                    fontFamily: { sans: ['"Manrope"', 'sans-serif'], serif: ['"Playfair Display"', 'serif'] },
+                    colors: { brand: { maroon: '#500000', gold: '#D4AF37', dark: '#0a0a0a', light: '#f4f4f5' } },
+                    backgroundImage: { 'hero-gradient': "linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80')" },
+                    boxShadow: { 'sleek': '0 4px 20px -2px rgba(0, 0, 0, 0.1)', 'glow': '0 0 15px rgba(212, 175, 55, 0.3)' }
                 }
             }
         }
@@ -83,13 +83,7 @@
         .slide { display: none; width: 100%; height: 100%; object-fit: contain; }
         .slide.active { display: block; animation: fadeEffect 0.5s; }
         @keyframes fadeEffect { from {opacity: .4} to {opacity: 1} }
-        .slider-btn { 
-            position: absolute; top: 50%; transform: translateY(-50%); 
-            background: rgba(255,255,255,0.9); color: #000; border: none; 
-            width: 32px; height: 32px; border-radius: 50%;
-            cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center;
-            transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
+        .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.9); color: #000; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .slider-btn:hover { background: #D4AF37; color: white; }
         #lightbox { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); justify-content: center; align-items: center; }
         #lightbox img { max-width: 90%; max-height: 90%; object-fit: contain; border: 2px solid #D4AF37; }
@@ -138,7 +132,7 @@
         </div>
     </nav>
 
-    <!-- Perfected Hero Section -->
+    <!-- Hero Section -->
     <header class="relative bg-hero-gradient bg-cover bg-center h-[700px] flex items-center justify-center text-center">
         <div class="container mx-auto px-6 relative z-10">
             <div class="max-w-4xl mx-auto fade-in">
@@ -161,7 +155,7 @@
         </div>
     </header>
 
-    <!-- Perfected About Section with Ruminant Details -->
+    <!-- About Section -->
     <section id="about" class="py-24 bg-white relative overflow-hidden">
         <div class="absolute top-0 right-0 w-1/3 h-full bg-gray-50 -skew-x-12 opacity-50 z-0 pointer-events-none"></div>
         <div class="container mx-auto px-6 relative z-10">
@@ -178,11 +172,9 @@
                     <p class="text-gray-600 mb-8 leading-relaxed">
                         Serving the Dairy and Cattle industry with authentic medicines and vaccines for more than 3 decades! We bridge the gap between top manufacturers and farms.
                     </p>
-                    
                     <p class="text-brand-maroon font-serif font-bold text-lg mt-10 mb-4 border-l-4 border-brand-gold pl-4">
                         Khyber Traders AnimalHealth.Pk specifically deals in the medicine and some instruments for :
                     </p>
-
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div class="p-6 border border-gray-100 hover:border-brand-gold transition duration-300 shadow-sm bg-gray-50/50">
                             <h4 class="font-bold text-sm uppercase text-brand-dark mb-3 border-b border-brand-gold/30 pb-2">Large Ruminants</h4>
@@ -202,7 +194,6 @@
                         </div>
                     </div>
                 </div>
-                
                 <div class="grid grid-cols-2 gap-6">
                     <div class="space-y-6">
                         <div class="bg-brand-dark text-white p-8 text-center shadow-2xl flex flex-col justify-center items-center h-48">
@@ -229,7 +220,7 @@
         </div>
     </section>
 
-    <!-- Perfected Catalog Section -->
+    <!-- Catalog Section -->
     <section id="products" class="py-24 bg-brand-light border-y border-gray-200">
         <div class="container mx-auto px-6">
             <div class="text-center mb-16">
@@ -243,7 +234,7 @@
         </div>
     </section>
 
-    <!-- Perfected Footer -->
+    <!-- Footer -->
     <footer id="contact" class="bg-brand-dark text-white pt-24 pb-12">
         <div class="container mx-auto px-6">
             <div class="flex flex-col items-center gap-10">
@@ -251,18 +242,9 @@
                     <div>
                         <div class="text-3xl font-serif font-bold mb-8 text-white">Khyber Traders</div>
                         <div class="space-y-6 text-gray-400 text-sm font-light">
-                            <p class="flex gap-4 items-start justify-center md:justify-start">
-                                <i class="fas fa-map-pin text-brand-gold mt-1"></i> 
-                                <span>Shop A2, Noori Center, Katchi Gali No 2,<br>Near Denso Hall, Marriot Road, Karachi.</span>
-                            </p>
-                            <p class="flex gap-4 items-center justify-center md:justify-start">
-                                <i class="fas fa-phone text-brand-gold"></i> 
-                                <span>+92 335 2999006</span>
-                            </p>
-                            <p class="flex gap-4 items-center justify-center md:justify-start">
-                                <i class="fas fa-clock text-brand-gold"></i> 
-                                <span>12:30 PM – 8:00 PM (Mon-Sat)</span>
-                            </p>
+                            <p class="flex gap-4 items-start justify-center md:justify-start"><i class="fas fa-map-pin text-brand-gold mt-1"></i> <span>Shop A2, Noori Center, Katchi Gali No 2,<br>Near Denso Hall, Karachi.</span></p>
+                            <p class="flex gap-4 items-center justify-center md:justify-start"><i class="fas fa-phone text-brand-gold"></i> <span>+92 335 2999006</span></p>
+                            <p class="flex gap-4 items-center justify-center md:justify-start"><i class="fas fa-clock text-brand-gold"></i> <span>12:30 PM – 8:00 PM (Mon-Sat)</span></p>
                         </div>
                     </div>
                     <div class="flex gap-4 justify-center md:justify-start mt-2">
@@ -316,7 +298,7 @@
             <h2 id="card-name" class="text-5xl font-serif font-bold text-brand-dark leading-tight">Product Name</h2>
             <div id="card-desc" class="formatted-text text-gray-600 text-2xl leading-relaxed font-light mt-6 mb-10 border-l-4 border-gray-200 pl-6"></div>
             <div class="flex items-center justify-between pt-8 border-t border-gray-100">
-                <div class="text-gray-400 text-lg font-bold"><i class="fas fa-map-marker-alt text-brand-gold mr-2"></i> Katchi Gali, Karachi</div>
+                <div class="text-gray-400 text-lg font-bold"><i class="fas fa-map-marker-alt text-brand-gold mr-2"></i> Karachi</div>
                 <div class="text-brand-maroon text-2xl font-bold">animalhealth.pk</div>
             </div>
         </div>
@@ -340,7 +322,6 @@
             } catch (error) { console.error(error); }
         }
 
-        // CSV Parser for multi-line cells
         function parseCSV(str) {
             const arr = []; let quote = false; let col = 0, c = 0;
             arr[col] = []; arr[col][c] = "";
@@ -353,12 +334,12 @@
                 else if (cc == '\n' && !quote) { ++col; c = 0; arr[col] = []; arr[col][c] = ""; }
                 else { arr[col][c] += cc; }
             }
-            const res = [];
+            const result = [];
             for (let i = 1; i < arr.length; i++) {
                 if (!arr[i] || arr[i].length < 2) continue;
-                res.push({ category: arr[i][0].toLowerCase().trim(), name: arr[i][1], desc: arr[i][2] || '', images: (arr[i][3] || '').split(',').map(u => u.trim()).filter(u => u.length > 5) });
+                result.push({ category: arr[i][0].toLowerCase().trim(), name: arr[i][1], desc: arr[i][2] || '', images: (arr[i][3] || '').split(',').map(u => u.trim()).filter(u => u.length > 5) });
             }
-            return res;
+            return result;
         }
 
         function formatText(text) {
