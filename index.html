@@ -24,6 +24,8 @@
 
     <!-- IMAGE GENERATOR LIBRARY -->
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <!-- ZIP LIBRARY -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <!-- Premium Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
@@ -109,6 +111,10 @@
             display: flex; flex-direction: column;
             z-index: 50;
         }
+
+        /* Formatted Description Styles */
+        .formatted-text { white-space: pre-wrap; word-wrap: break-word; }
+        .formatted-text strong { color: #500000; font-weight: 700; }
         
         /* Custom SVG classes */
         .icon-custom { fill: currentColor; }
@@ -319,8 +325,11 @@
                     </div>
                 </div>
             </div>
-            <div class="border-t border-gray-800 mt-16 pt-8 text-center text-[10px] uppercase tracking-widest text-gray-600">
+            
+            <div class="border-t border-gray-800 mt-16 pt-8 flex justify-between items-center text-[10px] uppercase tracking-widest text-gray-600">
                 <p>&copy; 2024 Khyber Traders. All rights reserved.</p>
+                <!-- ADMIN TOOL FOR STATIC GENERATOR -->
+                <button onclick="generateSocialFiles()" title="Developer: Generate Static Social Files" class="text-gray-800 hover:text-brand-gold transition"><i class="fas fa-bolt"></i></button>
             </div>
         </div>
     </footer>
@@ -376,9 +385,10 @@
                     <h2 id="card-name" class="text-5xl font-serif font-bold text-brand-dark leading-tight">Product Name</h2>
                 </div>
             </div>
-            <p id="card-desc" class="text-gray-600 text-2xl leading-relaxed font-light mb-10 border-l-4 border-gray-200 pl-6">
+            <!-- FORMATTED TEXT FOR CARD -->
+            <div id="card-desc" class="formatted-text text-gray-600 text-2xl leading-relaxed font-light mb-10 border-l-4 border-gray-200 pl-6">
                 Product description goes here.
-            </p>
+            </div>
             
             <div class="flex items-center justify-between mt-8 pt-8 border-t border-gray-100">
                 <div class="text-gray-400 text-lg font-bold">
@@ -450,27 +460,69 @@
             }
         }
 
-        function parseCSV(csvText) {
-            const lines = csvText.split('\n');
-            const result = [];
-            for (let i = 1; i < lines.length; i++) {
-                const row = lines[i];
-                if (!row) continue;
-                const regex = /"([^"]*)"|([^,]+)|(?<=,)(?=,)/g; 
-                const matches = row.match(regex);
-                if (matches && matches.length >= 2) {
-                    const clean = matches.map(m => m ? m.replace(/^"|"$/g, '').trim() : '');
-                    const rawImg = clean[3] || '';
-                    const images = rawImg.split(',').map(url => url.trim()).filter(url => url.length > 5);
-                    result.push({
-                        category: clean[0].toLowerCase().trim(), 
-                        name: clean[1],
-                        desc: clean[2] || '',
-                        images: images
-                    });
+        // --- ROBUST CSV PARSER (HANDLES MULTILINE CELLS) ---
+        function parseCSV(str) {
+            const arr = [];
+            let quote = false;  // 'true' means we're inside a quoted field
+            let col = 0, c = 0;
+            // Pre-allocate first row
+            arr[col] = [];
+            arr[col][c] = "";
+
+            for (let r = 0; r < str.length; r++) {
+                let cc = str[r], nc = str[r+1];
+                
+                // If current slot undefined, define it
+                if (!arr[col]) arr[col] = [];
+                if (arr[col][c] === undefined) arr[col][c] = "";
+
+                if (cc == '"' && quote && nc == '"') { 
+                    arr[col][c] += cc; ++r; 
+                }
+                else if (cc == '"') { 
+                    quote = !quote; 
+                }
+                else if (cc == ',' && !quote) { 
+                    ++c; 
+                    arr[col][c] = ""; // Initialize next col
+                }
+                else if (cc == '\n' && !quote) { 
+                    ++col; c = 0; 
+                    arr[col] = []; arr[col][c] = ""; // Initialize next row
+                }
+                else { 
+                    arr[col][c] += cc; 
                 }
             }
+
+            // Convert to object structure
+            const result = [];
+            // Assuming row 0 is header, start from 1
+            for (let i = 1; i < arr.length; i++) {
+                const clean = arr[i];
+                if (!clean || clean.length < 2) continue; // Skip empty rows
+                
+                // Handle image splitting
+                const rawImg = clean[3] || '';
+                const images = rawImg.split(',').map(url => url.trim()).filter(url => url.length > 5);
+                
+                result.push({
+                    category: clean[0].toLowerCase().trim(), 
+                    name: clean[1],
+                    desc: clean[2] || '', // Description keeps newlines here
+                    images: images
+                });
+            }
             return result;
+        }
+
+        // --- MARKDOWN FORMATTER FOR DISPLAY ---
+        function formatText(text) {
+            if(!text) return '';
+            return text
+                .replace(/\n/g, '<br>') // Convert newlines to breaks
+                .replace(/\*(.*?)\*/g, '<strong>$1</strong>') // Bold
+                .replace(/_(.*?)_/g, '<em>$1</em>'); // Italics
         }
 
         function generateTiles() {
@@ -528,7 +580,7 @@
                     <div class="bg-brand-gold/10 border-l-4 border-brand-gold p-6 relative group hover:shadow-lg transition">
                         <div class="absolute top-4 right-4 text-brand-gold opacity-50"><i class="fas fa-bullhorn text-2xl"></i></div>
                         <h4 class="font-bold text-brand-maroon text-lg mb-2">${p.name}</h4>
-                        <p class="text-sm text-gray-700 leading-relaxed font-light">${p.desc}</p>
+                        <div class="text-sm text-gray-700 leading-relaxed font-light formatted-text">${formatText(p.desc)}</div>
                     </div>`;
                     return;
                 }
@@ -548,7 +600,7 @@
                 const firstImg = p.images.length > 0 ? p.images[0] : 'No Image';
                 const uniqueLink = `${BASE_URL}/?item=${encodeURIComponent(p.name)}`;
 
-                // UPDATED MESSAGE FORMAT (REMOVED GREETING)
+                // UPDATED MESSAGE FORMAT (NO GREETING)
                 const messageText = `📦 *Product:* ${p.name}
 📂 *Category:* ${p.category.toUpperCase()}
 📝 *Details:* ${p.desc}
@@ -560,6 +612,7 @@
                 const shareUrl = `https://wa.me/?text=${encodedMsg}`;
                 const inquireUrl = `https://wa.me/923352999006?text=${encodedMsg}`;
 
+                // NOTE: Using innerHTML for description to support formatting
                 grid.innerHTML += `
                 <div class="bg-white group relative shadow-sm hover:shadow-2xl transition duration-500 border border-gray-100">
                     <div class="h-64 overflow-hidden relative bg-gray-50 border-b border-gray-100">
@@ -567,13 +620,13 @@
                     </div>
                     <div class="p-6">
                         <h4 class="font-bold text-brand-dark leading-tight mb-2 text-lg font-serif">${p.name}</h4>
-                        <p class="text-xs text-gray-500 mb-6 h-8 overflow-hidden leading-relaxed">${p.desc}</p>
+                        <div class="text-xs text-gray-500 mb-6 h-auto overflow-hidden leading-relaxed formatted-text">${formatText(p.desc)}</div>
                         <div class="grid grid-cols-2 gap-2">
-                            <button onclick="shareCardImage('${p.name.replace(/'/g, "\\'")}', '${p.category}', '${p.desc.replace(/'/g, "\\'")}', '${firstImg}')" class="col-span-2 bg-brand-gold text-brand-dark py-3 text-[10px] font-bold uppercase tracking-widest text-center hover:bg-white border border-brand-gold transition shadow-md mb-2">
-                                <i class="fas fa-camera mr-1"></i> Share Card Image
+                            <button onclick="shareCardImage('${p.name.replace(/'/g, "\\'")}', '${p.category}', '${p.desc.replace(/'/g, "\\'").replace(/\n/g, '\\n')}', '${firstImg}')" class="col-span-2 bg-brand-gold text-brand-dark py-3 text-[10px] font-bold uppercase tracking-widest text-center hover:bg-white border border-brand-gold transition shadow-md mb-2">
+                                <i class="fab fa-whatsapp mr-1"></i> Share Card Image
                             </button>
                             <a href="${shareUrl}" target="_blank" class="bg-white border border-gray-200 text-gray-600 py-3 text-[10px] font-bold uppercase tracking-widest text-center hover:bg-gray-50 transition">
-                                <i class="fas fa-share mr-1"></i> Share Link
+                                <i class="fas fa-copy mr-1"></i> Copy Link
                             </a>
                             <a href="${inquireUrl}" target="_blank" class="bg-brand-maroon text-white py-3 text-[10px] font-bold uppercase tracking-widest text-center hover:bg-brand-dark transition shadow-lg">
                                 Inquire
@@ -585,38 +638,46 @@
             modal.classList.remove('hidden');
         };
 
-        // --- CARD GENERATOR LOGIC ---
+        // --- CREATIVE SHARE CARD GENERATOR (UPGRADED) ---
         window.shareCardImage = (name, cat, desc, imgUrl) => {
+            // 1. Populate Hidden Canvas
             document.getElementById('card-name').innerText = name;
             document.getElementById('card-cat').innerText = cat;
-            document.getElementById('card-desc').innerText = desc || 'Contact for details.';
+            // Use innerHTML here to render formatted text on the card image too!
+            document.getElementById('card-desc').innerHTML = formatText(desc) || 'Contact for details.';
             
             const img = document.getElementById('card-img');
-            img.src = imgUrl;
+            img.src = imgUrl; // Must be CORS enabled (GitHub is good for this)
 
             const cardElement = document.getElementById('social-card-template');
             
+            // 2. Generate Image
             img.onload = () => {
                 html2canvas(cardElement, {
                     useCORS: true, 
                     scale: 1, 
+                    allowTaint: true
                 }).then(canvas => {
                     canvas.toBlob(blob => {
-                        const file = new File([blob], "khyber-traders-card.png", { type: "image/png" });
-                        if (navigator.share) {
+                        const file = new File([blob], `${name.replace(/\s+/g, '-').toLowerCase()}.png`, { type: "image/png" });
+                        
+                        // 3. Construct the "No Greeting" Caption
+                        const uniqueLink = `${BASE_URL}/?item=${encodeURIComponent(name)}`;
+                        const caption = `📦 *Product:* ${name}\n📂 *Category:* ${cat}\n📝 *Details:* ${desc}\n━━━━━━━━━━━━━━━━━━\n🔗 *Web Link:* ${uniqueLink}`;
+
+                        // 4. Try Native "Mobile Share" (Image + Text)
+                        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
                             navigator.share({
                                 files: [file],
-                                title: 'Khyber Traders Product',
-                                text: `Check out ${name} at Khyber Traders!`
-                            }).catch(err => {
-                                console.log("Share failed (desktop?), downloading instead.", err);
-                                downloadImage(canvas);
-                            });
+                                title: name,
+                                text: caption
+                            }).catch(err => console.log("Share failed", err));
                         } else {
+                            // 5. Fallback for Desktop (Download)
                             downloadImage(canvas);
-                            alert("Image downloaded! You can now share it on WhatsApp.");
+                            alert("Image downloaded! You can now drag it into WhatsApp.");
                         }
-                    });
+                    }, 'image/png');
                 });
             };
         };
@@ -627,6 +688,43 @@
             link.href = canvas.toDataURL();
             link.click();
         }
+
+        // --- DEVELOPER TOOL: STATIC FILE GENERATOR ---
+        // Generates ZIP of HTML files for GitHub hosting to force thumbnails on Paste
+        window.generateSocialFiles = () => {
+            if(!allProducts.length) return alert("Wait for products to load.");
+            const zip = new JSZip();
+            
+            allProducts.forEach(p => {
+                const slug = p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                const img = p.images.length ? p.images[0] : 'https://animalhealth.pk/card.jpg';
+                const htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>${p.name} | Khyber Traders</title>
+    <meta property="og:title" content="${p.name}">
+    <meta property="og:description" content="${p.desc}">
+    <meta property="og:image" content="${img}">
+    <meta property="og:type" content="product">
+    <meta http-equiv="refresh" content="0;url=${BASE_URL}/?item=${encodeURIComponent(p.name)}" />
+</head>
+<body>
+    <p>Redirecting to ${p.name}...</p>
+    <script>window.location.href = "${BASE_URL}/?item=${encodeURIComponent(p.name)}";<\/script>
+</body>
+</html>`;
+                zip.file(`${slug}.html`, htmlContent);
+            });
+
+            zip.generateAsync({type:"blob"}).then(function(content) {
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(content);
+                link.download = "share-files.zip";
+                link.click();
+                alert("Instructions:\n1. Unzip this folder.\n2. Upload these .html files to a 's' folder in your GitHub.\n3. Your share links will be animalhealth.pk/s/product-name.html");
+            });
+        };
 
         window.changeSlide = (e, cardIndex, direction, total) => { e.stopPropagation(); let current = parseInt(document.getElementById(`slider-${cardIndex}`).dataset.current); let next = current + direction; if (next >= total) next = 0; if (next < 0) next = total - 1; updateSlider(cardIndex, current, next); };
         window.goToSlide = (e, cardIndex, next) => { e.stopPropagation(); let current = parseInt(document.getElementById(`slider-${cardIndex}`).dataset.current); updateSlider(cardIndex, current, next); }
@@ -647,5 +745,3 @@
     </script>
 </body>
 </html>
-
-
