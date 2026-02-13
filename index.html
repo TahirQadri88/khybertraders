@@ -7,7 +7,7 @@
     
     <title>Khyber Traders | Wholesale Veterinary Pharmacy</title>
     
-    <!-- Site-wide Thumbnail (GitHub Pages banner) -->
+    <!-- Site-wide Thumbnail -->
     <meta property="og:title" content="Khyber Traders | Wholesale Veterinary Pharmacy">
     <meta property="og:description" content="Authentic Medicines for the Modern Dairy Industry. Open to get updates about trending products !">
     <meta property="og:image" content="https://tahirqadri88.github.io/khybertraders/images/website%20banner.jpg">
@@ -42,7 +42,7 @@
     <!-- 4. LIBRARIES -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
-    <!-- 5. PERFECTED STYLING & FONTS (V22) -->
+    <!-- 5. PERFECTED STYLING & FONTS (V22 RESTORED) -->
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -97,6 +97,7 @@
         #link-loader { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index: 9000; justify-content: center; align-items: center; flex-direction: column; }
         .formatted-text { white-space: pre-wrap; word-wrap: break-word; }
         .formatted-text strong { color: #500000; font-weight: 700; }
+        .btn-loading { opacity: 0.6; pointer-events: none; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased selection:bg-brand-maroon selection:text-white">
@@ -287,6 +288,9 @@
         <img id="lightbox-img" src="">
     </div>
 
+    <!-- CANVAS PROXY (Invisible) -->
+    <canvas id="share-canvas" style="display:none;"></canvas>
+
     <script>
         const SHEET_ID = '1-s7frQnY1Muh4XOizcz2V3KnkkHV8owNWYzyDrYFSic'; 
         const BASE_URL = 'https://animalhealth.pk'; 
@@ -320,7 +324,6 @@
             const res = [];
             for (let i = 1; i < arr.length; i++) {
                 if (!arr[i] || arr[i].length < 2) continue;
-                // Col 3 (Index 3) is your Image Link column
                 const images = (arr[i][3] || '').split(',').map(u => u.trim()).filter(u => u.length > 5);
                 res.push({ category: arr[i][0].toLowerCase().trim(), name: arr[i][1], desc: arr[i][2] || '', images });
             }
@@ -369,11 +372,9 @@
                         <h4 class="font-bold text-brand-dark mb-2 text-lg font-serif">${p.name}</h4>
                         <div class="text-xs text-gray-500 mb-6 formatted-text h-auto overflow-hidden">${formatText(p.desc)}</div>
                         <div class="grid grid-cols-2 gap-2">
-                            <!-- NEW UNIFIED SHARE BUTTON -->
-                            <button onclick="shareProductNative('${p.name.replace(/'/g,"\\'")}', '${p.category}', '${p.desc.replace(/'/g,"\\'").replace(/\n/g,'\\n')}', '${imageLink}')" class="bg-brand-gold text-brand-dark py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-white border border-brand-gold transition shadow-md">
+                            <button id="share-btn-${index}" onclick="shareProductNative(event, '${p.name.replace(/'/g,"\\'")}', '${p.category}', '${p.desc.replace(/'/g,"\\'").replace(/\n/g,'\\n')}', '${imageLink}')" class="bg-brand-gold text-brand-dark py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-white border border-brand-gold transition shadow-md">
                                 <i class="fas fa-share-alt mr-1"></i> SHARE
                             </button>
-                            <!-- INQUIRE BUTTON -->
                             <a href="https://wa.me/923352999006?text=${encodeURIComponent('📦 *Product:* ' + p.name + '\n🔗 *Link:* ' + link)}" target="_blank" class="bg-brand-maroon text-white py-3 text-[10px] font-bold uppercase tracking-widest text-center shadow-lg">
                                 <i class="fab fa-whatsapp mr-1"></i> INQUIRE
                             </a>
@@ -384,45 +385,63 @@
             document.getElementById('category-modal').classList.remove('hidden');
         };
 
-        // NEW NATIVE SHARE LOGIC (Attaches Image from Sheet + Caption)
-        window.shareProductNative = async (name, cat, desc, imgUrl) => {
-            const shareLink = `${BASE_URL}/?item=${encodeURIComponent(name)}`;
-            const caption = `📦 *Product:* ${name}\n📂 *Category:* ${cat.toUpperCase()}\n📝 *Details:* ${desc}\n━━━━━━━━━━━━━━━━━━\n🔗 *Link:* ${shareLink}`;
+        // NEW NATIVE SHARE LOGIC (CORS-AWARE FOR MODERN IPHONES/ANDROIDS)
+        window.shareProductNative = async (event, name, cat, desc, imgUrl) => {
+            const btn = event.currentTarget;
+            const webLink = `${BASE_URL}/?item=${encodeURIComponent(name)}`;
+            const cleanDesc = desc.replace(/<[^>]*>?/gm, ''); 
+            
+            // Text Captions
+            const baseCaption = `📦 *Product:* ${name}\n📂 *Category:* ${cat.toUpperCase()}\n📝 *Details:* ${cleanDesc}\n━━━━━━━━━━━━━━━━━━\n🔗 *Link:* ${webLink}`;
+            const fallbackCaption = `📦 *Product:* ${name}\n📂 *Category:* ${cat.toUpperCase()}\n📝 *Details:* ${cleanDesc}\n━━━━━━━━━━━━━━━━━━\n🖼 *Image:* ${imgUrl}\n🔗 *Link:* ${webLink}`;
+
+            btn.classList.add('btn-loading');
 
             try {
-                // If image URL exists and browser supports sharing files
                 if (imgUrl && navigator.canShare && navigator.share) {
-                    // Fetch image from Sheet link and convert to File object
-                    const response = await fetch(imgUrl);
-                    const blob = await response.blob();
-                    const file = new File([blob], `${name.replace(/\s+/g,'-')}.jpg`, { type: blob.type });
+                    // STEP 1: LOAD IMAGE INTO CANVAS (BYPASSES CORS FOR SHARING)
+                    const tempImg = new Image();
+                    tempImg.crossOrigin = "anonymous";
+                    tempImg.src = imgUrl + (imgUrl.includes('?') ? '&' : '?') + 't=' + new Date().getTime(); // Prevent cache lock
+                    
+                    await new Promise((resolve, reject) => {
+                        tempImg.onload = resolve;
+                        tempImg.onerror = reject;
+                        setTimeout(reject, 4000); // 4s timeout
+                    });
+
+                    const canvas = document.getElementById('share-canvas');
+                    canvas.width = tempImg.width;
+                    canvas.height = tempImg.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(tempImg, 0, 0);
+
+                    // STEP 2: CONVERT TO BLOB
+                    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.8));
+                    const file = new File([blob], `${name.replace(/\s+/g,'-')}.jpg`, { type: 'image/jpeg' });
 
                     if (navigator.canShare({ files: [file] })) {
                         await navigator.share({
                             files: [file],
-                            title: name,
-                            text: caption
+                            text: baseCaption
                         });
+                        btn.classList.remove('btn-loading');
                         return;
                     }
                 }
                 
-                // Fallback for non-file sharing or desktop
+                // FALLBACK: Text only (Includes Image Link + Web Link separately as requested)
                 if (navigator.share) {
-                    await navigator.share({
-                        title: name,
-                        text: caption,
-                        url: shareLink
-                    });
+                    await navigator.share({ text: fallbackCaption });
                 } else {
-                    // Manual copy fallback if sharing isn't supported at all
-                    await navigator.clipboard.writeText(caption);
-                    alert("Details copied to clipboard! Paste it on WhatsApp.");
+                    await navigator.clipboard.writeText(fallbackCaption);
+                    alert("Details copied! Paste it manually in WhatsApp.");
                 }
             } catch (error) {
-                console.error("Sharing failed", error);
-                // Last resort fallback
-                window.open(`https://wa.me/?text=${encodeURIComponent(caption)}`, '_blank');
+                console.error("Share Failed:", error);
+                window.open(`https://wa.me/?text=${encodeURIComponent(fallbackCaption)}`, '_blank');
+            } finally {
+                btn.classList.remove('btn-loading');
             }
         };
 
@@ -455,4 +474,3 @@
     </script>
 </body>
 </html>
-
