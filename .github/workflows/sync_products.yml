@@ -1,11 +1,11 @@
 name: Sync Product Social Links
 on:
   schedule:
-    - cron: '0 * * * *' # Every hour
-  workflow_dispatch: # Manual trigger
+    - cron: '0 * * * *'
+  workflow_dispatch:
 
 permissions:
-  contents: write # Allows the bot to write to the 's' folder
+  contents: write 
 
 jobs:
   build:
@@ -14,7 +14,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0 # Get full history for merging
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -25,6 +25,7 @@ jobs:
         run: pip install requests
 
       - name: Generate Redirect Files
+        shell: python
         run: |
           import csv
           import requests
@@ -37,44 +38,55 @@ jobs:
           
           def get_clean_slug(name):
               if not name: return ""
-              # STRICT SYNC WITH WEBSITE JS
-              name = name.lower().replace('&', 'and')
+              # MATCHES TITANIUM V50 JS LOGIC EXACTLY
+              name = name.lower()
+              name = re.sub(r'&', 'and', name)
               name = re.sub(r'\s+', '-', name)
               name = re.sub(r'[^a-z0-9-]', '', name)
               return name
 
-          response = requests.get(SHEET_URL)
-          decoded_content = response.content.decode('utf-8')
-          cr = csv.reader(decoded_content.splitlines(), delimiter=',')
-          rows = list(cr)
+          try:
+              response = requests.get(SHEET_URL)
+              response.raise_for_status()
+              decoded_content = response.content.decode('utf-8')
+              cr = csv.reader(decoded_content.splitlines(), delimiter=',')
+              rows = list(cr)
 
-          # Ensure 's' is a directory
-          if os.path.exists('s') and not os.path.isdir('s'):
-              os.remove('s')
-          if not os.path.exists('s'):
-              os.makedirs('s')
+              if not os.path.exists('s'):
+                  os.makedirs('s')
 
-          # Generate files
-          for row in rows[1:]:
-              if len(row) < 2 or not row[1].strip(): continue
-              name = row[1].strip()
-              desc = row[2].strip() if len(row) > 2 else ""
-              img = row[3].strip() if len(row) > 3 and len(row[3]) > 5 else "https://tahirqadri88.github.io/khybertraders/images/website%20banner.jpg"
-              slug = get_clean_slug(name)
-              target = f"{BASE_URL}/?item={urllib.parse.quote(name)}"
-              
-              file_content = f"""<!DOCTYPE html><html><head><meta charset="UTF-8">
-              <title>{name} | AnimalHealth.pk</title>
-              <meta property="og:title" content="{name}">
-              <meta property="og:description" content="{desc[:150]}">
-              <meta property="og:image" content="{img}">
-              <meta property="og:url" content="{target}">
-              <meta property="og:type" content="website">
-              <meta http-equiv="refresh" content="0;url={target}" />
-              </head><body><script>window.location.href="{target}";</script></body></html>"""
-              
-              with open(f"s/{slug}.html", "w", encoding="utf-8") as f:
-                  f.write(file_content)
+              # Clean existing html files to prevent dead links
+              for f in os.listdir('s'):
+                  if f.endswith('.html'):
+                      os.remove(os.path.join('s', f))
+
+              for row in rows[1:]:
+                  if len(row) < 2 or not row[1].strip(): continue
+                  name = row[1].strip()
+                  desc = row[2].strip() if len(row) > 2 else ""
+                  img = row[3].strip() if len(row) > 3 and len(row[3]) > 5 else "https://tahirqadri88.github.io/khybertraders/images/website%20banner.jpg"
+                  slug = get_clean_slug(name)
+                  target = f"{BASE_URL}/?item={urllib.parse.quote(name)}"
+                  
+                  file_content = f"""<!DOCTYPE html><html><head><meta charset="UTF-8">
+                  <title>{name} | AnimalHealth.pk</title>
+                  <meta property="og:title" content="{name}">
+                  <meta property="og:description" content="{desc[:150]}">
+                  <meta property="og:image" content="{img}">
+                  <meta property="og:url" content="{target}">
+                  <meta property="og:type" content="website">
+                  <meta http-equiv="refresh" content="0;url={target}" />
+                  </head><body style="font-family:sans-serif;text-align:center;padding-top:50px;">
+                  <p>Redirecting to <strong>{name}</strong>...</p>
+                  <script>window.location.href="{target}";</script>
+                  </body></html>"""
+                  
+                  with open(f"s/{slug}.html", "w", encoding="utf-8") as f:
+                      f.write(file_content)
+              print("Files generated successfully.")
+          except Exception as e:
+              print(f"Error: {e}")
+              exit(1)
           
       - name: Commit and Push Changes
         run: |
@@ -82,10 +94,9 @@ jobs:
           git config --global user.email "bot@animalhealth.pk"
           git add s/
           if git diff --staged --quiet; then
-            echo "No changes found."
+            echo "No changes to sync."
           else
             git commit -m "Auto-sync products: $(date)"
             git pull --rebase origin main
             git push origin main
           fi
-
