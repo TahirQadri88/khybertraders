@@ -1,3 +1,0 @@
-# Use this exact line in your sync_products.yml logic
-slug = name.lower().replace('&', 'and').replace(' ', '-')
-slug = "".join([c for c in slug if c.isalnum() or c == '-'])
