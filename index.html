@@ -129,7 +129,7 @@
         </div>
     </header>
 
-    <!-- About Section (V22 Perfected) -->
+    <!-- About Section -->
     <section id="about" class="py-24 bg-white relative overflow-hidden">
         <div class="absolute top-0 right-0 w-1/3 h-full bg-gray-50 -skew-x-12 opacity-50 pointer-events-none"></div>
         <div class="container mx-auto px-6 relative z-10">
@@ -211,15 +211,19 @@
                 generateTiles();
                 const item = new URLSearchParams(window.location.search).get('item');
                 if (item) {
-                    const p = allProducts.find(x => x.name.toLowerCase().replace(/[^a-z0-9]/g, '') === item.toLowerCase().replace(/[^a-z0-9]/g, ''));
+                    const p = allProducts.find(x => getCleanSlug(x.name) === getCleanSlug(item));
                     if (p) openCategoryModal(p.category, p.name);
                 }
             } catch (error) { console.error(error); }
         }
 
-        // Helper to generate the exact same slug as the Python Robot
+        // SYNCED SLUG LOGIC: Matches GitHub Automation Python code perfectly
         function getCleanSlug(name) {
-            return name.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+            if(!name) return '';
+            return name.toLowerCase()
+                .replace(/&/g, 'and')
+                .replace(/\s+/g, '-')
+                .replace(/[^a-z0-9-]/g, '');
         }
 
         function parseCSV(str) {
@@ -252,7 +256,7 @@
             const grid = document.getElementById('modal-grid');
             document.getElementById('modal-title').innerText = specificItemName ? 'Details' : category;
             let filtered = allProducts.filter(p => p.category === category);
-            if(specificItemName) filtered = allProducts.filter(p => p.name.toLowerCase().replace(/[^a-z0-9]/g, '') === specificItemName.toLowerCase().replace(/[^a-z0-9]/g, ''));
+            if(specificItemName) filtered = allProducts.filter(p => getCleanSlug(p.name) === getCleanSlug(specificItemName));
             grid.innerHTML = filtered.map((p, index) => {
                 const slug = getCleanSlug(p.name);
                 const redirectLink = `animalhealth.pk/s/${slug}.html`;
@@ -282,8 +286,6 @@
             const slug = getCleanSlug(name);
             const redirectLink = `animalhealth.pk/s/${slug}.html`;
             const cleanDesc = desc.replace(/<[^>]*>?/gm, ''); 
-            
-            // Shared captions using the new redirect link format
             const baseCaption = `📦 *Product:* ${name}\n📂 *Category:* ${cat.toUpperCase()}\n📝 *Details:* ${cleanDesc}\n━━━━━━━━━━━━━━━━━━\n🔗 *Link:* ${redirectLink}`;
             const fallbackCaption = `📦 *Product:* ${name}\n📂 *Category:* ${cat.toUpperCase()}\n📝 *Details:* ${cleanDesc}\n━━━━━━━━━━━━━━━━━━\n🖼 *Image:* ${imgUrl}\n🔗 *Link:* ${redirectLink}`;
 
