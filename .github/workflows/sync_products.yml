@@ -1,8 +1,8 @@
 name: Sync Product Social Links
 on:
   schedule:
-    - cron: '0 * * * *' # Runs every hour
-  workflow_dispatch: # Allows manual run
+    - cron: '0 * * * *' 
+  workflow_dispatch: 
 
 permissions:
   contents: write 
@@ -37,7 +37,7 @@ jobs:
           
           def get_clean_slug(name):
               if not name: return ""
-              # STRICT SYNC WITH JS LOGIC
+              # SYNCED WITH V46 JS LOGIC
               name = name.lower().replace('&', 'and')
               name = re.sub(r'\s+', '-', name)
               name = re.sub(r'[^a-z0-9-]', '', name)
@@ -51,42 +51,41 @@ jobs:
           if not os.path.exists('s'):
               os.makedirs('s')
 
+          # Remove existing html files to prevent dead links
+          for f in os.listdir('s'):
+              if f.endswith('.html'):
+                  os.remove(os.path.join('s', f))
+
           for row in rows[1:]:
               if len(row) < 2 or not row[1].strip(): continue
-              
               name = row[1].strip()
               desc = row[2].strip() if len(row) > 2 else ""
               img = row[3].strip() if len(row) > 3 and len(row[3]) > 5 else "https://tahirqadri88.github.io/khybertraders/images/website%20banner.jpg"
-              
               slug = get_clean_slug(name)
-              target_url = f"{BASE_URL}/?item={urllib.parse.quote(name)}"
+              target = f"{BASE_URL}/?item={urllib.parse.quote(name)}"
               
               file_content = f"""<!DOCTYPE html><html><head><meta charset="UTF-8">
               <title>{name} | AnimalHealth.pk</title>
               <meta property="og:title" content="{name}">
               <meta property="og:description" content="{desc[:150]}">
               <meta property="og:image" content="{img}">
-              <meta property="og:url" content="{target_url}">
+              <meta property="og:url" content="{target}">
               <meta property="og:type" content="website">
-              <meta http-equiv="refresh" content="0;url={target_url}" />
-              </head><body style="font-family:sans-serif;text-align:center;padding-top:50px;">
-              <p>Redirecting to <strong>{name}</strong>...</p>
-              <script>window.location.href = "{target_url}";</script>
-              </body></html>"""
+              <meta http-equiv="refresh" content="0;url={target}" />
+              </head><body><script>window.location.href="{target}";</script></body></html>"""
               
               with open(f"s/{slug}.html", "w", encoding="utf-8") as f:
                   f.write(file_content)
           
-      - name: Commit and Push Changes
+      - name: Commit and Push
         run: |
           git config --global user.name "Product-Bot"
           git config --global user.email "bot@animalhealth.pk"
           git add s/
           if git diff --staged --quiet; then
-            echo "No changes"
+            echo "No changes detected"
           else
             git commit -m "Auto-sync products: $(date)"
             git pull --rebase origin main
             git push origin main
           fi
-
