@@ -7,7 +7,7 @@
     
     <title>Khyber Traders | Wholesale Veterinary Pharmacy</title>
     
-    <!-- Restored Perfected Meta Tags -->
+    <!-- Site-wide Thumbnail (Perfected Meta) -->
     <meta property="og:title" content="Khyber Traders | Wholesale Veterinary Pharmacy">
     <meta property="og:description" content="Authentic Medicines for the Modern Dairy Industry. Serving the industry for 3 decades. Open to view trending products!">
     <meta property="og:image" content="https://tahirqadri88.github.io/khybertraders/images/website%20banner.jpg">
@@ -33,7 +33,8 @@
 
     <!-- 3. DOMAIN TRAFFIC CONTROLLER -->
     <script>
-        if (window.location.hostname.includes('khybertraders.com.pk')) {
+        const currentDomain = window.location.hostname;
+        if (currentDomain.includes('khybertraders.com.pk')) {
             window.location.replace("https://animalhealth.pk" + window.location.search);
         }
     </script>
@@ -41,7 +42,7 @@
     <!-- 4. LIBRARIES -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
-    <!-- 5. PERFECTED STYLING & FONTS (V22) -->
+    <!-- 5. PERFECTED STYLING & FONTS -->
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -83,7 +84,13 @@
         .slide { display: none; width: 100%; height: 100%; object-fit: contain; }
         .slide.active { display: block; animation: fadeEffect 0.5s; }
         @keyframes fadeEffect { from {opacity: .4} to {opacity: 1} }
-        .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.9); color: #000; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .slider-btn { 
+            position: absolute; top: 50%; transform: translateY(-50%); 
+            background: rgba(255,255,255,0.9); color: #000; border: none; 
+            width: 32px; height: 32px; border-radius: 50%;
+            cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
         .slider-btn:hover { background: #D4AF37; color: white; }
         #lightbox { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); justify-content: center; align-items: center; }
         #lightbox img { max-width: 90%; max-height: 90%; object-fit: contain; border: 2px solid #D4AF37; }
@@ -101,18 +108,20 @@
         <p class="text-brand-dark font-serif font-bold text-xl">Searching Inventory...</p>
     </div>
 
-    <!-- Restored Perfected Top Bar -->
+    <!-- Restored Top Bar -->
     <div class="bg-brand-dark text-gray-400 text-[11px] uppercase tracking-widest py-3 border-b border-gray-900">
         <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-2">
             <div class="flex gap-6">
                 <span><i class="fas fa-phone-alt text-brand-gold mr-2"></i> +92 335 2999006</span>
                 <span class="hidden md:inline"><i class="fas fa-map-marker-alt text-brand-gold mr-2"></i> Medicine Market, Karachi</span>
             </div>
-            <a href="https://animalhealth.pk" class="text-brand-gold hover:text-white font-bold transition">animalhealth.pk</a>
+            <div class="flex gap-6 font-semibold">
+                <a href="https://animalhealth.pk" class="text-brand-gold hover:text-white transition duration-300">animalhealth.pk</a>
+            </div>
         </div>
     </div>
 
-    <!-- Restored Perfected Navigation -->
+    <!-- Restored Navigation -->
     <nav class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center gap-4">
@@ -131,7 +140,7 @@
         </div>
     </nav>
 
-    <!-- Restored Perfected Hero -->
+    <!-- Restored Hero Section -->
     <header class="relative bg-hero-gradient bg-cover bg-center h-[700px] flex items-center justify-center text-center">
         <div class="container mx-auto px-6 relative z-10">
             <div class="max-w-4xl mx-auto fade-in">
@@ -139,46 +148,80 @@
                     <span class="text-brand-gold text-xs font-bold uppercase tracking-[0.2em]">A Legacy of Three Generations</span>
                 </div>
                 <h1 class="text-5xl md:text-7xl font-serif font-bold text-white mb-8 leading-tight drop-shadow-lg">
-                    The Gold Standard in <br><span class="italic text-brand-gold">Veterinary Health</span>
+                    The Gold Standard in <br>
+                    <span class="italic text-brand-gold">Veterinary Health</span>
                 </h1>
-                <p class="text-gray-200 text-lg font-light leading-relaxed mb-12 max-w-2xl mx-auto">Specialized wholesale solutions for the Dairy and Cattle Industry. Authenticity, Reliability, and History located in the heart of Karachi.</p>
+                <p class="text-gray-200 text-lg font-light leading-relaxed mb-12 max-w-2xl mx-auto">
+                    Specialized wholesale solutions for the Dairy and Cattle Industry. 
+                    Authenticity, Reliability, and History located in the heart of Karachi.
+                </p>
                 <div class="flex flex-col sm:flex-row gap-5 justify-center">
-                    <a href="https://wa.me/923352999006" class="bg-brand-gold text-brand-dark font-bold py-4 px-10 hover:bg-white transition shadow-glow">Contact</a>
-                    <a href="#products" class="border border-white/30 text-white font-bold py-4 px-10 hover:bg-white hover:text-brand-dark transition backdrop-blur-sm">View Collection</a>
+                    <a href="https://wa.me/923352999006" class="bg-brand-gold text-brand-dark font-bold py-4 px-10 hover:bg-white transition duration-300 shadow-glow">Contact</a>
+                    <a href="#products" class="border border-white/30 text-white font-bold py-4 px-10 hover:bg-white hover:text-brand-dark transition duration-300 backdrop-blur-sm">View Collection</a>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Restored Perfected About Section (V22) -->
+    <!-- RESTORED PERFECTED ABOUT SECTION (FULL BULLETS) -->
     <section id="about" class="py-24 bg-white relative overflow-hidden">
         <div class="absolute top-0 right-0 w-1/3 h-full bg-gray-50 -skew-x-12 opacity-50 z-0 pointer-events-none"></div>
         <div class="container mx-auto px-6 relative z-10">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
                 <div>
-                    <div class="flex items-center gap-4 mb-6"><div class="h-1 w-12 bg-brand-maroon"></div><span class="text-brand-maroon font-bold uppercase tracking-widest text-sm">About Us</span></div>
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="h-1 w-12 bg-brand-maroon"></div>
+                        <span class="text-brand-maroon font-bold uppercase tracking-widest text-sm">About Us</span>
+                    </div>
                     <h2 class="text-4xl font-serif font-bold text-brand-dark mb-8 leading-tight">Authentic Medicines for the <br>Modern Dairy Industry</h2>
-                    <p class="text-gray-600 mb-6 leading-relaxed text-lg font-light">We are a dedicated <strong>"Wholesale Veterinary Pharmacy"</strong> situated at Medicine Market's famous <strong>"Katchi Gali"</strong> Near the historical Denso Hall Building Karachi.</p>
-                    <p class="text-gray-600 mb-8 leading-relaxed">Serving the Dairy and Cattle industry with authentic medicines and vaccines for more than 3 decades! We bridge the gap between top manufacturers and farms.</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-10">
-                        <div class="flex items-center gap-4 p-4 border border-gray-100 bg-gray-50/50 shadow-sm">
-                            <div class="text-brand-gold text-2xl"><i class="fas fa-cow"></i></div>
-                            <div><h4 class="font-bold text-xs uppercase text-brand-dark">Large Ruminants</h4><p class="text-[10px] text-gray-500">Cows & Buffalos</p></div>
+                    <p class="text-gray-600 mb-6 leading-relaxed text-lg font-light">
+                         We are a dedicated <strong>"Wholesale Veterinary Pharmacy"</strong> situated at Medicine Market's famous <strong>"Katchi Gali"</strong> Near the historical Denso Hall Building Karachi. 
+                    </p>
+                    <p class="text-gray-600 mb-8 leading-relaxed">
+                        Serving the Dairy and Cattle industry with authentic medicines and vaccines for more than 3 decades! We bridge the gap between top manufacturers and farms.
+                    </p>
+                    <p class="text-brand-maroon font-serif font-bold text-lg mt-10 mb-4 border-l-4 border-brand-gold pl-4">
+                        Khyber Traders AnimalHealth.Pk specifically deals in the medicine and some instruments for :
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div class="p-6 border border-gray-100 hover:border-brand-gold transition duration-300 shadow-sm bg-gray-50/50">
+                            <h4 class="font-bold text-sm uppercase text-brand-dark mb-3 border-b border-brand-gold/30 pb-2">Large Ruminants</h4>
+                            <ul class="text-xs text-gray-600 space-y-2 font-medium">
+                                <li><i class="fas fa-check text-brand-gold mr-2"></i>Cows &amp; Buffaloes</li>
+                                <li><i class="fas fa-check text-brand-gold mr-2"></i>Calves &amp; Bulls</li>
+                                <li><i class="fas fa-check text-brand-gold mr-2"></i>Dairy &amp; Beef Cattle</li>
+                            </ul>
                         </div>
-                        <div class="flex items-center gap-4 p-4 border border-gray-100 bg-gray-50/50 shadow-sm">
-                            <div class="text-brand-gold text-2xl"><i class="fas fa-paw"></i></div>
-                            <div><h4 class="font-bold text-xs uppercase text-brand-dark">Small Ruminants</h4><p class="text-[10px] text-gray-500">Sheep & Goats</p></div>
+                        <div class="p-6 border border-gray-100 hover:border-brand-gold transition duration-300 shadow-sm bg-gray-50/50">
+                             <h4 class="font-bold text-sm uppercase text-brand-dark mb-3 border-b border-brand-gold/30 pb-2">Small Ruminants</h4>
+                             <ul class="text-xs text-gray-600 space-y-2 font-medium">
+                                <li><i class="fas fa-check text-brand-gold mr-2"></i>Sheep &amp; Goats</li>
+                                <li><i class="fas fa-check text-brand-gold mr-2"></i>Lambs &amp; Kids</li>
+                                <li><i class="fas fa-check text-brand-gold mr-2"></i>Fattening Herds</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-6 text-center">
                     <div class="space-y-6">
-                        <div class="bg-brand-dark text-white p-8 h-48 flex flex-col justify-center items-center shadow-2xl"><i class="fas fa-map-marked-alt text-4xl text-brand-gold mb-2"></i><h3 class="font-bold text-sm tracking-widest uppercase">KATCHI GALI</h3></div>
-                        <div class="bg-brand-maroon p-8 h-48 flex flex-col justify-center items-center text-white shadow-lg"><i class="fas fa-shield-alt text-4xl text-brand-gold mb-2"></i><h3 class="font-bold text-sm tracking-widest uppercase">AUTHENTIC</h3></div>
+                        <div class="bg-brand-dark text-white p-8 h-48 flex flex-col justify-center items-center shadow-2xl">
+                            <i class="fas fa-map-marked-alt text-4xl text-brand-gold mb-2"></i>
+                            <h3 class="font-bold text-sm tracking-widest uppercase">KATCHI GALI</h3>
+                        </div>
+                        <div class="bg-brand-maroon p-8 h-48 flex flex-col justify-center items-center text-white shadow-lg">
+                            <i class="fas fa-shield-alt text-4xl text-brand-gold mb-2"></i>
+                            <h3 class="font-bold text-sm tracking-widest uppercase">AUTHENTIC</h3>
+                        </div>
                     </div>
                     <div class="space-y-6">
-                        <div class="bg-brand-gold p-8 h-48 flex flex-col justify-center items-center shadow-lg"><i class="fas fa-boxes text-4xl text-brand-maroon mb-2"></i><h3 class="font-bold text-sm tracking-widest text-brand-dark uppercase">WHOLESALE</h3></div>
-                        <div class="bg-gray-800 p-8 h-48 flex flex-col justify-center items-center text-white shadow-2xl"><i class="fas fa-history text-4xl text-gray-400 mb-2"></i><h3 class="font-bold text-sm tracking-widest uppercase">LEGACY</h3></div>
+                        <div class="bg-brand-gold p-8 h-48 flex flex-col justify-center items-center shadow-lg">
+                            <i class="fas fa-boxes text-4xl text-brand-maroon mb-2"></i>
+                            <h3 class="font-bold text-sm tracking-widest text-brand-dark uppercase">WHOLESALE</h3>
+                        </div>
+                        <div class="bg-gray-800 p-8 h-48 flex flex-col justify-center items-center text-white shadow-2xl">
+                            <i class="fas fa-history text-4xl text-gray-400 mb-2"></i>
+                            <h3 class="font-bold text-sm tracking-widest uppercase">LEGACY</h3>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -207,12 +250,15 @@
                     <div>
                         <div class="text-3xl font-serif font-bold mb-8 text-white">Khyber Traders</div>
                         <div class="space-y-6 text-gray-400 text-sm font-light">
-                            <p class="flex gap-4 justify-center md:justify-start"><i class="fas fa-map-pin text-brand-gold"></i> <span>Noori Center, Katchi Gali No 2, Karachi.</span></p>
-                            <p class="flex gap-4 justify-center md:justify-start"><i class="fas fa-phone text-brand-gold"></i> <span>+92 335 2999006</span></p>
+                            <p class="flex gap-4 items-start justify-center md:justify-start"><i class="fas fa-map-pin text-brand-gold mt-1"></i> <span>Shop A2, Noori Center, Katchi Gali No 2,<br>Near Denso Hall, Karachi.</span></p>
+                            <p class="flex gap-4 items-center justify-center md:justify-start"><i class="fas fa-phone text-brand-gold"></i> <span>+92 335 2999006</span></p>
+                            <p class="flex gap-4 items-center justify-center md:justify-start"><i class="fas fa-clock text-brand-gold"></i> <span>12:30 PM – 8:00 PM (Mon-Sat)</span></p>
                         </div>
                     </div>
-                    <div class="flex gap-4 justify-center mt-2">
-                        <a href="https://wa.me/923352999006" class="w-12 h-12 bg-gray-800 flex items-center justify-center hover:bg-brand-maroon transition text-white"><i class="fab fa-whatsapp"></i></a>
+                    <div class="flex gap-4 justify-center md:justify-start mt-2">
+                        <a href="https://www.facebook.com/khybertraderskhi/" class="w-12 h-12 bg-gray-800 flex items-center justify-center hover:bg-brand-maroon transition duration-300 text-white"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/animalhealthpk/" class="w-12 h-12 bg-gray-800 flex items-center justify-center hover:bg-brand-maroon transition duration-300 text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="https://wa.me/923352999006" class="w-12 h-12 bg-gray-800 flex items-center justify-center hover:bg-brand-maroon transition duration-300 text-white"><i class="fab fa-whatsapp"></i></a>
                         <a href="https://maps.app.goo.gl/Bno7agdf2HcHZjKS9" target="_blank" class="w-12 h-12 bg-brand-gold flex items-center justify-center hover:bg-white transition text-brand-dark shadow-glow"><i class="fas fa-location-arrow"></i></a>
                     </div>
                 </div>
@@ -223,18 +269,27 @@
         </div>
     </footer>
 
-    <!-- Modals -->
+    <!-- CATEGORY MODAL - 2 COLUMN MOBILE -->
     <div id="category-modal" class="fixed inset-0 bg-black/95 hidden z-[100] overflow-y-auto backdrop-blur-sm transition-opacity duration-300">
-        <div class="min-h-screen px-4 text-center">
+        <div class="min-h-screen px-2 sm:px-4 text-center">
             <div class="fixed inset-0" onclick="closeCategoryModal()"></div>
-            <div class="inline-block w-full max-w-6xl p-8 my-12 text-left bg-white shadow-2xl relative border-t-4 border-brand-maroon">
-                <button onclick="closeCategoryModal()" class="absolute top-6 right-6 text-gray-300 hover:text-brand-maroon text-2xl transition"><i class="fas fa-times"></i></button>
-                <div class="mb-10 border-b pb-6"><h3 id="modal-title" class="text-4xl font-serif font-bold text-brand-dark capitalize">Category</h3></div>
-                <div id="modal-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"></div>
+            <div class="inline-block w-full max-w-6xl p-4 sm:p-8 my-6 sm:my-12 text-left align-middle transition-all transform bg-white shadow-2xl relative border-t-4 border-brand-maroon">
+                <button onclick="closeCategoryModal()" class="absolute top-4 right-4 sm:top-6 sm:right-6 text-gray-300 hover:text-brand-maroon text-2xl z-10 transition"><i class="fas fa-times"></i></button>
+                <div class="mb-6 sm:mb-10 border-b pb-4 sm:pb-6">
+                    <h3 id="modal-title" class="text-2xl sm:text-4xl font-serif font-bold text-brand-dark capitalize">Category</h3>
+                </div>
+                <!-- 2 columns on mobile so visitors see more inventory immediately -->
+                <div id="modal-grid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-8"></div>
             </div>
         </div>
     </div>
-    <div id="lightbox" onclick="closeLightbox()"><img id="lightbox-img" src=""></div>
+
+    <!-- LIGHTBOX -->
+    <div id="lightbox" onclick="closeLightbox()">
+        <img id="lightbox-img" src="">
+    </div>
+
+    <!-- Invisible Canvas for Share Proxy -->
     <canvas id="share-canvas"></canvas>
 
     <script>
@@ -243,30 +298,27 @@
         let allProducts = [];
 
         async function fetchProducts() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('item')) document.getElementById('link-loader').style.display = 'flex';
             const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
             try {
                 const response = await fetch(url);
                 const text = await response.text();
                 allProducts = parseCSV(text);
                 generateTiles();
-                const item = new URLSearchParams(window.location.search).get('item');
-                if (item) {
-                    const p = allProducts.find(x => getCleanSlug(x.name) === getCleanSlug(item));
-                    if (p) {
-                        document.getElementById('link-loader').style.display = 'none';
-                        openCategoryModal(p.category, p.name);
-                    } else document.getElementById('link-loader').style.display = 'none';
-                } else document.getElementById('link-loader').style.display = 'none';
-            } catch (error) { document.getElementById('link-loader').style.display = 'none'; }
+                checkForDirectLink();
+            } catch (error) { console.error(error); }
         }
 
+        // SLUG SYNC logic for animalhealth.pk/s/ redirect
         function getCleanSlug(name) {
             if(!name) return '';
             return name.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
         }
 
         function parseCSV(str) {
-            const arr = []; let quote = false, col = 0, c = 0; arr[col] = []; arr[col][c] = "";
+            const arr = []; let quote = false, col = 0, c = 0;
+            arr[col] = []; arr[col][c] = "";
             for (let r = 0; r < str.length; r++) {
                 let cc = str[r], nc = str[r+1];
                 if (!arr[col]) arr[col] = []; if (arr[col][c] === undefined) arr[col][c] = "";
@@ -276,7 +328,12 @@
                 else if (cc == '\n' && !quote) { ++col; c = 0; arr[col] = []; arr[col][c] = ""; }
                 else { arr[col][c] += cc; }
             }
-            return arr.slice(1).filter(r => r.length > 1).map(r => ({ category: r[0].toLowerCase().trim(), name: r[1], desc: r[2] || '', images: (r[3] || '').split(',').map(u => u.trim()).filter(u => u.length > 5) }));
+            return arr.slice(1).filter(r => r.length > 1).map(r => ({ 
+                category: r[0].toLowerCase().trim(), 
+                name: r[1], 
+                desc: r[2] || '', 
+                images: (r[3] || '').split(',').map(u => u.trim()).filter(u => u.length > 5) 
+            }));
         }
 
         function generateTiles() {
@@ -286,7 +343,7 @@
                 <div onclick="openCategoryModal('${cat}')" class="group cursor-pointer bg-white p-10 shadow-sleek hover:shadow-2xl transition transform hover:-translate-y-2 relative border-b-4 border-transparent hover:border-brand-gold">
                     <div class="w-16 h-16 bg-gray-50 text-brand-dark flex items-center justify-center text-3xl mb-8 group-hover:bg-brand-maroon group-hover:text-brand-gold transition duration-300"><i class="fas fa-box-open"></i></div>
                     <h3 class="text-2xl font-serif font-bold text-brand-dark mb-3 capitalize">${cat}</h3>
-                    <div class="mt-8 flex items-center text-brand-maroon font-bold text-xs uppercase tracking-widest group-hover:text-brand-gold transition">View Products <i class="fas fa-long-arrow-alt-right ml-2"></i></div>
+                    <div class="mt-8 flex items-center text-brand-maroon font-bold text-xs uppercase tracking-widest group-hover:text-brand-gold transition">View Category <i class="fas fa-long-arrow-alt-right ml-2"></i></div>
                 </div>`).join('');
         }
 
@@ -294,21 +351,26 @@
             const grid = document.getElementById('modal-grid');
             document.getElementById('modal-title').innerText = specificItemName ? 'Details' : category;
             let filtered = allProducts.filter(p => p.category === category);
-            if(specificItemName) filtered = allProducts.filter(p => getCleanSlug(p.name) === getCleanSlug(specificItemName));
+            if(specificItemName) {
+                const target = specificItemName.toLowerCase().replace(/[^a-z0-9]/g, '');
+                filtered = allProducts.filter(p => p.name.toLowerCase().replace(/[^a-z0-9]/g, '') === target);
+            }
             grid.innerHTML = filtered.map((p, index) => {
                 const slug = getCleanSlug(p.name);
                 const redirectLink = `animalhealth.pk/s/${slug}.html`;
                 const imageLink = p.images[0] || '';
+                
                 let slides = p.images.length ? `<div class="slider-wrapper" id="slider-${index}" data-current="0">${p.images.map((img, i) => `<img src="${img}" class="slide ${i===0?'active':''}" id="slide-${index}-${i}" onclick="openLightbox('${img}')">`).join('')}${p.images.length > 1 ? `<button class="slider-btn left-2" onclick="changeSlide(event,${index},-1,${p.images.length})">←</button><button class="slider-btn right-2" onclick="changeSlide(event,${index},1,${p.images.length})">→</button>` : ''}</div>` : '';
+
                 return `
-                <div class="bg-white group relative shadow-sm hover:shadow-xl transition duration-500 border border-gray-100">
-                    <div class="h-64 overflow-hidden relative bg-gray-50 border-b">${slides}</div>
-                    <div class="p-6">
-                        <h4 class="font-bold text-brand-dark mb-2 text-lg font-serif">${p.name}</h4>
-                        <div class="text-xs text-gray-500 mb-6 formatted-text h-24 overflow-y-auto">${(p.desc || '').replace(/\n/g, '<br>')}</div>
-                        <div class="grid grid-cols-2 gap-2 mt-4">
-                            <button onclick="shareProductNative(event, '${p.name.replace(/'/g,"\\'")}', '${p.category}', '${(p.desc||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}', '${imageLink}')" class="bg-brand-gold text-brand-dark py-3 text-[10px] font-bold uppercase transition shadow-md"><i class="fas fa-share-alt mr-1"></i> SHARE</button>
-                            <a href="https://wa.me/923352999006?text=${encodeURIComponent('📦 *Product:* ' + p.name + '\n🔗 *Link:* ' + redirectLink)}" target="_blank" class="bg-brand-maroon text-white py-3 text-[10px] font-bold uppercase text-center shadow-lg"><i class="fab fa-whatsapp mr-1"></i> INQUIRE</a>
+                <div class="bg-white group relative shadow-sm hover:shadow-xl transition duration-500 border border-gray-100 flex flex-col h-full">
+                    <div class="h-40 sm:h-64 overflow-hidden relative bg-gray-50 border-b">${slides}</div>
+                    <div class="p-3 sm:p-6 flex flex-col flex-grow">
+                        <h4 class="font-bold text-brand-dark mb-1 sm:mb-2 text-[13px] sm:text-lg font-serif leading-tight">${p.name}</h4>
+                        <div class="text-[10px] sm:text-xs text-gray-500 mb-4 sm:mb-6 formatted-text h-12 sm:h-24 overflow-y-auto leading-tight">${(p.desc || '').replace(/\n/g, '<br>')}</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-2 mt-auto">
+                            <button onclick="shareProductNative(event, '${p.name.replace(/'/g,"\\'")}', '${p.category}', '${(p.desc||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}', '${imageLink}')" class="bg-brand-gold text-brand-dark py-2 sm:py-3 text-[8px] sm:text-[10px] font-bold uppercase transition shadow-md"><i class="fas fa-share-alt mr-1"></i> SHARE</button>
+                            <a href="https://wa.me/923352999006?text=${encodeURIComponent('📦 *Product:* ' + p.name + '\n🔗 *Link:* ' + redirectLink)}" target="_blank" class="bg-brand-maroon text-white py-2 sm:py-3 text-[8px] sm:text-[10px] font-bold uppercase text-center shadow-lg"><i class="fab fa-whatsapp mr-1"></i> INQUIRE</a>
                         </div>
                     </div>
                 </div>`;
@@ -320,28 +382,59 @@
             const btn = event.currentTarget;
             const slug = getCleanSlug(name);
             const redirectLink = `animalhealth.pk/s/${slug}.html`;
-            const caption = `📦 *Product:* ${name}\n📂 *Category:* ${cat.toUpperCase()}\n📝 *Details:* ${desc.replace(/<[^>]*>?/gm, '')}\n━━━━━━━━━━━━━━━━━━\n🔗 *Link:* ${redirectLink}`;
+            const cleanDesc = desc.replace(/<[^>]*>?/gm, ''); 
+            const caption = `📦 *Product:* ${name}\n📂 *Category:* ${cat.toUpperCase()}\n📝 *Details:* ${cleanDesc}\n━━━━━━━━━━━━━━━━━━\n🔗 *Link:* ${redirectLink}`;
+            const fallbackCaption = `📦 *Product:* ${name}\n📂 *Category:* ${cat.toUpperCase()}\n📝 *Details:* ${cleanDesc}\n━━━━━━━━━━━━━━━━━━\n🖼 *Image:* ${imgUrl}\n🔗 *Link:* ${redirectLink}`;
+
             btn.classList.add('btn-loading');
             try {
                 if (imgUrl && navigator.canShare && navigator.share) {
-                    const tempImg = new Image(); tempImg.crossOrigin = "anonymous"; tempImg.src = imgUrl + '?t=' + new Date().getTime(); 
-                    await new Promise((res, rej) => { tempImg.onload = res; tempImg.onerror = rej; setTimeout(rej, 4500); });
-                    const canvas = document.getElementById('share-canvas'); canvas.width = tempImg.width; canvas.height = tempImg.height;
-                    canvas.getContext('2d').drawImage(tempImg, 0, 0);
+                    const tempImg = new Image(); 
+                    tempImg.crossOrigin = "anonymous"; 
+                    tempImg.src = imgUrl + (imgUrl.includes('?') ? '&' : '?') + 't=' + new Date().getTime(); 
+                    
+                    await new Promise((res, rej) => { 
+                        tempImg.onload = res; 
+                        tempImg.onerror = rej; 
+                        setTimeout(rej, 4500); 
+                    });
+
+                    const canvas = document.getElementById('share-canvas');
+                    canvas.width = tempImg.width;
+                    canvas.height = tempImg.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(tempImg, 0, 0);
+
                     const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.8));
                     const file = new File([blob], `${slug}.jpg`, { type: 'image/jpeg' });
-                    if (navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], text: caption }); btn.classList.remove('btn-loading'); return; }
+
+                    if (navigator.canShare({ files: [file] })) {
+                        await navigator.share({ files: [file], text: caption });
+                        btn.classList.remove('btn-loading');
+                        return;
+                    }
                 }
-                if (navigator.share) await navigator.share({ text: caption });
-                else { await navigator.clipboard.writeText(caption); alert("Details copied!"); }
-            } catch (e) { window.open(`https://wa.me/?text=${encodeURIComponent(caption)}`, '_blank'); }
+                if (navigator.share) await navigator.share({ text: fallbackCaption });
+                else { await navigator.clipboard.writeText(fallbackCaption); alert("Details copied!"); }
+            } catch (e) { window.open(`https://wa.me/?text=${encodeURIComponent(fallbackCaption)}`, '_blank'); }
             btn.classList.remove('btn-loading');
         };
+
+        function checkForDirectLink() {
+            const item = new URLSearchParams(window.location.search).get('item');
+            if (item) {
+                const target = item.toLowerCase().replace(/[^a-z0-9]/g, '');
+                const product = allProducts.find(p => p.name.toLowerCase().replace(/[^a-z0-9]/g, '') === target);
+                document.getElementById('link-loader').style.display = 'none';
+                if (product) openCategoryModal(product.category, product.name);
+            } else document.getElementById('link-loader').style.display = 'none';
+        }
 
         window.changeSlide = (e, cardIdx, dir, tot) => { e.stopPropagation(); const w = document.getElementById(`slider-${cardIdx}`); let cur = parseInt(w.dataset.current), n = (cur + dir + tot) % tot; document.getElementById(`slide-${cardIdx}-${cur}`).classList.remove('active'); document.getElementById(`slide-${cardIdx}-${n}`).classList.add('active'); w.dataset.current = n; };
         window.closeCategoryModal = () => document.getElementById('category-modal').classList.add('hidden');
         window.openLightbox = (s) => { document.getElementById('lightbox-img').src = s; document.getElementById('lightbox').style.display = 'flex'; };
         window.closeLightbox = () => document.getElementById('lightbox').style.display = 'none';
+
         fetchProducts();
     </script>
 </body>
