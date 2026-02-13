@@ -1,11 +1,11 @@
 name: Sync Product Social Links
 on:
   schedule:
-    - cron: '0 * * * *' 
-  workflow_dispatch: 
+    - cron: '0 * * * *' # Every hour
+  workflow_dispatch: # Manual trigger
 
 permissions:
-  contents: write 
+  contents: write # Allows the bot to write to the 's' folder
 
 jobs:
   build:
@@ -14,7 +14,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # Get full history for merging
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -37,7 +37,7 @@ jobs:
           
           def get_clean_slug(name):
               if not name: return ""
-              # SYNCED WITH V46 JS LOGIC
+              # STRICT SYNC WITH WEBSITE JS
               name = name.lower().replace('&', 'and')
               name = re.sub(r'\s+', '-', name)
               name = re.sub(r'[^a-z0-9-]', '', name)
@@ -48,14 +48,13 @@ jobs:
           cr = csv.reader(decoded_content.splitlines(), delimiter=',')
           rows = list(cr)
 
+          # Ensure 's' is a directory
+          if os.path.exists('s') and not os.path.isdir('s'):
+              os.remove('s')
           if not os.path.exists('s'):
               os.makedirs('s')
 
-          # Remove existing html files to prevent dead links
-          for f in os.listdir('s'):
-              if f.endswith('.html'):
-                  os.remove(os.path.join('s', f))
-
+          # Generate files
           for row in rows[1:]:
               if len(row) < 2 or not row[1].strip(): continue
               name = row[1].strip()
@@ -77,15 +76,16 @@ jobs:
               with open(f"s/{slug}.html", "w", encoding="utf-8") as f:
                   f.write(file_content)
           
-      - name: Commit and Push
+      - name: Commit and Push Changes
         run: |
           git config --global user.name "Product-Bot"
           git config --global user.email "bot@animalhealth.pk"
           git add s/
           if git diff --staged --quiet; then
-            echo "No changes detected"
+            echo "No changes found."
           else
             git commit -m "Auto-sync products: $(date)"
             git pull --rebase origin main
             git push origin main
           fi
+
