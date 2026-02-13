@@ -1,4 +1,0 @@
-# ... (same as before, but ensuring slug logic matches JS)
-slug = name.lower().replace('&', 'and').replace(' ', '-')
-slug = "".join([c for c in slug if c.isalnum() or c == '-'])
-# ...
