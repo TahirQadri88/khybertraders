@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth" prefix="og: http://ogp.me/ns#">
 <head>
-    <!-- 1. WHATSAPP & SOCIAL CRAWLER PREREQUISITES (TOP PRIORITY) -->
+    <!-- 1. WHATSAPP & SOCIAL PREVIEW (TOP PRIORITY) -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>Khyber Traders | Wholesale Veterinary Pharmacy</title>
     
-    <!-- Thumbnail Meta - GitHub Pages Link -->
+    <!-- Site-wide Thumbnail (GitHub Pages banner) -->
     <meta property="og:title" content="Khyber Traders | Wholesale Veterinary Pharmacy">
     <meta property="og:description" content="Authentic Medicines for the Modern Dairy Industry. Open to get updates about trending products !">
     <meta property="og:image" content="https://tahirqadri88.github.io/khybertraders/images/website%20banner.jpg">
@@ -15,7 +15,6 @@
     <meta property="og:image:type" content="image/jpeg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Khyber Traders Veterinary Pharmacy Banner">
     
     <meta property="og:url" content="https://animalhealth.pk">
     <meta property="og:type" content="website">
@@ -23,25 +22,13 @@
     
     <meta name="description" content="Khyber Traders - Wholesale Veterinary Pharmacy. Specialized in Dairy and Cattle Industry solutions.">
 
-    <!-- 2. TRACKING STATION (GA4 INTEGRATED) -->
-    
-    <!-- Google tag (gtag.js) -->
+    <!-- 2. TRACKING STATION (GA4) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-GZN53B9YMP"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-GZN53B9YMP');
-    </script>
-
-    <!-- Microsoft Clarity (UX & Heatmaps) -->
-    <!-- Replace 'YOUR_CLARITY_PROJECT_ID' once you have it -->
-    <script type="text/javascript">
-        (function(c,l,a,r,i,t,y){
-            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-        })(window, document, "clarity", "script", "YOUR_CLARITY_PROJECT_ID");
     </script>
 
     <!-- 3. DOMAIN TRAFFIC CONTROLLER -->
@@ -53,10 +40,9 @@
     </script>
 
     <!-- 4. LIBRARIES -->
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
-    <!-- 5. PERFECTED STYLING & FONTS -->
+    <!-- 5. PERFECTED STYLING & FONTS (V22) -->
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -65,10 +51,25 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['"Manrope"', 'sans-serif'], serif: ['"Playfair Display"', 'serif'] },
-                    colors: { brand: { maroon: '#500000', gold: '#D4AF37', dark: '#0a0a0a', light: '#f4f4f5' } },
-                    backgroundImage: { 'hero-gradient': "linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80')" },
-                    boxShadow: { 'sleek': '0 4px 20px -2px rgba(0, 0, 0, 0.1)', 'glow': '0 0 15px rgba(212, 175, 55, 0.3)' }
+                    fontFamily: {
+                        sans: ['"Manrope"', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            maroon: '#500000', 
+                            gold: '#D4AF37',   
+                            dark: '#0a0a0a',   
+                            light: '#f4f4f5',
+                        }
+                    },
+                    backgroundImage: {
+                        'hero-gradient': "linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80')",
+                    },
+                    boxShadow: {
+                        'sleek': '0 4px 20px -2px rgba(0, 0, 0, 0.1)',
+                        'glow': '0 0 15px rgba(212, 175, 55, 0.3)',
+                    }
                 }
             }
         }
@@ -83,12 +84,17 @@
         .slide { display: none; width: 100%; height: 100%; object-fit: contain; }
         .slide.active { display: block; animation: fadeEffect 0.5s; }
         @keyframes fadeEffect { from {opacity: .4} to {opacity: 1} }
-        .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.9); color: #000; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .slider-btn { 
+            position: absolute; top: 50%; transform: translateY(-50%); 
+            background: rgba(255,255,255,0.9); color: #000; border: none; 
+            width: 32px; height: 32px; border-radius: 50%;
+            cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
         .slider-btn:hover { background: #D4AF37; color: white; }
         #lightbox { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); justify-content: center; align-items: center; }
         #lightbox img { max-width: 90%; max-height: 90%; object-fit: contain; border: 2px solid #D4AF37; }
         #link-loader { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index: 9000; justify-content: center; align-items: center; flex-direction: column; }
-        #social-card-template { position: fixed; top: 0; left: -9999px; width: 1080px; height: 1350px; background: white; display: flex; flex-direction: column; }
         .formatted-text { white-space: pre-wrap; word-wrap: break-word; }
         .formatted-text strong { color: #500000; font-weight: 700; }
     </style>
@@ -149,7 +155,7 @@
                 </p>
                 <div class="flex flex-col sm:flex-row gap-5 justify-center">
                     <a href="https://wa.me/923352999006" class="bg-brand-gold text-brand-dark font-bold py-4 px-10 hover:bg-white transition duration-300 shadow-glow">Contact</a>
-                    <a href="#products" class="border border-white/30 text-white font-bold py-4 px-10 hover:bg-white transition duration-300 backdrop-blur-sm">View Collection</a>
+                    <a href="#products" class="border border-white/30 text-white font-bold py-4 px-10 hover:bg-white hover:text-brand-dark transition duration-300 backdrop-blur-sm">View Collection</a>
                 </div>
             </div>
         </div>
@@ -257,7 +263,7 @@
             </div>
             <div class="border-t border-gray-800 mt-16 pt-8 flex justify-between items-center text-[10px] uppercase tracking-widest text-gray-600">
                 <p>&copy; 2024 Khyber Traders. All rights reserved.</p>
-                <button onclick="generateSocialFiles()" class="text-gray-800 hover:text-brand-gold transition"><i class="fas fa-bolt"></i></button>
+                <button onclick="generateSocialFiles()" title="Developer: Generate Shareable Product Links" class="text-gray-800 hover:text-brand-gold transition"><i class="fas fa-bolt"></i></button>
             </div>
         </div>
     </footer>
@@ -269,7 +275,7 @@
             <div class="inline-block w-full max-w-6xl p-8 my-12 text-left align-middle transition-all transform bg-white shadow-2xl relative border-t-4 border-brand-maroon">
                 <button onclick="closeCategoryModal()" class="absolute top-6 right-6 text-gray-300 hover:text-brand-maroon text-2xl z-10 transition"><i class="fas fa-times"></i></button>
                 <div class="mb-10 border-b pb-6">
-                    <h3 id="modal-title" class="text-4xl font-serif font-bold text-brand-dark capitalize">Category Name</h3>
+                    <h3 id="modal-title" class="text-4xl font-serif font-bold text-brand-dark capitalize">Category</h3>
                 </div>
                 <div id="modal-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"></div>
             </div>
@@ -279,29 +285,6 @@
     <!-- LIGHTBOX -->
     <div id="lightbox" onclick="closeLightbox()">
         <img id="lightbox-img" src="">
-    </div>
-
-    <!-- SHARE TEMPLATE (4:5 Ratio) -->
-    <div id="social-card-template">
-        <div class="h-32 bg-brand-maroon flex items-center justify-between px-12">
-            <div class="text-white">
-                <h1 class="font-serif font-bold text-4xl">Khyber Traders</h1>
-                <p class="text-brand-gold uppercase tracking-[0.2em] text-sm mt-1">Wholesale Veterinary Pharmacy</p>
-            </div>
-            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center"><span class="text-brand-maroon font-serif font-bold text-3xl">KT</span></div>
-        </div>
-        <div class="flex-1 bg-gray-50 flex items-center justify-center p-12 overflow-hidden relative">
-             <img id="card-img" src="" class="max-h-full max-w-full object-contain drop-shadow-2xl" crossorigin="anonymous">
-        </div>
-        <div class="bg-white p-12 border-t-8 border-brand-gold">
-            <span id="card-cat" class="text-brand-maroon font-bold uppercase tracking-widest text-sm mb-2 block">CATEGORY</span>
-            <h2 id="card-name" class="text-5xl font-serif font-bold text-brand-dark leading-tight">Product Name</h2>
-            <div id="card-desc" class="formatted-text text-gray-600 text-2xl leading-relaxed font-light mt-6 mb-10 border-l-4 border-gray-200 pl-6"></div>
-            <div class="flex items-center justify-between pt-8 border-t border-gray-100">
-                <div class="text-gray-400 text-lg font-bold"><i class="fas fa-map-marker-alt text-brand-gold mr-2"></i> Karachi</div>
-                <div class="text-brand-maroon text-2xl font-bold">animalhealth.pk</div>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -334,12 +317,14 @@
                 else if (cc == '\n' && !quote) { ++col; c = 0; arr[col] = []; arr[col][c] = ""; }
                 else { arr[col][c] += cc; }
             }
-            const result = [];
+            const res = [];
             for (let i = 1; i < arr.length; i++) {
                 if (!arr[i] || arr[i].length < 2) continue;
-                result.push({ category: arr[i][0].toLowerCase().trim(), name: arr[i][1], desc: arr[i][2] || '', images: (arr[i][3] || '').split(',').map(u => u.trim()).filter(u => u.length > 5) });
+                // Col 3 (Index 3) is your Image Link column
+                const images = (arr[i][3] || '').split(',').map(u => u.trim()).filter(u => u.length > 5);
+                res.push({ category: arr[i][0].toLowerCase().trim(), name: arr[i][1], desc: arr[i][2] || '', images });
             }
-            return result;
+            return res;
         }
 
         function formatText(text) {
@@ -373,7 +358,8 @@
             grid.innerHTML = "";
             filtered.forEach((p, index) => {
                 const link = `${BASE_URL}/?item=${encodeURIComponent(p.name)}`;
-                const msg = `📦 *Product:* ${p.name}\n📂 *Category:* ${p.category.toUpperCase()}\n📝 *Details:* ${p.desc}\n━━━━━━━━━━━━━━━━━━\n🔗 *Link:* ${link}`;
+                const imageLink = p.images[0] || '';
+                
                 let slides = p.images.length ? `<div class="slider-wrapper" id="slider-${index}" data-current="0">${p.images.map((img, i) => `<img src="${img}" class="slide ${i===0?'active':''}" id="slide-${index}-${i}" onclick="openLightbox('${img}')">`).join('')}${p.images.length > 1 ? `<button class="slider-btn left-2" onclick="changeSlide(event,${index},-1,${p.images.length})">←</button><button class="slider-btn right-2" onclick="changeSlide(event,${index},1,${p.images.length})">→</button>` : ''}</div>` : '';
 
                 grid.innerHTML += `
@@ -383,9 +369,14 @@
                         <h4 class="font-bold text-brand-dark mb-2 text-lg font-serif">${p.name}</h4>
                         <div class="text-xs text-gray-500 mb-6 formatted-text h-auto overflow-hidden">${formatText(p.desc)}</div>
                         <div class="grid grid-cols-2 gap-2">
-                            <button onclick="shareCardImage('${p.name.replace(/'/g,"\\'")}', '${p.category}', '${p.desc.replace(/'/g,"\\'").replace(/\n/g,'\\n')}', '${p.images[0]||''}')" class="col-span-2 bg-brand-gold text-brand-dark py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-white border border-brand-gold transition shadow-md mb-2"><i class="fab fa-whatsapp mr-1"></i> SHARE CARD IMAGE</button>
-                            <a href="https://wa.me/?text=${encodeURIComponent(msg)}" target="_blank" class="bg-white border border-gray-200 text-gray-600 py-3 text-[10px] font-bold uppercase tracking-widest text-center"><i class="fas fa-copy mr-1"></i> COPY LINK</a>
-                            <a href="https://wa.me/923352999006?text=${encodeURIComponent(msg)}" target="_blank" class="bg-brand-maroon text-white py-3 text-[10px] font-bold uppercase tracking-widest text-center shadow-lg">INQUIRE</a>
+                            <!-- NEW UNIFIED SHARE BUTTON -->
+                            <button onclick="shareProductNative('${p.name.replace(/'/g,"\\'")}', '${p.category}', '${p.desc.replace(/'/g,"\\'").replace(/\n/g,'\\n')}', '${imageLink}')" class="bg-brand-gold text-brand-dark py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-white border border-brand-gold transition shadow-md">
+                                <i class="fas fa-share-alt mr-1"></i> SHARE
+                            </button>
+                            <!-- INQUIRE BUTTON -->
+                            <a href="https://wa.me/923352999006?text=${encodeURIComponent('📦 *Product:* ' + p.name + '\n🔗 *Link:* ' + link)}" target="_blank" class="bg-brand-maroon text-white py-3 text-[10px] font-bold uppercase tracking-widest text-center shadow-lg">
+                                <i class="fab fa-whatsapp mr-1"></i> INQUIRE
+                            </a>
                         </div>
                     </div>
                 </div>`;
@@ -393,22 +384,46 @@
             document.getElementById('category-modal').classList.remove('hidden');
         };
 
-        window.shareCardImage = (name, cat, desc, imgUrl) => {
-            document.getElementById('card-name').innerText = name;
-            document.getElementById('card-cat').innerText = cat;
-            document.getElementById('card-desc').innerHTML = formatText(desc);
-            const img = document.getElementById('card-img');
-            img.src = imgUrl;
-            img.onload = () => {
-                html2canvas(document.getElementById('social-card-template'), { useCORS: true, scale: 1 }).then(canvas => {
-                    canvas.toBlob(blob => {
-                        const file = new File([blob], `${name}.png`, { type: "image/png" });
-                        const cap = `📦 *Product:* ${name}\n🔗 *Web Link:* ${BASE_URL}/?item=${encodeURIComponent(name)}`;
-                        if (navigator.share) navigator.share({ files: [file], text: cap }).catch(e => console.log(e));
-                        else { const a = document.createElement('a'); a.download = 'product.png'; a.href = canvas.toDataURL(); a.click(); }
-                    }, 'image/png');
-                });
-            };
+        // NEW NATIVE SHARE LOGIC (Attaches Image from Sheet + Caption)
+        window.shareProductNative = async (name, cat, desc, imgUrl) => {
+            const shareLink = `${BASE_URL}/?item=${encodeURIComponent(name)}`;
+            const caption = `📦 *Product:* ${name}\n📂 *Category:* ${cat.toUpperCase()}\n📝 *Details:* ${desc}\n━━━━━━━━━━━━━━━━━━\n🔗 *Link:* ${shareLink}`;
+
+            try {
+                // If image URL exists and browser supports sharing files
+                if (imgUrl && navigator.canShare && navigator.share) {
+                    // Fetch image from Sheet link and convert to File object
+                    const response = await fetch(imgUrl);
+                    const blob = await response.blob();
+                    const file = new File([blob], `${name.replace(/\s+/g,'-')}.jpg`, { type: blob.type });
+
+                    if (navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                            files: [file],
+                            title: name,
+                            text: caption
+                        });
+                        return;
+                    }
+                }
+                
+                // Fallback for non-file sharing or desktop
+                if (navigator.share) {
+                    await navigator.share({
+                        title: name,
+                        text: caption,
+                        url: shareLink
+                    });
+                } else {
+                    // Manual copy fallback if sharing isn't supported at all
+                    await navigator.clipboard.writeText(caption);
+                    alert("Details copied to clipboard! Paste it on WhatsApp.");
+                }
+            } catch (error) {
+                console.error("Sharing failed", error);
+                // Last resort fallback
+                window.open(`https://wa.me/?text=${encodeURIComponent(caption)}`, '_blank');
+            }
         };
 
         function waitAndCheckLink() {
@@ -430,9 +445,11 @@
             const zip = new JSZip();
             allProducts.forEach(p => {
                 const slug = p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-                zip.file(`${slug}.html`, `<!DOCTYPE html><html><head><meta property="og:title" content="${p.name}"><meta property="og:image" content="${p.images[0]||''}"><meta http-equiv="refresh" content="0;url=${BASE_URL}/?item=${encodeURIComponent(p.name)}" /></head></html>`);
+                const thumb = p.images[0] || 'https://tahirqadri88.github.io/khybertraders/images/website%20banner.jpg';
+                const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${p.name}</title><meta property="og:title" content="${p.name}"><meta property="og:image" content="${thumb}"><meta http-equiv="refresh" content="0;url=${BASE_URL}/?item=${encodeURIComponent(p.name)}" /></head></html>`;
+                zip.file(`${slug}.html`, html);
             });
-            zip.generateAsync({type:"blob"}).then(b => { const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = "share-files.zip"; a.click(); });
+            zip.generateAsync({type:"blob"}).then(b => { const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = "share-links.zip"; a.click(); });
         };
         fetchProducts();
     </script>
