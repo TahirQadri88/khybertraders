@@ -7,7 +7,7 @@
     
     <title>Khyber Traders | Wholesale Veterinary Pharmacy</title>
     
-    <!-- Site-wide Thumbnail (Perfected Meta) -->
+    <!-- Restored Perfected Meta Tags -->
     <meta property="og:title" content="Khyber Traders | Wholesale Veterinary Pharmacy">
     <meta property="og:description" content="Authentic Medicines for the Modern Dairy Industry. Serving the industry for 3 decades. Open to view trending products!">
     <meta property="og:image" content="https://tahirqadri88.github.io/khybertraders/images/website%20banner.jpg">
@@ -94,6 +94,7 @@
         .slider-btn:hover { background: #D4AF37; color: white; }
         #lightbox { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); justify-content: center; align-items: center; }
         #lightbox img { max-width: 90%; max-height: 90%; object-fit: contain; border: 2px solid #D4AF37; }
+        #lightbox-close { position: absolute; top: 20px; right: 20px; color: white; font-size: 30px; cursor: pointer; z-index: 10001; background: rgba(0,0,0,0.5); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
         #link-loader { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index: 9000; justify-content: center; align-items: center; flex-direction: column; }
         .formatted-text { white-space: pre-wrap; word-wrap: break-word; }
         .formatted-text strong { color: #500000; font-weight: 700; }
@@ -163,7 +164,7 @@
         </div>
     </header>
 
-    <!-- RESTORED PERFECTED ABOUT SECTION (FULL BULLETS) -->
+    <!-- About Section with Compact Mobile Cards -->
     <section id="about" class="py-24 bg-white relative overflow-hidden">
         <div class="absolute top-0 right-0 w-1/3 h-full bg-gray-50 -skew-x-12 opacity-50 z-0 pointer-events-none"></div>
         <div class="container mx-auto px-6 relative z-10">
@@ -202,25 +203,26 @@
                         </div>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-6 text-center">
-                    <div class="space-y-6">
-                        <div class="bg-brand-dark text-white p-8 h-48 flex flex-col justify-center items-center shadow-2xl">
-                            <i class="fas fa-map-marked-alt text-4xl text-brand-gold mb-2"></i>
-                            <h3 class="font-bold text-sm tracking-widest uppercase">KATCHI GALI</h3>
+                <!-- Compact Mobile Cards (h-32) -->
+                <div class="grid grid-cols-2 gap-3 sm:gap-6 text-center">
+                    <div class="space-y-3 sm:space-y-6">
+                        <div class="bg-brand-dark text-white p-4 sm:p-8 h-32 sm:h-48 flex flex-col justify-center items-center shadow-2xl">
+                            <i class="fas fa-map-marked-alt text-2xl sm:text-4xl text-brand-gold mb-2"></i>
+                            <h3 class="font-bold text-[10px] sm:text-sm tracking-widest uppercase">KATCHI GALI</h3>
                         </div>
-                        <div class="bg-brand-maroon p-8 h-48 flex flex-col justify-center items-center text-white shadow-lg">
-                            <i class="fas fa-shield-alt text-4xl text-brand-gold mb-2"></i>
-                            <h3 class="font-bold text-sm tracking-widest uppercase">AUTHENTIC</h3>
+                        <div class="bg-brand-maroon p-4 sm:p-8 h-32 sm:h-48 flex flex-col justify-center items-center text-white shadow-lg">
+                            <i class="fas fa-shield-alt text-2xl sm:text-4xl text-brand-gold mb-2"></i>
+                            <h3 class="font-bold text-[10px] sm:text-sm tracking-widest uppercase">AUTHENTIC</h3>
                         </div>
                     </div>
-                    <div class="space-y-6">
-                        <div class="bg-brand-gold p-8 h-48 flex flex-col justify-center items-center shadow-lg">
-                            <i class="fas fa-boxes text-4xl text-brand-maroon mb-2"></i>
-                            <h3 class="font-bold text-sm tracking-widest text-brand-dark uppercase">WHOLESALE</h3>
+                    <div class="space-y-3 sm:space-y-6">
+                         <div class="bg-brand-gold p-4 sm:p-8 h-32 sm:h-48 flex flex-col justify-center items-center shadow-lg">
+                            <i class="fas fa-boxes text-2xl sm:text-4xl text-brand-maroon mb-2"></i>
+                            <h3 class="font-bold text-[10px] sm:text-sm tracking-widest text-brand-dark uppercase">WHOLESALE</h3>
                         </div>
-                        <div class="bg-gray-800 p-8 h-48 flex flex-col justify-center items-center text-white shadow-2xl">
-                            <i class="fas fa-history text-4xl text-gray-400 mb-2"></i>
-                            <h3 class="font-bold text-sm tracking-widest uppercase">LEGACY</h3>
+                        <div class="bg-gray-800 text-white p-4 sm:p-8 h-32 sm:h-48 flex flex-col justify-center items-center shadow-2xl">
+                            <i class="fas fa-history text-2xl sm:text-4xl text-gray-400 mb-2"></i>
+                            <h3 class="font-bold text-[10px] sm:text-sm tracking-widest uppercase">LEGACY</h3>
                         </div>
                     </div>
                 </div>
@@ -228,15 +230,15 @@
         </div>
     </section>
 
-    <!-- Catalog Section -->
+    <!-- Catalog Section with Compact Tiles -->
     <section id="products" class="py-24 bg-brand-light border-y border-gray-200">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-16">
+        <div class="container mx-auto px-6 text-center">
+            <div class="mb-16">
                 <span class="text-brand-maroon font-bold uppercase tracking-widest text-xs">Catalog</span>
                 <h2 class="text-4xl font-serif font-bold text-brand-dark mt-3">Product Categories</h2>
                 <div class="h-1 w-20 bg-brand-gold mx-auto mt-6"></div>
             </div>
-            <div id="tiles-container" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div id="tiles-container" class="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-8">
                 <div class="col-span-full text-center py-10"><i class="fas fa-circle-notch fa-spin text-brand-gold text-3xl"></i></div>
             </div>
         </div>
@@ -250,14 +252,11 @@
                     <div>
                         <div class="text-3xl font-serif font-bold mb-8 text-white">Khyber Traders</div>
                         <div class="space-y-6 text-gray-400 text-sm font-light">
-                            <p class="flex gap-4 items-start justify-center md:justify-start"><i class="fas fa-map-pin text-brand-gold mt-1"></i> <span>Shop A2, Noori Center, Katchi Gali No 2,<br>Near Denso Hall, Karachi.</span></p>
-                            <p class="flex gap-4 items-center justify-center md:justify-start"><i class="fas fa-phone text-brand-gold"></i> <span>+92 335 2999006</span></p>
-                            <p class="flex gap-4 items-center justify-center md:justify-start"><i class="fas fa-clock text-brand-gold"></i> <span>12:30 PM – 8:00 PM (Mon-Sat)</span></p>
+                            <p class="flex gap-4 justify-center md:justify-start"><i class="fas fa-map-pin text-brand-gold"></i> <span>Noori Center, Katchi Gali No 2, Karachi.</span></p>
+                            <p class="flex gap-4 justify-center md:justify-start"><i class="fas fa-phone text-brand-gold"></i> <span>+92 335 2999006</span></p>
                         </div>
                     </div>
-                    <div class="flex gap-4 justify-center md:justify-start mt-2">
-                        <a href="https://www.facebook.com/khybertraderskhi/" class="w-12 h-12 bg-gray-800 flex items-center justify-center hover:bg-brand-maroon transition duration-300 text-white"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://www.instagram.com/animalhealthpk/" class="w-12 h-12 bg-gray-800 flex items-center justify-center hover:bg-brand-maroon transition duration-300 text-white"><i class="fab fa-instagram"></i></a>
+                    <div class="flex gap-4 justify-center mt-2">
                         <a href="https://wa.me/923352999006" class="w-12 h-12 bg-gray-800 flex items-center justify-center hover:bg-brand-maroon transition duration-300 text-white"><i class="fab fa-whatsapp"></i></a>
                         <a href="https://maps.app.goo.gl/Bno7agdf2HcHZjKS9" target="_blank" class="w-12 h-12 bg-brand-gold flex items-center justify-center hover:bg-white transition text-brand-dark shadow-glow"><i class="fas fa-location-arrow"></i></a>
                     </div>
@@ -269,23 +268,29 @@
         </div>
     </footer>
 
-    <!-- CATEGORY MODAL - 2 COLUMN MOBILE -->
+    <!-- CATEGORY MODAL -->
     <div id="category-modal" class="fixed inset-0 bg-black/95 hidden z-[100] overflow-y-auto backdrop-blur-sm transition-opacity duration-300">
         <div class="min-h-screen px-2 sm:px-4 text-center">
             <div class="fixed inset-0" onclick="closeCategoryModal()"></div>
             <div class="inline-block w-full max-w-6xl p-4 sm:p-8 my-6 sm:my-12 text-left align-middle transition-all transform bg-white shadow-2xl relative border-t-4 border-brand-maroon">
-                <button onclick="closeCategoryModal()" class="absolute top-4 right-4 sm:top-6 sm:right-6 text-gray-300 hover:text-brand-maroon text-2xl z-10 transition"><i class="fas fa-times"></i></button>
-                <div class="mb-6 sm:mb-10 border-b pb-4 sm:pb-6">
-                    <h3 id="modal-title" class="text-2xl sm:text-4xl font-serif font-bold text-brand-dark capitalize">Category</h3>
+                <!-- Sticky Close Button -->
+                <div class="sticky top-0 z-50 flex justify-end pb-4 bg-white/95 backdrop-blur-sm">
+                    <button onclick="closeCategoryModal()" class="text-gray-400 hover:text-brand-maroon text-3xl transition">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
-                <!-- 2 columns on mobile so visitors see more inventory immediately -->
+                <div class="mb-6 sm:mb-10 border-b pb-4 sm:pb-6 mt-[-3rem]">
+                    <h3 id="modal-title" class="text-2xl sm:text-4xl font-serif font-bold text-brand-dark capitalize mt-4">Category</h3>
+                </div>
+                <!-- 2 columns on mobile -->
                 <div id="modal-grid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-8"></div>
             </div>
         </div>
     </div>
 
-    <!-- LIGHTBOX -->
+    <!-- LIGHTBOX WITH CLOSE BUTTON -->
     <div id="lightbox" onclick="closeLightbox()">
+        <div id="lightbox-close" onclick="closeLightbox()"><i class="fas fa-times"></i></div>
         <img id="lightbox-img" src="">
     </div>
 
@@ -299,7 +304,7 @@
 
         async function fetchProducts() {
             const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('item')) document.getElementById('link-loader').style.display = 'flex';
+            if (urlParams.get('item') || urlParams.get('cat')) document.getElementById('link-loader').style.display = 'flex';
             const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
             try {
                 const response = await fetch(url);
@@ -310,7 +315,6 @@
             } catch (error) { console.error(error); }
         }
 
-        // SLUG SYNC logic for animalhealth.pk/s/ redirect
         function getCleanSlug(name) {
             if(!name) return '';
             return name.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
@@ -339,12 +343,18 @@
         function generateTiles() {
             const container = document.getElementById('tiles-container');
             const uniqueCats = [...new Set(allProducts.map(p => p.category))];
-            container.innerHTML = uniqueCats.map(cat => `
-                <div onclick="openCategoryModal('${cat}')" class="group cursor-pointer bg-white p-10 shadow-sleek hover:shadow-2xl transition transform hover:-translate-y-2 relative border-b-4 border-transparent hover:border-brand-gold">
-                    <div class="w-16 h-16 bg-gray-50 text-brand-dark flex items-center justify-center text-3xl mb-8 group-hover:bg-brand-maroon group-hover:text-brand-gold transition duration-300"><i class="fas fa-box-open"></i></div>
-                    <h3 class="text-2xl font-serif font-bold text-brand-dark mb-3 capitalize">${cat}</h3>
-                    <div class="mt-8 flex items-center text-brand-maroon font-bold text-xs uppercase tracking-widest group-hover:text-brand-gold transition">View Category <i class="fas fa-long-arrow-alt-right ml-2"></i></div>
-                </div>`).join('');
+            container.innerHTML = uniqueCats.map(cat => {
+                const safeCat = cat.replace(/'/g, "\\'"); 
+                return `
+                <div class="group bg-white p-4 sm:p-10 shadow-sleek hover:shadow-2xl transition transform hover:-translate-y-2 relative border-b-4 border-transparent hover:border-brand-gold flex flex-col items-center text-center">
+                    <div onclick="openCategoryModal('${safeCat}')" class="cursor-pointer w-full flex flex-col items-center">
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gray-50 text-brand-dark flex items-center justify-center text-xl sm:text-3xl mb-4 sm:mb-8 group-hover:bg-brand-maroon group-hover:text-brand-gold transition duration-300"><i class="fas fa-box-open"></i></div>
+                        <h3 class="text-lg sm:text-2xl font-serif font-bold text-brand-dark mb-2 capitalize leading-tight">${cat}</h3>
+                        <div class="mt-2 sm:mt-8 flex items-center text-brand-maroon font-bold text-[10px] sm:text-xs uppercase tracking-widest group-hover:text-brand-gold transition">View <i class="fas fa-long-arrow-alt-right ml-2"></i></div>
+                    </div>
+                    <button onclick="shareCategory(event, '${safeCat}')" class="mt-4 text-gray-400 hover:text-brand-gold text-xs uppercase tracking-widest border-t border-gray-100 w-full pt-3"><i class="fas fa-share-alt mr-1"></i> Share</button>
+                </div>`
+            }).join('');
         }
 
         window.openCategoryModal = (category, specificItemName = null) => {
@@ -359,7 +369,6 @@
                 const slug = getCleanSlug(p.name);
                 const redirectLink = `animalhealth.pk/s/${slug}.html`;
                 const imageLink = p.images[0] || '';
-                
                 let slides = p.images.length ? `<div class="slider-wrapper" id="slider-${index}" data-current="0">${p.images.map((img, i) => `<img src="${img}" class="slide ${i===0?'active':''}" id="slide-${index}-${i}" onclick="openLightbox('${img}')">`).join('')}${p.images.length > 1 ? `<button class="slider-btn left-2" onclick="changeSlide(event,${index},-1,${p.images.length})">←</button><button class="slider-btn right-2" onclick="changeSlide(event,${index},1,${p.images.length})">→</button>` : ''}</div>` : '';
 
                 return `
@@ -376,6 +385,35 @@
                 </div>`;
             }).join('');
             document.getElementById('category-modal').classList.remove('hidden');
+        };
+
+        window.shareCategory = async (event, cat) => {
+            event.stopPropagation();
+            const slug = getCleanSlug(cat);
+            const redirectLink = `https://animalhealth.pk/?cat=${slug}`;
+            const caption = `📂 *Category:* ${cat.toUpperCase()}\nCheck out our collection here:\n🔗 ${redirectLink}`;
+            
+            try {
+                if (navigator.share) {
+                    // FIXED: Removed 'url' param to stop double links on Android/iOS
+                    await navigator.share({ title: cat, text: caption });
+                } else {
+                    throw new Error("Unavailable");
+                }
+            } catch (err) {
+                try {
+                    await navigator.clipboard.writeText(caption);
+                    alert("Category link copied to clipboard!");
+                } catch (e2) {
+                    const textArea = document.createElement("textarea");
+                    textArea.value = caption;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    alert("Category link copied to clipboard!");
+                }
+            }
         };
 
         window.shareProductNative = async (event, name, cat, desc, imgUrl) => {
@@ -421,13 +459,23 @@
         };
 
         function checkForDirectLink() {
-            const item = new URLSearchParams(window.location.search).get('item');
+            const params = new URLSearchParams(window.location.search);
+            const item = params.get('item');
+            const cat = params.get('cat');
+
             if (item) {
                 const target = item.toLowerCase().replace(/[^a-z0-9]/g, '');
                 const product = allProducts.find(p => p.name.toLowerCase().replace(/[^a-z0-9]/g, '') === target);
                 document.getElementById('link-loader').style.display = 'none';
                 if (product) openCategoryModal(product.category, product.name);
-            } else document.getElementById('link-loader').style.display = 'none';
+            } else if (cat) {
+                const targetCat = allProducts.find(p => getCleanSlug(p.category) === cat);
+                document.getElementById('link-loader').style.display = 'none';
+                if (targetCat) openCategoryModal(targetCat.category);
+                else alert("Category not found");
+            } else {
+                document.getElementById('link-loader').style.display = 'none';
+            }
         }
 
         window.changeSlide = (e, cardIdx, dir, tot) => { e.stopPropagation(); const w = document.getElementById(`slider-${cardIdx}`); let cur = parseInt(w.dataset.current), n = (cur + dir + tot) % tot; document.getElementById(`slide-${cardIdx}-${cur}`).classList.remove('active'); document.getElementById(`slide-${cardIdx}-${n}`).classList.add('active'); w.dataset.current = n; };
@@ -439,3 +487,5 @@
     </script>
 </body>
 </html>
+
+
