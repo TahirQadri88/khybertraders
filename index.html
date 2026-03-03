@@ -271,19 +271,17 @@
         </div>
     </footer>
 
-    <!-- CATEGORY MODAL -->
+    <!-- CATEGORY MODAL (FIXED HEADER ALIGNMENT) -->
     <div id="category-modal" class="fixed inset-0 bg-black/95 hidden z-[100] overflow-y-auto backdrop-blur-sm transition-opacity duration-300">
-        <div class="min-h-screen px-2 sm:px-4 text-center">
+        <div class="min-h-screen px-2 sm:px-4 flex justify-center items-start">
             <div class="fixed inset-0" onclick="closeCategoryModal()"></div>
-            <div class="inline-block w-full max-w-6xl p-4 sm:p-8 my-6 sm:my-12 text-left align-middle transition-all transform bg-white shadow-2xl relative border-t-4 border-brand-maroon">
-                <!-- Sticky Close Button -->
-                <div class="sticky top-0 z-50 flex justify-end pb-4 bg-white/95 backdrop-blur-sm">
-                    <button onclick="closeCategoryModal()" class="text-gray-400 hover:text-brand-maroon text-3xl transition">
+            <div class="w-full max-w-6xl p-4 sm:p-8 my-6 sm:my-12 text-left transition-all transform bg-white shadow-2xl relative border-t-4 border-brand-maroon">
+                <!-- Sticky Header: Title and Close Button together to prevent overlap and cutoff -->
+                <div class="sticky top-0 z-50 bg-white/95 backdrop-blur-sm pb-4 sm:pb-6 border-b mb-6 sm:mb-10 flex justify-between items-start pt-2">
+                    <h3 id="modal-title" class="text-2xl sm:text-4xl font-serif font-bold text-brand-dark capitalize mt-2">Category</h3>
+                    <button onclick="closeCategoryModal()" class="text-gray-400 hover:text-brand-maroon text-3xl transition ml-4 mt-2">
                         <i class="fas fa-times"></i>
                     </button>
-                </div>
-                <div class="mb-6 sm:mb-10 border-b pb-4 sm:pb-6 mt-[-3rem]">
-                    <h3 id="modal-title" class="text-2xl sm:text-4xl font-serif font-bold text-brand-dark capitalize mt-4">Category</h3>
                 </div>
                 <!-- 2 columns on mobile -->
                 <div id="modal-grid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-8"></div>
@@ -489,5 +487,3 @@
     </script>
 </body>
 </html>
-
-
