@@ -39,10 +39,7 @@
         }
     </script>
 
-    <!-- 4. LIBRARIES -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
-    <!-- 5. PERFECTED STYLING & FONTS -->
+    <!-- 4. STYLING & FONTS -->
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -100,6 +97,8 @@
         .formatted-text strong { color: #500000; font-weight: 700; }
         .btn-loading { opacity: 0.6; pointer-events: none; }
         #share-canvas { display: none; }
+        #mobile-menu { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        #mobile-menu.open { max-height: 200px; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased selection:bg-brand-maroon selection:text-white">
@@ -122,7 +121,7 @@
         </div>
     </div>
 
-    <!-- Restored Navigation -->
+    <!-- Navigation -->
     <nav class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center gap-4">
@@ -137,7 +136,17 @@
                 <a href="#products" class="hover:text-brand-maroon transition duration-300">Products</a>
                 <a href="#contact" class="hover:text-brand-maroon transition duration-300">Contact</a>
             </div>
-            <a href="https://wa.me/923352999006" class="md:hidden text-brand-maroon text-2xl"><i class="fab fa-whatsapp"></i></a>
+            <button id="nav-toggle" class="md:hidden text-brand-maroon text-2xl p-1" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <div id="mobile-menu" class="md:hidden border-t border-gray-100 bg-white">
+            <div class="container mx-auto px-6 py-4 flex flex-col gap-5 text-xs font-bold uppercase tracking-widest text-gray-500">
+                <a href="#about" class="hover:text-brand-maroon transition" onclick="closeMobileMenu()">Profile</a>
+                <a href="#products" class="hover:text-brand-maroon transition" onclick="closeMobileMenu()">Products</a>
+                <a href="#contact" class="hover:text-brand-maroon transition" onclick="closeMobileMenu()">Contact</a>
+                <a href="https://wa.me/923352999006" class="text-green-600 font-bold flex items-center gap-2"><i class="fab fa-whatsapp text-lg"></i> WhatsApp Us</a>
+            </div>
         </div>
     </nav>
 
@@ -266,7 +275,7 @@
                 </div>
             </div>
             <div class="border-t border-gray-800 mt-16 pt-8 flex justify-between items-center text-[10px] uppercase tracking-widest text-gray-600">
-                <p>&copy; 2024 Khyber Traders. All rights reserved.</p>
+                <p>&copy; <span id="copyright-year">2024</span> Khyber Traders. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -295,6 +304,21 @@
         <img id="lightbox-img" src="">
     </div>
 
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/923352999006" target="_blank" rel="noopener"
+       aria-label="Chat on WhatsApp"
+       class="fixed bottom-6 right-6 z-[200] w-14 h-14 bg-green-500 hover:bg-green-600 text-white rounded-full flex items-center justify-center shadow-xl transition-transform duration-300 hover:scale-110">
+        <i class="fab fa-whatsapp text-3xl"></i>
+    </a>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top"
+       aria-label="Back to top"
+       onclick="window.scrollTo({top:0,behavior:'smooth'})"
+       class="fixed bottom-24 right-6 z-[200] w-12 h-12 bg-brand-maroon text-brand-gold rounded-full flex items-center justify-center shadow-xl transition-all duration-300 opacity-0 pointer-events-none hover:bg-brand-gold hover:text-brand-dark">
+        <i class="fas fa-chevron-up text-lg"></i>
+    </button>
+
     <!-- Invisible Canvas for Share Proxy -->
     <canvas id="share-canvas"></canvas>
 
@@ -313,7 +337,22 @@
                 allProducts = parseCSV(text);
                 generateTiles();
                 checkForDirectLink();
-            } catch (error) { console.error(error); }
+            } catch (error) {
+                console.error(error);
+                const container = document.getElementById('tiles-container');
+                if (container) {
+                    container.innerHTML = `
+                        <div class="col-span-full text-center py-16 px-6">
+                            <i class="fas fa-exclamation-circle text-brand-maroon text-4xl mb-4"></i>
+                            <p class="text-brand-dark font-bold text-lg mb-2">Could not load products</p>
+                            <p class="text-gray-500 text-sm mb-6">Please check your connection and try again.</p>
+                            <button onclick="fetchProducts()" class="bg-brand-maroon text-white font-bold py-3 px-8 hover:bg-brand-gold hover:text-brand-dark transition">
+                                <i class="fas fa-redo mr-2"></i> Retry
+                            </button>
+                        </div>`;
+                }
+                document.getElementById('link-loader').style.display = 'none';
+            }
         }
 
         function getCleanSlug(name) {
@@ -345,12 +384,14 @@
             const container = document.getElementById('tiles-container');
             const uniqueCats = [...new Set(allProducts.map(p => p.category))];
             container.innerHTML = uniqueCats.map(cat => {
-                const safeCat = cat.replace(/'/g, "\\'"); 
+                const safeCat = cat.replace(/'/g, "\\'");
+                const count = allProducts.filter(p => p.category === cat).length;
                 return `
                 <div class="group bg-white p-4 sm:p-10 shadow-sleek hover:shadow-2xl transition transform hover:-translate-y-2 relative border-b-4 border-transparent hover:border-brand-gold flex flex-col items-center text-center">
                     <div onclick="openCategoryModal('${safeCat}')" class="cursor-pointer w-full flex flex-col items-center">
                         <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gray-50 text-brand-dark flex items-center justify-center text-xl sm:text-3xl mb-4 sm:mb-8 group-hover:bg-brand-maroon group-hover:text-brand-gold transition duration-300"><i class="fas fa-box-open"></i></div>
                         <h3 class="text-lg sm:text-2xl font-serif font-bold text-brand-dark mb-2 capitalize leading-tight">${cat}</h3>
+                        <p class="text-[10px] sm:text-xs text-gray-400 font-semibold uppercase tracking-widest mb-1">${count} product${count !== 1 ? 's' : ''}</p>
                         <div class="mt-2 sm:mt-8 flex items-center text-brand-maroon font-bold text-[10px] sm:text-xs uppercase tracking-widest group-hover:text-brand-gold transition">View <i class="fas fa-long-arrow-alt-right ml-2"></i></div>
                     </div>
                     <button onclick="shareCategory(event, '${safeCat}')" class="mt-4 text-gray-400 hover:text-brand-gold text-xs uppercase tracking-widest border-t border-gray-100 w-full pt-3"><i class="fas fa-share-alt mr-1"></i> Share</button>
@@ -370,7 +411,7 @@
                 const slug = getCleanSlug(p.name);
                 const redirectLink = `animalhealth.pk/s/${slug}.html`;
                 const imageLink = p.images[0] || '';
-                let slides = p.images.length ? `<div class="slider-wrapper" id="slider-${index}" data-current="0">${p.images.map((img, i) => `<img src="${img}" class="slide ${i===0?'active':''}" id="slide-${index}-${i}" onclick="openLightbox('${img}')">`).join('')}${p.images.length > 1 ? `<button class="slider-btn left-2" onclick="changeSlide(event,${index},-1,${p.images.length})">←</button><button class="slider-btn right-2" onclick="changeSlide(event,${index},1,${p.images.length})">→</button>` : ''}</div>` : '';
+                let slides = p.images.length ? `<div class="slider-wrapper" id="slider-${index}" data-current="0">${p.images.map((img, i) => `<img src="${img}" class="slide ${i===0?'active':''}" id="slide-${index}-${i}" onclick="openLightbox('${img}')"${i===0 ? '' : ' loading="lazy"'}>`).join('')}${p.images.length > 1 ? `<button class="slider-btn left-2" onclick="changeSlide(event,${index},-1,${p.images.length})">←</button><button class="slider-btn right-2" onclick="changeSlide(event,${index},1,${p.images.length})">→</button>` : ''}</div>` : '';
 
                 return `
                 <div class="bg-white group relative shadow-sm hover:shadow-xl transition duration-500 border border-gray-100 flex flex-col h-full">
@@ -477,6 +518,49 @@
                 document.getElementById('link-loader').style.display = 'none';
             }
         }
+
+        // Dynamic copyright year
+        document.getElementById('copyright-year').textContent = new Date().getFullYear();
+
+        // Mobile hamburger menu
+        function closeMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const btn = document.getElementById('nav-toggle');
+            menu.classList.remove('open');
+            btn.setAttribute('aria-expanded', 'false');
+            btn.innerHTML = '<i class="fas fa-bars"></i>';
+        }
+        document.getElementById('nav-toggle').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            const isOpen = menu.classList.toggle('open');
+            this.setAttribute('aria-expanded', String(isOpen));
+            this.innerHTML = isOpen ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+        });
+
+        // Back-to-top button visibility
+        window.addEventListener('scroll', function() {
+            const btn = document.getElementById('back-to-top');
+            if (!btn) return;
+            if (window.scrollY > 400) {
+                btn.classList.remove('opacity-0', 'pointer-events-none');
+                btn.classList.add('opacity-100');
+            } else {
+                btn.classList.add('opacity-0', 'pointer-events-none');
+                btn.classList.remove('opacity-100');
+            }
+        });
+
+        // Escape key to close modals (lightbox → category modal → mobile menu)
+        document.addEventListener('keydown', function(e) {
+            if (e.key !== 'Escape') return;
+            if (document.getElementById('lightbox').style.display === 'flex') {
+                closeLightbox();
+            } else if (!document.getElementById('category-modal').classList.contains('hidden')) {
+                closeCategoryModal();
+            } else {
+                closeMobileMenu();
+            }
+        });
 
         window.changeSlide = (e, cardIdx, dir, tot) => { e.stopPropagation(); const w = document.getElementById(`slider-${cardIdx}`); let cur = parseInt(w.dataset.current), n = (cur + dir + tot) % tot; document.getElementById(`slide-${cardIdx}-${cur}`).classList.remove('active'); document.getElementById(`slide-${cardIdx}-${n}`).classList.add('active'); w.dataset.current = n; };
         window.closeCategoryModal = () => document.getElementById('category-modal').classList.add('hidden');
