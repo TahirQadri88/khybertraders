@@ -409,7 +409,7 @@
             }
             grid.innerHTML = filtered.map((p, index) => {
                 const slug = getCleanSlug(p.name);
-                const redirectLink = `animalhealth.pk/s/${slug}.html`;
+                const redirectLink = `https://animalhealth.pk/s/${slug}.html`;
                 const imageLink = p.images[0] || '';
                 let slides = p.images.length ? `<div class="slider-wrapper" id="slider-${index}" data-current="0">${p.images.map((img, i) => `<img src="${img}" class="slide ${i===0?'active':''}" id="slide-${index}-${i}" onclick="openLightbox('${img}')"${i===0 ? '' : ' loading="lazy"'}>`).join('')}${p.images.length > 1 ? `<button class="slider-btn left-2" onclick="changeSlide(event,${index},-1,${p.images.length})">←</button><button class="slider-btn right-2" onclick="changeSlide(event,${index},1,${p.images.length})">→</button>` : ''}</div>` : '';
 
@@ -460,7 +460,7 @@
         window.shareProductNative = async (event, name, cat, desc, imgUrl) => {
             const btn = event.currentTarget;
             const slug = getCleanSlug(name);
-            const redirectLink = `animalhealth.pk/s/${slug}.html`;
+            const redirectLink = `https://animalhealth.pk/s/${slug}.html`;
             const cleanDesc = desc.replace(/<[^>]*>?/gm, ''); 
             const caption = `📦 *Product:* ${name}\n📂 *Category:* ${cat.toUpperCase()}\n📝 *Details:* ${cleanDesc}\n━━━━━━━━━━━━━━━━━━\n🔗 *Link:* ${redirectLink}`;
             const fallbackCaption = `📦 *Product:* ${name}\n📂 *Category:* ${cat.toUpperCase()}\n📝 *Details:* ${cleanDesc}\n━━━━━━━━━━━━━━━━━━\n🖼 *Image:* ${imgUrl}\n🔗 *Link:* ${redirectLink}`;
