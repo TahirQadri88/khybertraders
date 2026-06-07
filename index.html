@@ -99,6 +99,7 @@
         #share-canvas { display: none; }
         #mobile-menu { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
         #mobile-menu.open { max-height: 200px; }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: normal; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased selection:bg-brand-maroon selection:text-white">
@@ -411,26 +412,36 @@
                 const slug = getCleanSlug(p.name);
                 const redirectLink = `https://animalhealth.pk/s/${slug}.html`;
                 const imageLink = p.images[0] || '';
+                const plainDesc = (p.desc || '').replace(/\n+/g, ' ').trim();
                 let slides = p.images.length ? `<div class="slider-wrapper" id="slider-${index}" data-current="0">${p.images.map((img, i) => `<img src="${img}" class="slide ${i===0?'active':''}" id="slide-${index}-${i}" onclick="openLightbox('${img}')"${i===0 ? '' : ' loading="lazy"'}>`).join('')}${p.images.length > 1 ? `<button class="slider-btn left-2" onclick="changeSlide(event,${index},-1,${p.images.length})">←</button><button class="slider-btn right-2" onclick="changeSlide(event,${index},1,${p.images.length})">→</button>` : ''}</div>` : '';
 
                 return `
-                <div class="bg-white group relative shadow-sm hover:shadow-xl transition duration-500 border border-gray-100 flex flex-col h-full">
-                    <div class="h-40 sm:h-64 overflow-hidden relative bg-gray-50 border-b">${slides}</div>
-                    <div class="p-3 sm:p-6 flex flex-col flex-grow">
-                        <h4 class="font-bold text-brand-dark mb-1 sm:mb-2 text-[13px] sm:text-lg font-serif leading-tight">${p.name}</h4>
-                        <div class="text-[10px] sm:text-xs text-gray-500 mb-4 sm:mb-6 formatted-text h-12 sm:h-24 overflow-y-auto leading-tight">${(p.desc || '').replace(/\n/g, '<br>')}</div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-2 mt-auto">
-                            <button onclick="shareProductNative(event, '${p.name.replace(/'/g,"\\'")}', '${p.category}', '${(p.desc||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}', '${imageLink}')" class="bg-brand-gold text-brand-dark py-2 sm:py-3 text-[8px] sm:text-[10px] font-bold uppercase transition shadow-md"><i class="fas fa-share-alt mr-1"></i> SHARE</button>
-                            <a href="https://wa.me/923352999006?text=${encodeURIComponent('📦 *Product:* ' + p.name + '\n🔗 *Link:* ' + redirectLink)}" target="_blank" class="bg-brand-maroon text-white py-2 sm:py-3 text-[8px] sm:text-[10px] font-bold uppercase text-center shadow-lg"><i class="fab fa-whatsapp mr-1"></i> INQUIRE</a>
-                        </div>
+                <div class="bg-white border border-gray-100 hover:border-brand-gold hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden">
+                    <div class="aspect-square overflow-hidden relative bg-gray-50 border-b">
+                        ${slides}
+                        <span class="absolute top-2 left-2 z-[15] bg-brand-maroon text-white text-[7px] sm:text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 pointer-events-none">${p.category}</span>
+                        <button onclick="shareProductNative(event, '${p.name.replace(/'/g,"\\'")}', '${p.category}', '${(p.desc||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}', '${imageLink}')" class="absolute top-2 right-2 z-[15] w-7 h-7 sm:w-8 sm:h-8 bg-white/90 hover:bg-brand-gold hover:text-white flex items-center justify-center shadow transition text-gray-500"><i class="fas fa-share-alt text-[10px]"></i></button>
+                        ${p.images.length > 1 ? `<span id="img-count-${index}" class="absolute bottom-2 right-2 z-[15] bg-black/50 text-white text-[8px] px-1.5 py-0.5 rounded pointer-events-none">1 / ${p.images.length}</span>` : ''}
+                    </div>
+                    <div class="p-3 sm:p-4 flex flex-col flex-grow">
+                        <a href="${redirectLink}" target="_blank" class="font-bold text-brand-dark mb-2 text-[13px] sm:text-base font-serif leading-tight hover:text-brand-maroon transition block">${p.name}</a>
+                        <p class="text-[10px] sm:text-xs text-gray-500 mb-3 line-clamp-2 leading-relaxed">${plainDesc}</p>
+                        <a href="https://wa.me/923352999006?text=${encodeURIComponent('📦 *Product:* ' + p.name + '\n🔗 *Link:* ' + redirectLink)}" target="_blank" onclick="trackInquiry('${p.name.replace(/'/g,"\\'")}','${p.category}')" class="mt-auto bg-green-500 hover:bg-green-600 text-white py-2 sm:py-2.5 text-[9px] sm:text-[10px] font-bold uppercase flex items-center justify-center gap-1.5 transition shadow"><i class="fab fa-whatsapp text-sm"></i> Inquire on WhatsApp</a>
                     </div>
                 </div>`;
             }).join('');
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'view_item_list', {
+                    item_list_name: specificItemName ? 'product_detail' : category,
+                    items: filtered.map(p => ({ item_name: p.name, item_category: p.category }))
+                });
+            }
             document.getElementById('category-modal').classList.remove('hidden');
         };
 
         window.shareCategory = async (event, cat) => {
             event.stopPropagation();
+            if (typeof gtag !== 'undefined') gtag('event', 'share', { method: 'whatsapp', content_type: 'category', content_id: cat });
             const slug = getCleanSlug(cat);
             const redirectLink = `https://animalhealth.pk/?cat=${slug}`;
             const caption = `📂 *Category:* ${cat.toUpperCase()}\nCheck out our collection here:\n🔗 ${redirectLink}`;
@@ -458,6 +469,7 @@
         };
 
         window.shareProductNative = async (event, name, cat, desc, imgUrl) => {
+            if (typeof gtag !== 'undefined') gtag('event', 'share', { method: 'whatsapp', content_type: 'product', content_id: name });
             const btn = event.currentTarget;
             const slug = getCleanSlug(name);
             const redirectLink = `https://animalhealth.pk/s/${slug}.html`;
@@ -562,7 +574,19 @@
             }
         });
 
-        window.changeSlide = (e, cardIdx, dir, tot) => { e.stopPropagation(); const w = document.getElementById(`slider-${cardIdx}`); let cur = parseInt(w.dataset.current), n = (cur + dir + tot) % tot; document.getElementById(`slide-${cardIdx}-${cur}`).classList.remove('active'); document.getElementById(`slide-${cardIdx}-${n}`).classList.add('active'); w.dataset.current = n; };
+        window.changeSlide = (e, cardIdx, dir, tot) => {
+            e.stopPropagation();
+            const w = document.getElementById(`slider-${cardIdx}`);
+            let cur = parseInt(w.dataset.current), n = (cur + dir + tot) % tot;
+            document.getElementById(`slide-${cardIdx}-${cur}`).classList.remove('active');
+            document.getElementById(`slide-${cardIdx}-${n}`).classList.add('active');
+            w.dataset.current = n;
+            const counter = document.getElementById(`img-count-${cardIdx}`);
+            if (counter) counter.textContent = (n + 1) + ' / ' + tot;
+        };
+        window.trackInquiry = (name, category) => {
+            if (typeof gtag !== 'undefined') gtag('event', 'generate_lead', { item_name: name, item_category: category });
+        };
         window.closeCategoryModal = () => document.getElementById('category-modal').classList.add('hidden');
         window.openLightbox = (s) => { document.getElementById('lightbox-img').src = s; document.getElementById('lightbox').style.display = 'flex'; };
         window.closeLightbox = () => document.getElementById('lightbox').style.display = 'none';
