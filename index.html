@@ -419,12 +419,12 @@
                 <div class="bg-white border border-gray-100 hover:border-brand-gold hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden">
                     <div class="aspect-square overflow-hidden relative bg-gray-50 border-b">
                         ${slides}
-                        <span class="absolute top-2 left-2 z-[15] bg-brand-maroon text-white text-[7px] sm:text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 pointer-events-none">${p.category}</span>
-                        <button onclick="shareProductNative(event, '${p.name.replace(/'/g,"\\'")}', '${p.category}', '${(p.desc||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}', '${imageLink}')" class="absolute top-2 right-2 z-[15] w-7 h-7 sm:w-8 sm:h-8 bg-white/90 hover:bg-brand-gold hover:text-white flex items-center justify-center shadow transition text-gray-500"><i class="fas fa-share-alt text-[10px]"></i></button>
+                        <button onclick="shareProductNative(event, '${p.name.replace(/'/g,"\\'")}', '${p.category}', '${(p.desc||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}', '${imageLink}')" class="absolute top-2 right-2 z-[15] w-7 h-7 sm:w-8 sm:h-8 bg-brand-gold text-brand-dark hover:bg-brand-maroon hover:text-white flex items-center justify-center shadow-md transition"><i class="fas fa-share-alt text-[10px]"></i></button>
                         ${p.images.length > 1 ? `<span id="img-count-${index}" class="absolute bottom-2 right-2 z-[15] bg-black/50 text-white text-[8px] px-1.5 py-0.5 rounded pointer-events-none">1 / ${p.images.length}</span>` : ''}
                     </div>
                     <div class="p-3 sm:p-4 flex flex-col flex-grow">
-                        <a href="${redirectLink}" target="_blank" class="font-bold text-brand-dark mb-2 text-[13px] sm:text-base font-serif leading-tight hover:text-brand-maroon transition block">${p.name}</a>
+                        <a href="${redirectLink}" target="_blank" class="font-bold text-brand-dark mb-1 text-[13px] sm:text-base font-serif leading-tight hover:text-brand-maroon transition block">${p.name}</a>
+                        <span class="inline-block bg-brand-maroon/10 text-brand-maroon text-[7px] sm:text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 mb-2 self-start">${p.category}</span>
                         <p class="text-[10px] sm:text-xs text-gray-500 mb-3 line-clamp-2 leading-relaxed">${plainDesc}</p>
                         <a href="https://wa.me/923352999006?text=${encodeURIComponent('📦 *Product:* ' + p.name + '\n🔗 *Link:* ' + redirectLink)}" target="_blank" onclick="trackInquiry('${p.name.replace(/'/g,"\\'")}','${p.category}')" class="mt-auto bg-green-500 hover:bg-green-600 text-white py-2 sm:py-2.5 text-[9px] sm:text-[10px] font-bold uppercase flex items-center justify-center gap-1.5 transition shadow"><i class="fab fa-whatsapp text-sm"></i> Inquire on WhatsApp</a>
                     </div>
