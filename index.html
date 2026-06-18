@@ -134,6 +134,8 @@
         #mobile-menu.open { max-height: 200px; }
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: normal; }
         .search-highlight { background: #D4AF37; color: #0a0a0a; padding: 0 2px; border-radius: 1px; }
+        .product-thumb { cursor: pointer; opacity: 0.5; transition: opacity 0.2s, border-color 0.2s; border: 2px solid transparent; }
+        .product-thumb.active, .product-thumb:hover { opacity: 1; border-color: #500000; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased selection:bg-brand-maroon selection:text-white">
@@ -351,6 +353,22 @@
         <img id="lightbox-img" src="">
     </div>
 
+    <!-- Product Detail Page -->
+    <div id="product-detail-page" class="fixed inset-0 bg-white z-[150] overflow-y-auto hidden">
+        <div class="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
+            <div class="container mx-auto px-4 py-3 flex items-center gap-3">
+                <button onclick="closeProductDetailPage()" class="flex items-center gap-2 text-brand-maroon font-bold text-xs uppercase tracking-widest hover:text-brand-dark transition flex-shrink-0">
+                    <i class="fas fa-arrow-left"></i> All Products
+                </button>
+                <span class="text-gray-200">|</span>
+                <span id="pdp-nav-title" class="text-xs text-gray-500 truncate"></span>
+            </div>
+        </div>
+        <div class="container mx-auto px-4 py-8 sm:py-12 max-w-4xl">
+            <div id="pdp-content"></div>
+        </div>
+    </div>
+
     <!-- Floating WhatsApp Button -->
     <a href="https://wa.me/923352999006" target="_blank" rel="noopener"
        aria-label="Chat on WhatsApp"
@@ -566,7 +584,7 @@
                 const target = item.toLowerCase().replace(/[^a-z0-9]/g, '');
                 const product = allProducts.find(p => p.name.toLowerCase().replace(/[^a-z0-9]/g, '') === target);
                 document.getElementById('link-loader').style.display = 'none';
-                if (product) openCategoryModal(product.category, product.name);
+                if (product) openProductDetailPage(product);
             } else if (cat) {
                 const targetCat = allProducts.find(p => getCleanSlug(p.category) === cat);
                 document.getElementById('link-loader').style.display = 'none';
@@ -576,6 +594,78 @@
                 document.getElementById('link-loader').style.display = 'none';
             }
         }
+
+        // Product detail page
+        window.openProductDetailPage = function(product) {
+            const slug = getCleanSlug(product.name);
+            const redirectLink = `https://animalhealth.pk/s/${slug}.html`;
+            document.title = product.name + ' | AnimalHealth.pk';
+            document.getElementById('pdp-nav-title').textContent = product.name;
+
+            const firstImg = product.images[0] || '';
+            const galleryHtml = product.images.length
+                ? `<div>
+                    <img id="pdp-main-img" src="${firstImg}" alt="${product.name}"
+                        class="w-full aspect-square sm:aspect-[4/3] object-contain bg-gray-50 border cursor-zoom-in"
+                        onclick="openLightbox(this.src)">
+                    ${product.images.length > 1
+                        ? `<div class="flex gap-2 mt-3 flex-wrap">${product.images.map((img, i) =>
+                            `<img src="${img}" class="product-thumb w-16 h-16 sm:w-20 sm:h-20 object-cover bg-gray-50 ${i===0?'active':''}"
+                                onclick="pdpSetImage('${img}',this)" loading="${i===0?'eager':'lazy'}">`
+                          ).join('')}</div>`
+                        : ''}
+                   </div>`
+                : `<div class="w-full aspect-square bg-gray-100 flex items-center justify-center border"><i class="fas fa-box-open text-gray-300 text-5xl"></i></div>`;
+
+            const formattedDesc = (product.desc || '').replace(/\n/g, '<br>');
+            const shareParams = `event,'${product.name.replace(/'/g,"\\'")}','${product.category}','${(product.desc||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}','${firstImg}'`;
+            const waText = encodeURIComponent('📦 *Product:* ' + product.name + '\n🔗 *Link:* ' + redirectLink);
+
+            document.getElementById('pdp-content').innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
+                    <div>${galleryHtml}</div>
+                    <div class="flex flex-col">
+                        <span class="inline-block bg-brand-maroon/10 text-brand-maroon text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 mb-3 self-start">${product.category}</span>
+                        <h1 class="text-2xl sm:text-3xl font-serif font-bold text-brand-dark mb-4 leading-tight">${product.name}</h1>
+                        <div class="h-0.5 w-12 bg-brand-gold mb-5"></div>
+                        ${formattedDesc
+                            ? `<div class="text-sm text-gray-600 leading-relaxed formatted-text mb-8">${formattedDesc}</div>`
+                            : `<p class="text-gray-400 text-sm mb-8 italic">No description available.</p>`}
+                        <div class="space-y-3">
+                            <a href="https://wa.me/923352999006?text=${waText}" target="_blank"
+                               onclick="trackInquiry('${product.name.replace(/'/g,"\\'")}','${product.category}')"
+                               class="w-full bg-green-500 hover:bg-green-600 text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
+                                <i class="fab fa-whatsapp text-lg"></i> Inquire on WhatsApp
+                            </a>
+                            <button onclick="shareProductNative(${shareParams})"
+                                    class="w-full bg-brand-gold hover:bg-brand-maroon hover:text-white text-brand-dark py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
+                                <i class="fas fa-share-alt"></i> Share Product
+                            </button>
+                            <button onclick="closeProductDetailPage()"
+                                    class="w-full border border-gray-200 text-gray-500 py-2.5 text-xs font-bold uppercase tracking-widest hover:border-brand-maroon hover:text-brand-maroon transition">
+                                <i class="fas fa-th-large mr-1"></i> Browse All Products
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+
+            document.getElementById('product-detail-page').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        };
+
+        window.closeProductDetailPage = function() {
+            document.getElementById('product-detail-page').classList.add('hidden');
+            document.title = 'Khyber Traders | Wholesale Veterinary Pharmacy';
+            history.replaceState(null, '', '/');
+            document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+        };
+
+        window.pdpSetImage = function(src, thumbEl) {
+            const mainImg = document.getElementById('pdp-main-img');
+            if (mainImg) { mainImg.src = src; mainImg.onclick = function() { openLightbox(src); }; }
+            document.querySelectorAll('.product-thumb').forEach(t => t.classList.remove('active'));
+            if (thumbEl) thumbEl.classList.add('active');
+        };
 
         // Product search
         let searchTimer = null;
@@ -682,6 +772,8 @@
             if (e.key !== 'Escape') return;
             if (document.getElementById('lightbox').style.display === 'flex') {
                 closeLightbox();
+            } else if (!document.getElementById('product-detail-page').classList.contains('hidden')) {
+                closeProductDetailPage();
             } else if (!document.getElementById('category-modal').classList.contains('hidden')) {
                 closeCategoryModal();
             } else {
