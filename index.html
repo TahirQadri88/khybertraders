@@ -490,7 +490,11 @@
                         <a href="${redirectLink}" target="_blank" class="font-bold text-brand-dark mb-1 text-[13px] sm:text-base font-serif leading-tight hover:text-brand-maroon transition block">${p.name}</a>
                         <span class="inline-block bg-brand-maroon/10 text-brand-maroon text-[7px] sm:text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 mb-2 self-start">${p.category}</span>
                         <p class="text-[10px] sm:text-xs text-gray-500 mb-3 line-clamp-2 leading-relaxed">${plainDesc}</p>
-                        <a href="https://wa.me/923352999006?text=${encodeURIComponent('📦 *Product:* ' + p.name + '\n🔗 *Link:* ' + redirectLink)}" target="_blank" onclick="trackInquiry('${p.name.replace(/'/g,"\\'")}','${p.category}')" class="mt-auto bg-green-500 hover:bg-green-600 text-white py-2 sm:py-2.5 text-[9px] sm:text-[10px] font-bold uppercase flex items-center justify-center gap-1.5 transition shadow"><i class="fab fa-whatsapp text-sm"></i> Inquire on WhatsApp</a>
+                        <div class="grid grid-cols-2 border border-gray-100 mb-2 mt-auto">
+                            <button onclick="openProductByName('${p.name.replace(/'/g,"\\'")}');" class="py-2 text-[9px] sm:text-[10px] font-bold uppercase text-brand-maroon hover:bg-brand-maroon/5 flex items-center justify-center gap-1 transition border-r border-gray-100"><i class="fas fa-expand-alt text-[9px]"></i> View</button>
+                            <button onclick="shareProductNative(event,'${p.name.replace(/'/g,"\\'")}','${p.category}','${(p.desc||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}','${imageLink}')" class="py-2 text-[9px] sm:text-[10px] font-bold uppercase text-gray-500 hover:bg-gray-50 flex items-center justify-center gap-1 transition"><i class="fas fa-share-alt text-[9px]"></i> Share</button>
+                        </div>
+                        <a href="https://wa.me/923352999006?text=${encodeURIComponent('📦 *Product:* ' + p.name + '\n🔗 *Link:* ' + redirectLink)}" target="_blank" onclick="trackInquiry('${p.name.replace(/'/g,"\\'")}','${p.category}')" class="bg-green-500 hover:bg-green-600 text-white py-2 sm:py-2.5 text-[9px] sm:text-[10px] font-bold uppercase flex items-center justify-center gap-1.5 transition shadow"><i class="fab fa-whatsapp text-sm"></i> Inquire on WhatsApp</a>
                     </div>
                 </div>`;
             }).join('');
@@ -790,6 +794,10 @@
             w.dataset.current = n;
             const counter = document.getElementById(`img-count-${cardIdx}`);
             if (counter) counter.textContent = (n + 1) + ' / ' + tot;
+        };
+        window.openProductByName = (name) => {
+            const p = allProducts.find(x => x.name === name);
+            if (p) openProductDetailPage(p);
         };
         window.trackInquiry = (name, category) => {
             if (typeof gtag !== 'undefined') gtag('event', 'generate_lead', { item_name: name, item_category: category });
