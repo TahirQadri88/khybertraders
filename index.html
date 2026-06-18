@@ -483,7 +483,6 @@
                 <div class="bg-white border border-gray-100 hover:border-brand-gold hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden">
                     <div class="aspect-square overflow-hidden relative bg-gray-50 border-b">
                         ${slides}
-                        <button onclick="shareProductNative(event, '${p.name.replace(/'/g,"\\'")}', '${p.category}', '${(p.desc||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}', '${imageLink}')" class="absolute top-2 right-2 z-[15] w-7 h-7 sm:w-8 sm:h-8 bg-brand-gold text-brand-dark hover:bg-brand-maroon hover:text-white flex items-center justify-center shadow-md transition"><i class="fas fa-share-alt text-[10px]"></i></button>
                         ${p.images.length > 1 ? `<span id="img-count-${index}" class="absolute bottom-2 right-2 z-[15] bg-black/50 text-white text-[8px] px-1.5 py-0.5 rounded pointer-events-none">1 / ${p.images.length}</span>` : ''}
                     </div>
                     <div class="p-3 sm:p-4 flex flex-col flex-grow">
