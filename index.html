@@ -413,8 +413,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('item') || urlParams.get('cat')) document.getElementById('link-loader').style.display = 'flex';
             try {
-                const snapshot = await db.collection('products')
-                    .orderBy('category').orderBy('sortOrder').get();
+                const snapshot = await db.collection('products').get();
                 allProducts = [];
                 snapshot.forEach(doc => {
                     const d = doc.data();
@@ -426,6 +425,10 @@
                         priceDisplay: d.priceDisplay || '',
                         inStock:      d.inStock !== false
                     });
+                });
+                allProducts.sort((a, b) => {
+                    const cat = a.category.localeCompare(b.category);
+                    return cat !== 0 ? cat : (a.sortOrder || 0) - (b.sortOrder || 0);
                 });
                 generateTiles();
                 checkForDirectLink();

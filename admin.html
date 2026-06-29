@@ -334,11 +334,14 @@ function doLogout() {
 // ── Load Products ─────────────────────────────────────────────────
 async function loadProducts() {
     try {
-        const snap = await db.collection('products')
-            .orderBy('category').orderBy('sortOrder').get();
+        const snap = await db.collection('products').get();
 
         allProductsCache = [];
         snap.forEach(doc => allProductsCache.push({ id: doc.id, ...doc.data() }));
+        allProductsCache.sort((a, b) => {
+            const cat = (a.category || '').localeCompare(b.category || '');
+            return cat !== 0 ? cat : (a.sortOrder || 0) - (b.sortOrder || 0);
+        });
 
         renderTable(allProductsCache);
         populateCatFilter();
