@@ -733,22 +733,23 @@
                 const count = allProducts.filter(p => p.category === cat).length;
                 return `
                 <div class="flex items-center overflow-hidden transition-all duration-200 hover:shadow-md cursor-pointer"
-                     style="background:${c.bg}; border:1px solid ${c.bar}33"
+                     style="background:${c.bg}; border:1px solid ${c.bar}55"
                      onclick="openCategoryModal('${safeCat}')">
                     <div class="w-1.5 self-stretch flex-shrink-0" style="background:${c.bar}"></div>
-                    <div class="w-11 h-11 rounded-full flex items-center justify-center mx-3 my-3 flex-shrink-0"
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center mx-3 my-3.5 flex-shrink-0"
                          style="background:${c.iconBg}">
                         <i class="fas fa-box-open text-sm" style="color:${c.iconFg}"></i>
                     </div>
-                    <div class="flex-1 min-w-0 py-3 pr-1">
-                        <h3 class="font-bold text-sm leading-tight capitalize text-gray-800" style="font-family:'Playfair Display',serif">${cat}</h3>
-                        <p class="text-xs text-gray-400 mt-0.5 font-medium">${count} product${count !== 1 ? 's' : ''}</p>
+                    <div class="flex-1 min-w-0 py-3.5 pr-1">
+                        <h3 class="font-semibold text-base leading-tight capitalize text-gray-800 font-sans">${cat}</h3>
+                        <p class="text-xs mt-0.5 font-medium" style="color:${c.bar}bb">${count} product${count !== 1 ? 's' : ''}</p>
                     </div>
                     <button onclick="shareCategory(event, '${safeCat}')"
-                            class="px-3 self-stretch flex items-center text-gray-300 hover:text-gray-500 transition flex-shrink-0 border-l"
-                            style="border-left-color:${c.bar}22"
+                            class="px-4 self-stretch flex flex-col items-center justify-center gap-1 transition flex-shrink-0 border-l hover:opacity-80"
+                            style="border-left-color:${c.bar}44; color:${c.bar}"
                             title="Share category">
-                        <i class="fas fa-share-alt text-xs"></i>
+                        <i class="fas fa-share-alt text-sm"></i>
+                        <span class="text-[9px] font-bold uppercase tracking-wide">Share</span>
                     </button>
                 </div>`
             }).join('');
