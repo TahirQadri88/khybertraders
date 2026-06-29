@@ -14,11 +14,10 @@
         }
     </script>
 
-    <!-- Firebase SDK v9 compat (works without a build step) -->
+    <!-- Firebase SDK v9 compat (Auth + Firestore only — images use Cloudinary) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 
     <style>
         body { font-family: 'Manrope', sans-serif; }
@@ -284,9 +283,12 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-const auth    = firebase.auth();
-const db      = firebase.firestore();
-const storage = firebase.storage();
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+// ── Cloudinary Config (image hosting — free, no billing required) ──
+const CLOUDINARY_CLOUD  = 'dkay9chpe';
+const CLOUDINARY_PRESET = 'khybertraders';
 
 // ── State ─────────────────────────────────────────────────────────
 let allProductsCache = [];
@@ -505,32 +507,42 @@ function handleFileSelect(files) {
     [...files].forEach(uploadImage);
 }
 
-function uploadImage(file) {
-    compressImage(file, 800).then(blob => {
-        const filename = `${Date.now()}_${file.name.replace(/[^a-z0-9.]/gi, '_')}`;
-        const ref  = storage.ref(`products/${filename}`);
-        const task = ref.put(blob);
-        const prog = document.getElementById('upload-progress');
-        const bar  = document.getElementById('progress-bar');
-        const txt  = document.getElementById('progress-text');
-        prog.classList.remove('hidden');
+async function uploadImage(file) {
+    const blob = await compressImage(file, 800);
 
-        task.on('state_changed',
-            snap => {
-                const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
-                bar.style.width = pct + '%';
-                txt.textContent = `Uploading ${file.name}… ${pct}%`;
-            },
-            err => { showToast('Upload failed: ' + err.message, 'red'); prog.classList.add('hidden'); },
-            async () => {
-                const url = await ref.getDownloadURL();
-                currentImages.push(url);
-                renderImagePreviews();
-                prog.classList.add('hidden');
-                showToast('Image uploaded', 'green');
-            }
-        );
-    });
+    const prog = document.getElementById('upload-progress');
+    const bar  = document.getElementById('progress-bar');
+    const txt  = document.getElementById('progress-text');
+    prog.classList.remove('hidden');
+    bar.style.width = '60%';
+    txt.textContent = `Uploading ${file.name}…`;
+
+    try {
+        const formData = new FormData();
+        formData.append('file', blob, file.name);
+        formData.append('upload_preset', CLOUDINARY_PRESET);
+        formData.append('folder', 'khybertraders/products');
+
+        const res  = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+
+        if (data.secure_url) {
+            bar.style.width = '100%';
+            currentImages.push(data.secure_url);
+            renderImagePreviews();
+            showToast('Image uploaded ✓', 'green');
+        } else {
+            showToast('Upload failed: ' + (data.error?.message || 'Unknown error'), 'red');
+        }
+    } catch (err) {
+        showToast('Upload failed: ' + err.message, 'red');
+    } finally {
+        prog.classList.add('hidden');
+        bar.style.width = '0%';
+    }
 }
 
 function compressImage(file, maxPx) {
