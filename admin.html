@@ -159,7 +159,7 @@
                     <th class="p-3 text-left w-16"></th>
                     <th class="p-3 text-left">Product</th>
                     <th class="p-3 text-left hidden md:table-cell">Category</th>
-                    <th class="p-3 text-left hidden sm:table-cell">Price</th>
+                    <th class="p-3 text-left">Price</th>
                     <th class="p-3 text-left">Stock</th>
                     <th class="p-3 text-right">Actions</th>
                 </tr>
@@ -421,7 +421,7 @@ function renderTable(products) {
                 <div class="text-[10px] text-gray-400 mt-0.5 md:hidden capitalize">${esc(p.category || '')}</div>
             </td>
             <td class="p-3 hidden md:table-cell text-xs capitalize text-gray-500">${esc(p.category || '')}</td>
-            <td class="p-3 hidden sm:table-cell cursor-pointer select-none" onclick="startPriceEdit('${p.id}',this)" data-price="${esc(p.priceDisplay||'')}" title="Click to edit price">
+            <td class="p-3 cursor-pointer select-none" onclick="startPriceEdit('${p.id}',this)" data-price="${esc(p.priceDisplay||'')}" title="Click to edit price">
                 ${p.packSizes && p.packSizes.length
                     ? p.packSizes.map(ps => `<span class="inline-block text-[9px] bg-brand-maroon/10 text-brand-maroon font-bold px-1.5 py-0.5 mr-0.5 mb-0.5">${esc(ps.size)} ${esc(ps.price)}</span>`).join('')
                     : `<span class="text-xs text-brand-maroon font-semibold">${esc(p.priceDisplay || '—')}</span>`}

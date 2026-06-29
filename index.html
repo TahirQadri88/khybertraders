@@ -182,7 +182,7 @@
             <div class="flex items-center gap-3">
                 <button id="cart-btn" onclick="openCart()"
                     class="relative text-brand-maroon p-1" aria-label="View order list">
-                    <i class="fas fa-clipboard-list text-xl"></i>
+                    <i class="fas fa-shopping-cart text-xl"></i>
                     <span id="cart-badge" class="hidden absolute -top-1 -right-1 bg-brand-maroon text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none"></span>
                 </button>
                 <button id="nav-toggle" class="md:hidden text-brand-maroon text-2xl p-1" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu">
@@ -421,27 +421,27 @@
     <div id="cart-drawer" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white z-[260] shadow-2xl flex flex-col">
         <div class="flex items-center justify-between px-5 py-4 bg-brand-dark text-white flex-shrink-0">
             <div class="flex items-center gap-2">
-                <i class="fas fa-clipboard-list text-brand-gold"></i>
+                <i class="fas fa-shopping-cart text-brand-gold"></i>
                 <span class="font-bold text-sm uppercase tracking-widest">Your Order List</span>
             </div>
             <button onclick="closeCart()" class="text-gray-400 hover:text-white text-2xl leading-none">&times;</button>
         </div>
         <div id="cart-empty-state" class="flex-1 flex flex-col items-center justify-center text-gray-400 p-8">
-            <i class="fas fa-clipboard-list text-5xl mb-4 text-gray-200"></i>
+            <i class="fas fa-shopping-cart text-5xl mb-4 text-gray-200"></i>
             <p class="font-bold text-gray-500 mb-1">Your order list is empty</p>
             <p class="text-xs text-center">Browse products and tap <strong>Add to Order</strong> to build your order</p>
         </div>
         <div id="cart-filled" class="hidden flex-1 flex flex-col overflow-hidden">
             <div id="cart-items-list" class="flex-1 overflow-y-auto px-4 py-3 space-y-2"></div>
             <div class="border-t border-gray-100 px-4 py-3 flex-shrink-0 bg-gray-50">
-                <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-2 font-bold">Your Details <span class="font-normal normal-case">(optional)</span></p>
-                <input id="cart-customer-name" type="text" placeholder="Your name"
+                <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-2 font-bold">Your Details <span class="font-normal normal-case text-brand-maroon">(required)</span></p>
+                <input id="cart-customer-name" type="text" placeholder="Your name *" required
                     class="w-full border border-gray-200 px-3 py-2 text-xs mb-2 focus:outline-none focus:border-brand-maroon transition bg-white">
-                <input id="cart-customer-phone" type="tel" placeholder="Contact number"
+                <input id="cart-customer-phone" type="tel" placeholder="Contact number *" required
                     class="w-full border border-gray-200 px-3 py-2 text-xs mb-2 focus:outline-none focus:border-brand-maroon transition bg-white">
-                <input id="cart-customer-city" type="text" placeholder="City / Area"
+                <input id="cart-customer-city" type="text" placeholder="City / Area *" required
                     class="w-full border border-gray-200 px-3 py-2 text-xs mb-2 focus:outline-none focus:border-brand-maroon transition bg-white">
-                <input id="cart-customer-address" type="text" placeholder="Delivery address"
+                <input id="cart-customer-address" type="text" placeholder="Delivery address *" required
                     class="w-full border border-gray-200 px-3 py-2 text-xs focus:outline-none focus:border-brand-maroon transition bg-white">
             </div>
             <div class="px-4 pb-5 pt-3 flex-shrink-0 bg-white border-t space-y-2">
@@ -592,10 +592,24 @@
         }
         function checkoutViaWhatsApp() {
             if (!cart.length) return;
-            const name    = document.getElementById('cart-customer-name').value.trim();
-            const phone   = document.getElementById('cart-customer-phone').value.trim();
-            const city    = document.getElementById('cart-customer-city').value.trim();
-            const address = document.getElementById('cart-customer-address').value.trim();
+            const nameEl = document.getElementById('cart-customer-name');
+            const phoneEl = document.getElementById('cart-customer-phone');
+            const cityEl = document.getElementById('cart-customer-city');
+            const addressEl = document.getElementById('cart-customer-address');
+            const name    = nameEl.value.trim();
+            const phone   = phoneEl.value.trim();
+            const city    = cityEl.value.trim();
+            const address = addressEl.value.trim();
+            const missing = [];
+            if (!name) missing.push(['Name', nameEl]);
+            if (!phone) missing.push(['Contact number', phoneEl]);
+            if (!city) missing.push(['City / Area', cityEl]);
+            if (!address) missing.push(['Delivery address', addressEl]);
+            if (missing.length) {
+                alert('Please fill in: ' + missing.map(m => m[0]).join(', '));
+                missing[0][1].focus();
+                return;
+            }
             const itemCount = cart.reduce((s, x) => s + x.qty, 0);
             let totalAmt = 0, allPriced = cart.length > 0;
             const lines = cart.map((x, i) => {
