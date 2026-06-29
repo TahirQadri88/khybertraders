@@ -365,6 +365,11 @@
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
+                <!-- Category-specific notices -->
+                <div id="modal-cold-chain-note" class="hidden mb-6 flex items-start gap-3 bg-sky-50 border border-sky-200 text-sky-900 px-4 py-3 text-sm rounded-sm">
+                    <i class="fas fa-snowflake text-sky-400 mt-0.5 flex-shrink-0"></i>
+                    <span>Cold Chain Items — not delivered outside Karachi due to cold storage maintenance requirements.</span>
+                </div>
                 <!-- 2 columns on mobile -->
                 <div id="modal-grid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-8"></div>
             </div>
@@ -495,7 +500,7 @@
                 if (doc.exists) shopSettings = { ...shopSettings, ...doc.data() };
                 const note = document.getElementById('cart-min-order-note');
                 if (note && shopSettings.minOrderValue > 0) {
-                    note.textContent = 'Minimum order value for delivery: ' + formatPKR(shopSettings.minOrderValue) + '. Wholesale orders only.';
+                    note.innerHTML = 'Minimum order value for delivery: <strong>' + formatPKR(shopSettings.minOrderValue) + '</strong><br>Delivery Charges Apply according to your area and vehicle';
                     note.classList.remove('hidden');
                 }
                 if (allProducts.length) generateTiles();
@@ -752,6 +757,8 @@
         window.openCategoryModal = (category, specificItemName = null) => {
             const grid = document.getElementById('modal-grid');
             document.getElementById('modal-title').innerText = specificItemName ? 'Details' : category;
+            const coldNote = document.getElementById('modal-cold-chain-note');
+            if (coldNote) coldNote.classList.toggle('hidden', category.toLowerCase() !== 'vaccines');
             let filtered = allProducts.filter(p => p.category === category);
             if(specificItemName) {
                 const target = specificItemName.toLowerCase().replace(/[^a-z0-9]/g, '');
