@@ -535,11 +535,7 @@
                 cart.push({ key, name: p.name, category: p.category, packSize: ps, priceDisplay: ps ? ps.price : (p.priceDisplay || ''), image: p.images[0] || '', qty: 1 });
             }
             updateCartBadge();
-            const toast = document.getElementById('cart-toast');
-            toast.textContent = '✓ ' + (name.length > 24 ? name.substring(0, 24) + '…' : name) + (ps ? ' (' + ps.size + ')' : '');
-            toast.classList.remove('hidden');
-            clearTimeout(toast._t);
-            toast._t = setTimeout(() => toast.classList.add('hidden'), 2000);
+            openCart();
         };
         window.removeFromCart = function(idx) {
             cart.splice(idx, 1);
@@ -953,7 +949,7 @@
                             ? `<div class="text-sm text-gray-600 leading-relaxed formatted-text mb-8">${formattedDesc}</div>`
                             : `<p class="text-gray-400 text-sm mb-8 italic">No description available.</p>`}
                         <div class="space-y-3">
-                            <button onclick="window.addToCart('${product.name.replace(/'/g,"\\'")}', _pdpPackSize);openCart();"
+                            <button onclick="window.addToCart('${product.name.replace(/'/g,"\\'")}', _pdpPackSize);"
                                 class="w-full bg-brand-maroon hover:bg-brand-dark text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
                                 <i class="fas fa-plus text-lg"></i> Add to Order
                             </button>
