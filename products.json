@@ -2,196 +2,274 @@
   {
     "category": "VACCINES",
     "name": "P.P.R VACCINE (100 dose)",
-    "slug": "ppr-vaccine-100-dose"
+    "slug": "ppr-vaccine-100-dose",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "VACCINES",
     "name": "FOOT & MOUTH DISEASE VACCINE",
-    "slug": "foot-and-mouth-disease-vaccine"
+    "slug": "foot-and-mouth-disease-vaccine",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "VACCINES",
     "name": "FOOT & MOUTH DISEASE VACCINE",
-    "slug": "foot-and-mouth-disease-vaccine"
+    "slug": "foot-and-mouth-disease-vaccine",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "VACCINES",
     "name": "CUBOLAC 100ml (SPAIN)",
-    "slug": "cubolac-100ml-spain"
+    "slug": "cubolac-100ml-spain",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "VACCINES",
     "name": "ANTOX 9 100ml (Russia)",
-    "slug": "antox-9-100ml-russia"
+    "slug": "antox-9-100ml-russia",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "VACCINES",
     "name": "TOXIPRA S7 100ML (Spain)",
-    "slug": "toxipra-s7-100ml-spain"
+    "slug": "toxipra-s7-100ml-spain",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "VACCINES",
     "name": "LUMPY SKIN DISEASE (LSD) VACCINE",
-    "slug": "lumpy-skin-disease-lsd-vaccine"
+    "slug": "lumpy-skin-disease-lsd-vaccine",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "VACCINES",
     "name": "LUMPY SKIN DISEASE (LSD) VACCINE",
-    "slug": "lumpy-skin-disease-lsd-vaccine"
+    "slug": "lumpy-skin-disease-lsd-vaccine",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "VACCINES",
     "name": "HS AND PASTURELLA VACCINE",
-    "slug": "hs-and-pasturella-vaccine"
+    "slug": "hs-and-pasturella-vaccine",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "BUTTER MILK FOR FATTENING CATTLE",
     "name": "BUTTERY MILK POWDER (26-28% Milk Fat with 34% Protein)",
-    "slug": "buttery-milk-powder-26-28-milk-fat-with-34-protein"
+    "slug": "buttery-milk-powder-26-28-milk-fat-with-34-protein",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "FEED PREMIX & MINERALS MIXTURE",
     "name": "Power V Mix 5kg",
-    "slug": "power-v-mix-5kg"
+    "slug": "power-v-mix-5kg",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "FEED PREMIX & MINERALS MIXTURE",
     "name": "HEAVY GOLD 5 in 1 Powder 20kg",
-    "slug": "heavy-gold-5-in-1-powder-20kg"
+    "slug": "heavy-gold-5-in-1-powder-20kg",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "FEED PREMIX & MINERALS MIXTURE",
     "name": "FATTY VIT 6 IN 1 Powder 20kg",
-    "slug": "fatty-vit-6-in-1-powder-20kg"
+    "slug": "fatty-vit-6-in-1-powder-20kg",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "FEED PREMIX & MINERALS MIXTURE",
     "name": "Mega V Mix 25kg Turkey",
-    "slug": "mega-v-mix-25kg-turkey"
+    "slug": "mega-v-mix-25kg-turkey",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "TOXIN BINDER",
     "name": "NOVASIL PLUS (BASF) USA 25kg",
-    "slug": "novasil-plus-basf-usa-25kg"
+    "slug": "novasil-plus-basf-usa-25kg",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "TOXIN BINDER",
     "name": "MEGA TOX (Toxin Binder) TURKEY 25KG",
-    "slug": "mega-tox-toxin-binder-turkey-25kg"
+    "slug": "mega-tox-toxin-binder-turkey-25kg",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "TOXIN BINDER",
     "name": "MEGA TOX PLUS (Yeast Based Toxin Binder) TURKEY 25KG",
-    "slug": "mega-tox-plus-yeast-based-toxin-binder-turkey-25kg"
+    "slug": "mega-tox-plus-yeast-based-toxin-binder-turkey-25kg",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "PROTOCOL OF ARTIFICIAL INSEMINATION (AI)",
     "name": "Useful Information",
-    "slug": "useful-information"
+    "slug": "useful-information",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "VACCINE CHART AND DOSAGE SCHEDULE",
     "name": "Useful Information",
-    "slug": "useful-information"
+    "slug": "useful-information",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "IVOMEC & OTHER SKIN INJ.",
     "name": "IVOMEC (Merial/Boehringer, Brazil) 50 ML",
-    "slug": "ivomec-merialboehringer-brazil-50-ml"
+    "slug": "ivomec-merialboehringer-brazil-50-ml",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "IVOMEC & OTHER SKIN INJ.",
     "name": "IVOMEC (Merial/Boehringer, Brazil) 500 ML",
-    "slug": "ivomec-merialboehringer-brazil-500-ml"
+    "slug": "ivomec-merialboehringer-brazil-500-ml",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "IVOMEC & OTHER SKIN INJ.",
     "name": "ECOMECTIN UK 500ML",
-    "slug": "ecomectin-uk-500ml"
+    "slug": "ecomectin-uk-500ml",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "IVOMEC & OTHER SKIN INJ.",
     "name": "IVERMECTIN SG 100ML",
-    "slug": "ivermectin-sg-100ml"
+    "slug": "ivermectin-sg-100ml",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "IVOMEC & OTHER SKIN INJ.",
     "name": "UNIMEC PLUS (Hilton Pharma, PK) 100ML",
-    "slug": "unimec-plus-hilton-pharma-pk-100ml"
+    "slug": "unimec-plus-hilton-pharma-pk-100ml",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "DEWROMER DRENCHES",
     "name": "Nilzan Plus 1000ml",
-    "slug": "nilzan-plus-1000ml"
+    "slug": "nilzan-plus-1000ml",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "DEWROMER DRENCHES",
     "name": "Punch 1000ml",
-    "slug": "punch-1000ml"
+    "slug": "punch-1000ml",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "DEWROMER DRENCHES",
     "name": "Oxfenox Drench 1000ml",
-    "slug": "oxfenox-drench-1000ml"
+    "slug": "oxfenox-drench-1000ml",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "DEWROMER DRENCHES",
     "name": "Oxanid Drench 1000ml",
-    "slug": "oxanid-drench-1000ml"
+    "slug": "oxanid-drench-1000ml",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "DEWROMER DRENCHES",
     "name": "Tramazol Drench 1000ml Univet Ireland",
-    "slug": "tramazol-drench-1000ml-univet-ireland"
+    "slug": "tramazol-drench-1000ml-univet-ireland",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "DEWROMER DRENCHES",
     "name": "Albensel 10% Selmore",
-    "slug": "albensel-10-selmore"
+    "slug": "albensel-10-selmore",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "DEWROMER DRENCHES",
     "name": "Avinide Drench China UM Ent.",
-    "slug": "avinide-drench-china-um-ent"
+    "slug": "avinide-drench-china-um-ent",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "DEWROMER DRENCHES",
     "name": "Proven Drench 1000ml Mylab",
-    "slug": "proven-drench-1000ml-mylab"
+    "slug": "proven-drench-1000ml-mylab",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "DEWROMER DRENCHES",
     "name": "Expel Drench 1000ml Mylab",
-    "slug": "expel-drench-1000ml-mylab"
+    "slug": "expel-drench-1000ml-mylab",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "ANTI-LICE SHAMPOO FOR CATTLE",
     "name": "Anti-Lice Shampoo 350ml appx",
-    "slug": "anti-lice-shampoo-350ml-appx"
+    "slug": "anti-lice-shampoo-350ml-appx",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "ANTI-LICE SHAMPOO FOR CATTLE",
     "name": "Field Fresh 5 Litre Shampoo",
-    "slug": "field-fresh-5-litre-shampoo"
+    "slug": "field-fresh-5-litre-shampoo",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "ANTI-LICE SHAMPOO FOR CATTLE",
     "name": "Farm Fresh 5 Litre Shampoo",
-    "slug": "farm-fresh-5-litre-shampoo"
+    "slug": "farm-fresh-5-litre-shampoo",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "EAR TAGS FOR CATTLE & GOATS",
     "name": "Ear Tags for Cows Buffalos Sheep & Goats",
-    "slug": "ear-tags-for-cows-buffalos-sheep-and-goats"
+    "slug": "ear-tags-for-cows-buffalos-sheep-and-goats",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "GRIPE WATER",
     "name": "Life Gripe Water 1 & 5 Litre",
-    "slug": "life-gripe-water-1-and-5-litre"
+    "slug": "life-gripe-water-1-and-5-litre",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "LIVER TONIC / GROWTH PROMOTER / DIGESTIVE SUPPORT",
     "name": "HeptaSef Liver Tonic 1 & 5 Litre",
-    "slug": "heptasef-liver-tonic-1-and-5-litre"
+    "slug": "heptasef-liver-tonic-1-and-5-litre",
+    "inStock": true,
+    "priceDisplay": ""
   }
 ]
