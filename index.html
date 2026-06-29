@@ -634,6 +634,7 @@
             grid.innerHTML = filtered.map((p, index) => {
                 const slug = getCleanSlug(p.name);
                 const redirectLink = `https://animalhealth.pk/s/${slug}.html`;
+                const itemLink = `https://animalhealth.pk/?item=${encodeURIComponent(p.name)}`;
                 const imageLink = p.images[0] || '';
                 const plainDesc = (p.desc || '').replace(/\n+/g, ' ').trim();
                 let slides = p.images.length ? `<div class="slider-wrapper" id="slider-${index}" data-current="0">${p.images.map((img, i) => `<img src="${img}" class="slide ${i===0?'active':''}" id="slide-${index}-${i}" onclick="openLightbox('${img}')"${i===0 ? '' : ' loading="lazy"'}>`).join('')}${p.images.length > 1 ? `<button class="slider-btn left-2" onclick="changeSlide(event,${index},-1,${p.images.length})">←</button><button class="slider-btn right-2" onclick="changeSlide(event,${index},1,${p.images.length})">→</button>` : ''}</div>` : '';
@@ -646,7 +647,7 @@
                         ${!p.inStock ? `<div class="absolute inset-0 bg-black/50 flex items-center justify-center pointer-events-none z-10"><span class="bg-red-600 text-white text-[9px] sm:text-[10px] font-bold uppercase tracking-widest px-3 py-1">Out of Stock</span></div>` : ''}
                     </div>
                     <div class="p-3 sm:p-4 flex flex-col flex-grow">
-                        <a href="${redirectLink}" target="_blank" class="font-bold text-brand-dark mb-0.5 text-[13px] sm:text-base font-serif leading-tight hover:text-brand-maroon transition block">${p.name}</a>
+                        <a href="${itemLink}" target="_blank" class="font-bold text-brand-dark mb-0.5 text-[13px] sm:text-base font-serif leading-tight hover:text-brand-maroon transition block">${p.name}</a>
                         <span class="inline-block bg-brand-maroon/10 text-brand-maroon text-[7px] sm:text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 mb-1 self-start">${p.category}</span>
                         ${p.priceDisplay ? `<div class="text-[10px] sm:text-xs font-bold text-brand-maroon mb-1">${p.priceDisplay}</div>` : ''}
                         <p class="text-[10px] sm:text-xs text-gray-500 mb-3 line-clamp-2 leading-relaxed">${plainDesc}</p>
@@ -701,11 +702,10 @@
         window.shareProductNative = async (event, name, cat, desc, imgUrl) => {
             if (typeof gtag !== 'undefined') gtag('event', 'share', { method: 'whatsapp', content_type: 'product', content_id: name });
             const btn = event.currentTarget;
-            const slug = getCleanSlug(name);
-            const redirectLink = `https://animalhealth.pk/s/${slug}.html`;
-            const cleanDesc = desc.replace(/<[^>]*>?/gm, ''); 
-            const caption = `📦 *Product:* ${name}\n📂 *Category:* ${cat.toUpperCase()}\n📝 *Details:* ${cleanDesc}\n━━━━━━━━━━━━━━━━━━\n🔗 *Link:* ${redirectLink}`;
-            const fallbackCaption = `📦 *Product:* ${name}\n📂 *Category:* ${cat.toUpperCase()}\n📝 *Details:* ${cleanDesc}\n━━━━━━━━━━━━━━━━━━\n🖼 *Image:* ${imgUrl}\n🔗 *Link:* ${redirectLink}`;
+            const itemLink = `https://animalhealth.pk/?item=${encodeURIComponent(name)}`;
+            const cleanDesc = desc.replace(/<[^>]*>?/gm, '');
+            const caption = `📦 *Product:* ${name}\n📂 *Category:* ${cat.toUpperCase()}\n📝 *Details:* ${cleanDesc}\n━━━━━━━━━━━━━━━━━━\n🔗 *Link:* ${itemLink}`;
+            const fallbackCaption = `📦 *Product:* ${name}\n📂 *Category:* ${cat.toUpperCase()}\n📝 *Details:* ${cleanDesc}\n━━━━━━━━━━━━━━━━━━\n🖼 *Image:* ${imgUrl}\n🔗 *Link:* ${itemLink}`;
 
             btn.classList.add('btn-loading');
             try {
@@ -765,6 +765,7 @@
         window.openProductDetailPage = function(product) {
             const slug = getCleanSlug(product.name);
             const redirectLink = `https://animalhealth.pk/s/${slug}.html`;
+            const itemLink = `https://animalhealth.pk/?item=${encodeURIComponent(product.name)}`;
             document.title = product.name + ' | AnimalHealth.pk';
             document.getElementById('pdp-nav-title').textContent = product.name;
 
@@ -802,7 +803,7 @@
                                 class="w-full bg-brand-maroon hover:bg-brand-dark text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
                                 <i class="fas fa-shopping-cart text-lg"></i> Add to Cart
                             </button>
-                            <button onclick="window.inquireProduct('${product.name.replace(/'/g,"\\'")}','${product.category}','${redirectLink}')"
+                            <button onclick="window.inquireProduct('${product.name.replace(/'/g,"\\'")}','${product.category}','${itemLink}')"
                                 class="w-full bg-green-500 hover:bg-green-600 text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
                                 <i class="fab fa-whatsapp text-lg"></i> Inquire on WhatsApp
                             </button>
