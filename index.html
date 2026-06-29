@@ -181,8 +181,8 @@
             </div>
             <div class="flex items-center gap-3">
                 <button id="cart-btn" onclick="openCart()"
-                    class="relative text-brand-maroon p-1" aria-label="View order cart">
-                    <i class="fas fa-shopping-cart text-xl"></i>
+                    class="relative text-brand-maroon p-1" aria-label="View order list">
+                    <i class="fas fa-clipboard-list text-xl"></i>
                     <span id="cart-badge" class="hidden absolute -top-1 -right-1 bg-brand-maroon text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none"></span>
                 </button>
                 <button id="nav-toggle" class="md:hidden text-brand-maroon text-2xl p-1" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu">
@@ -297,6 +297,17 @@
                 <h2 class="text-4xl font-serif font-bold text-brand-dark mt-3">Product Categories</h2>
                 <div class="h-1 w-20 bg-brand-gold mx-auto mt-6"></div>
             </div>
+            <!-- How to Order note -->
+            <div class="mb-8 max-w-2xl mx-auto bg-white border border-brand-gold/40 px-5 py-4 text-left shadow-sm">
+                <p class="text-[10px] font-bold text-brand-maroon uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fas fa-info-circle"></i> How to Place an Order</p>
+                <ol class="text-xs text-gray-600 space-y-2">
+                    <li class="flex gap-2.5"><span class="font-bold text-brand-gold w-4 flex-shrink-0">1.</span><span>Browse the categories below and open any product to view details.</span></li>
+                    <li class="flex gap-2.5"><span class="font-bold text-brand-gold w-4 flex-shrink-0">2.</span><span>Tap <strong class="text-brand-dark">Add to Order</strong> on the products you need — you can add as many as you like.</span></li>
+                    <li class="flex gap-2.5"><span class="font-bold text-brand-gold w-4 flex-shrink-0">3.</span><span>Open your <strong class="text-brand-dark">Order List</strong> (cart icon, top right), add your name &amp; address, then tap <strong class="text-brand-dark">Send on WhatsApp</strong>.</span></li>
+                    <li class="flex gap-2.5"><span class="font-bold text-brand-gold w-4 flex-shrink-0">4.</span><span>Our representative will confirm pricing and arrange payment &amp; dispatch for you.</span></li>
+                </ol>
+            </div>
+
             <div class="mb-8 max-w-xl mx-auto">
                 <div class="relative">
                     <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
@@ -309,7 +320,7 @@
                 </div>
             </div>
             <div id="search-results" class="hidden mb-8 text-left"></div>
-            <div id="tiles-container" class="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-8">
+            <div id="tiles-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-2xl mx-auto text-left">
                 <div class="col-span-full text-center py-10"><i class="fas fa-circle-notch fa-spin text-brand-gold text-3xl"></i></div>
             </div>
         </div>
@@ -410,15 +421,15 @@
     <div id="cart-drawer" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white z-[260] shadow-2xl flex flex-col">
         <div class="flex items-center justify-between px-5 py-4 bg-brand-dark text-white flex-shrink-0">
             <div class="flex items-center gap-2">
-                <i class="fas fa-shopping-cart text-brand-gold"></i>
-                <span class="font-bold text-sm uppercase tracking-widest">Your Order</span>
+                <i class="fas fa-clipboard-list text-brand-gold"></i>
+                <span class="font-bold text-sm uppercase tracking-widest">Your Order List</span>
             </div>
             <button onclick="closeCart()" class="text-gray-400 hover:text-white text-2xl leading-none">&times;</button>
         </div>
         <div id="cart-empty-state" class="flex-1 flex flex-col items-center justify-center text-gray-400 p-8">
-            <i class="fas fa-shopping-cart text-5xl mb-4 text-gray-200"></i>
-            <p class="font-bold text-gray-500 mb-1">Your order is empty</p>
-            <p class="text-xs text-center">Browse products and tap <strong>Add to Cart</strong> to build your order</p>
+            <i class="fas fa-clipboard-list text-5xl mb-4 text-gray-200"></i>
+            <p class="font-bold text-gray-500 mb-1">Your order list is empty</p>
+            <p class="text-xs text-center">Browse products and tap <strong>Add to Order</strong> to build your order</p>
         </div>
         <div id="cart-filled" class="hidden flex-1 flex flex-col overflow-hidden">
             <div id="cart-items-list" class="flex-1 overflow-y-auto px-4 py-3 space-y-2"></div>
@@ -433,14 +444,17 @@
                 <input id="cart-customer-address" type="text" placeholder="Delivery address"
                     class="w-full border border-gray-200 px-3 py-2 text-xs focus:outline-none focus:border-brand-maroon transition bg-white">
             </div>
-            <div class="px-4 pb-5 pt-3 flex-shrink-0 bg-white border-t">
-                <p class="text-[10px] text-gray-400 mb-3 text-center">Prices confirmed on WhatsApp. <strong class="text-brand-maroon">Wholesale orders only.</strong></p>
+            <div class="px-4 pb-5 pt-3 flex-shrink-0 bg-white border-t space-y-2">
+                <div id="cart-min-order-note" class="hidden text-[10px] text-amber-800 bg-amber-50 border border-amber-200 px-3 py-2 text-center leading-relaxed"></div>
+                <p class="text-[10px] text-gray-400 text-center leading-relaxed">
+                    <i class="fas fa-truck mr-1"></i>Delivery time depends on your area and will be confirmed by our representative on WhatsApp.
+                </p>
                 <button onclick="checkoutViaWhatsApp()"
                     class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3.5 text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition shadow-md">
                     <i class="fab fa-whatsapp text-lg"></i> Send Order on WhatsApp
                 </button>
                 <button onclick="clearCart()"
-                    class="w-full mt-2 text-[10px] text-gray-400 hover:text-red-500 transition py-1 uppercase tracking-widest">
+                    class="w-full text-[10px] text-gray-400 hover:text-red-500 transition py-1 uppercase tracking-widest">
                     Clear all items
                 </button>
             </div>
@@ -463,7 +477,29 @@
         const db = firebase.firestore();
 
         const BASE_URL = 'https://animalhealth.pk';
-        let allProducts = [];
+        let allProducts  = [];
+        let shopSettings = { minOrderValue: 0 };
+
+        function parsePrice(str) {
+            if (!str) return null;
+            const m = str.replace(/,/g, '').match(/\d+/);
+            return m ? parseInt(m[0]) : null;
+        }
+        function formatPKR(num) {
+            return 'Rs. ' + num.toLocaleString('en-PK');
+        }
+
+        async function fetchSettings() {
+            try {
+                const doc = await db.collection('settings').doc('shop').get();
+                if (doc.exists) shopSettings = { ...shopSettings, ...doc.data() };
+                const note = document.getElementById('cart-min-order-note');
+                if (note && shopSettings.minOrderValue > 0) {
+                    note.textContent = 'Minimum order value for delivery: ' + formatPKR(shopSettings.minOrderValue) + '. Wholesale orders only.';
+                    note.classList.remove('hidden');
+                }
+            } catch (e) { /* settings not yet configured — silent */ }
+        }
 
         // ── Cart ─────────────────────────────────────────────────────────
         let cart = [];
@@ -523,12 +559,17 @@
             if (cart.length === 0) { filled.classList.add('hidden'); empty.classList.remove('hidden'); return; }
             empty.classList.add('hidden');
             filled.classList.remove('hidden');
-            list.innerHTML = cart.map((item, idx) => `<div class="flex items-center gap-2 bg-gray-50 border border-gray-100 p-2">
+            let totalAmt = 0, allPriced = cart.length > 0;
+            list.innerHTML = cart.map((item, idx) => {
+                const unitPrice = parsePrice(item.priceDisplay);
+                if (unitPrice !== null) totalAmt += unitPrice * item.qty;
+                else allPriced = false;
+                return `<div class="flex items-center gap-2 bg-gray-50 border border-gray-100 p-2">
                     ${item.image ? `<img src="${item.image}" class="w-12 h-12 object-cover flex-shrink-0 border border-gray-200">` : '<div class="w-12 h-12 bg-gray-200 flex-shrink-0 flex items-center justify-center"><i class="fas fa-box-open text-gray-300 text-sm"></i></div>'}
                     <div class="flex-1 min-w-0">
                         <div class="font-bold text-brand-dark text-[11px] leading-tight line-clamp-2">${item.name}</div>
                         ${item.packSize ? '<div class="text-[9px] text-gray-500 font-semibold mt-0.5">' + item.packSize.size + '</div>' : '<div class="text-[9px] text-gray-400 capitalize mt-0.5">' + item.category + '</div>'}
-                        ${item.priceDisplay ? '<div class="text-[10px] font-bold text-brand-maroon">' + item.priceDisplay + '</div>' : ''}
+                        ${item.priceDisplay ? '<div class="text-[10px] font-bold text-brand-maroon">' + item.priceDisplay + (item.qty > 1 ? ' \xD7' + item.qty : '') + '</div>' : ''}
                     </div>
                     <div class="flex items-center gap-0.5 flex-shrink-0">
                         <button onclick="window.updateCartQty(${idx},${item.qty-1})" class="w-7 h-7 bg-gray-200 hover:bg-brand-maroon hover:text-white font-bold text-sm flex items-center justify-center transition">−</button>
@@ -536,7 +577,11 @@
                         <button onclick="window.updateCartQty(${idx},${item.qty+1})" class="w-7 h-7 bg-gray-200 hover:bg-brand-maroon hover:text-white font-bold text-sm flex items-center justify-center transition">+</button>
                         <button onclick="window.removeFromCart(${idx})" class="w-7 h-7 text-gray-300 hover:text-red-500 text-sm flex items-center justify-center transition ml-0.5"><i class="fas fa-trash-alt"></i></button>
                     </div>
-                </div>`).join('');
+                </div>`;
+            }).join('') + (cart.length > 0 ? `<div class="flex justify-between items-center border-t border-dashed border-gray-300 pt-2 mt-1 px-1">
+                    <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Estimated Total</span>
+                    <span class="text-sm font-bold text-brand-maroon">${totalAmt > 0 ? (allPriced ? formatPKR(totalAmt) : '~ ' + formatPKR(totalAmt) + '+') : '—'}</span>
+                </div>` : '');
         }
         function clearCart() {
             if (!cart.length) return;
@@ -551,8 +596,15 @@
             const phone   = document.getElementById('cart-customer-phone').value.trim();
             const city    = document.getElementById('cart-customer-city').value.trim();
             const address = document.getElementById('cart-customer-address').value.trim();
-            const total   = cart.reduce((s, x) => s + x.qty, 0);
-            const lines   = cart.map((x, i) => (i+1) + '. ' + x.name + (x.packSize ? ' — ' + x.packSize.size : '') + (x.qty > 1 ? ' ×' + x.qty : '')).join('\n');
+            const itemCount = cart.reduce((s, x) => s + x.qty, 0);
+            let totalAmt = 0, allPriced = cart.length > 0;
+            const lines = cart.map((x, i) => {
+                const up = parsePrice(x.priceDisplay);
+                if (up !== null) totalAmt += up * x.qty; else allPriced = false;
+                const lineTotal = (up !== null && x.qty > 1) ? ' = ' + formatPKR(up * x.qty) : '';
+                const priceStr = x.priceDisplay ? ' [' + x.priceDisplay + (x.qty > 1 ? ' x' + x.qty + lineTotal : '') + ']' : '';
+                return (i+1) + '. ' + x.name + (x.packSize ? ' — ' + x.packSize.size : '') + (x.qty > 1 ? ' x' + x.qty : '') + priceStr;
+            }).join('\n');
             const SEP = '━━━━━━━━━━━━━━━━━━';
             let msg = '\uD83D\uDED2 *ORDER REQUEST — Khyber Traders*\n' + SEP + '\n';
             if (name)    msg += '\uD83D\uDC64 Name: '    + name    + '\n';
@@ -560,9 +612,11 @@
             if (city)    msg += '\uD83D\uDCCD City: '    + city    + '\n';
             if (address) msg += '\uD83C\uDFE0 Address: ' + address + '\n';
             if (name || phone || city || address) msg += SEP + '\n';
-            msg += '\uD83D\uDCE6 *Items (' + total + '):*\n' + lines + '\n' + SEP + '\n\uD83D\uDCAC Please confirm availability and pricing.';
+            msg += '\uD83D\uDCE6 *Items (' + itemCount + '):*\n' + lines + '\n' + SEP + '\n';
+            if (totalAmt > 0) msg += '\uD83D\uDCB0 ' + (allPriced ? 'Total' : 'Approx. Total') + ': *' + formatPKR(totalAmt) + (allPriced ? '' : '+') + '*\n' + SEP + '\n';
+            msg += '\uD83D\uDCAC Please confirm availability and arrange delivery.';
             window.open('https://wa.me/923352999006?text=' + encodeURIComponent(msg), '_blank');
-            if (typeof gtag !== 'undefined') gtag('event', 'generate_lead', { method: 'whatsapp_cart', value: total });
+            if (typeof gtag !== 'undefined') gtag('event', 'generate_lead', { method: 'whatsapp_cart', value: itemCount });
         }
         window.inquireProduct = function(name, category, link) {
             const text = '\uD83D\uDCE6 *Product:* ' + name + '\n\uD83D\uDD17 *Link:* ' + link;
@@ -617,21 +671,45 @@
             return name.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
         }
 
+        const CAT_COLORS = [
+            { bg:'#eff6ff', bar:'#3b82f6', iconBg:'#dbeafe', iconFg:'#1d4ed8' },
+            { bg:'#f0fdf4', bar:'#16a34a', iconBg:'#dcfce7', iconFg:'#166534' },
+            { bg:'#fffbeb', bar:'#d97706', iconBg:'#fef3c7', iconFg:'#92400e' },
+            { bg:'#f5f3ff', bar:'#7c3aed', iconBg:'#ede9fe', iconFg:'#4c1d95' },
+            { bg:'#fff1f2', bar:'#e11d48', iconBg:'#ffe4e6', iconFg:'#9f1239' },
+            { bg:'#f0fdfa', bar:'#0d9488', iconBg:'#ccfbf1', iconFg:'#134e4a' },
+            { bg:'#fff7ed', bar:'#ea580c', iconBg:'#ffedd5', iconFg:'#7c2d12' },
+            { bg:'#fdf4ff', bar:'#a21caf', iconBg:'#fae8ff', iconFg:'#701a75' },
+            { bg:'#f0f9ff', bar:'#0284c7', iconBg:'#e0f2fe', iconFg:'#0c4a6e' },
+            { bg:'#fafaf9', bar:'#78716c', iconBg:'#f5f5f4', iconFg:'#44403c' },
+        ];
+
         function generateTiles() {
             const container = document.getElementById('tiles-container');
             const uniqueCats = [...new Set(allProducts.map(p => p.category))];
-            container.innerHTML = uniqueCats.map(cat => {
+            container.innerHTML = uniqueCats.map((cat, i) => {
+                const c = CAT_COLORS[i % CAT_COLORS.length];
                 const safeCat = cat.replace(/'/g, "\\'");
                 const count = allProducts.filter(p => p.category === cat).length;
                 return `
-                <div class="group bg-white p-4 sm:p-10 shadow-sleek hover:shadow-2xl transition transform hover:-translate-y-2 relative border-b-4 border-transparent hover:border-brand-gold flex flex-col items-center text-center">
-                    <div onclick="openCategoryModal('${safeCat}')" class="cursor-pointer w-full flex flex-col items-center">
-                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gray-50 text-brand-dark flex items-center justify-center text-xl sm:text-3xl mb-4 sm:mb-8 group-hover:bg-brand-maroon group-hover:text-brand-gold transition duration-300"><i class="fas fa-box-open"></i></div>
-                        <h3 class="text-lg sm:text-2xl font-serif font-bold text-brand-dark mb-2 capitalize leading-tight">${cat}</h3>
-                        <p class="text-[10px] sm:text-xs text-gray-400 font-semibold uppercase tracking-widest mb-1">${count} product${count !== 1 ? 's' : ''}</p>
-                        <div class="mt-2 sm:mt-8 flex items-center text-brand-maroon font-bold text-[10px] sm:text-xs uppercase tracking-widest group-hover:text-brand-gold transition">View <i class="fas fa-long-arrow-alt-right ml-2"></i></div>
+                <div class="flex items-center overflow-hidden transition-all duration-200 hover:shadow-md cursor-pointer"
+                     style="background:${c.bg}; border:1px solid ${c.bar}33"
+                     onclick="openCategoryModal('${safeCat}')">
+                    <div class="w-1.5 self-stretch flex-shrink-0" style="background:${c.bar}"></div>
+                    <div class="w-11 h-11 rounded-full flex items-center justify-center mx-3 my-3 flex-shrink-0"
+                         style="background:${c.iconBg}">
+                        <i class="fas fa-box-open text-sm" style="color:${c.iconFg}"></i>
                     </div>
-                    <button onclick="shareCategory(event, '${safeCat}')" class="mt-4 text-gray-400 hover:text-brand-gold text-xs uppercase tracking-widest border-t border-gray-100 w-full pt-3"><i class="fas fa-share-alt mr-1"></i> Share</button>
+                    <div class="flex-1 min-w-0 py-3 pr-1">
+                        <h3 class="font-bold text-[13px] leading-tight capitalize text-gray-800" style="font-family:'Playfair Display',serif">${cat}</h3>
+                        <p class="text-[10px] text-gray-400 mt-0.5 font-medium">${count} product${count !== 1 ? 's' : ''}</p>
+                    </div>
+                    <button onclick="shareCategory(event, '${safeCat}')"
+                            class="px-3 self-stretch flex items-center text-gray-300 hover:text-gray-500 transition flex-shrink-0 border-l"
+                            style="border-left-color:${c.bar}22"
+                            title="Share category">
+                        <i class="fas fa-share-alt text-xs"></i>
+                    </button>
                 </div>`
             }).join('');
         }
@@ -671,7 +749,7 @@
                             <button onclick="shareProductNative(event,'${p.name.replace(/'/g,"\\'")}','${p.category}','${(p.desc||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}','${imageLink}')" class="py-2 text-[9px] sm:text-[10px] font-bold uppercase text-gray-500 hover:bg-gray-50 flex items-center justify-center gap-1 transition"><i class="fas fa-share-alt text-[9px]"></i> Share</button>
                         </div>
                         ${p.inStock
-                            ? `<button onclick="window.addToCart('${p.name.replace(/'/g,"\\'")}')" class="bg-brand-maroon hover:bg-brand-dark text-white py-2 sm:py-2.5 text-[9px] sm:text-[10px] font-bold uppercase flex items-center justify-center gap-1.5 transition shadow w-full"><i class="fas fa-shopping-cart text-sm"></i> Add to Cart</button>`
+                            ? `<button onclick="window.addToCart('${p.name.replace(/'/g,"\\'")}')" class="bg-brand-maroon hover:bg-brand-dark text-white py-2 sm:py-2.5 text-[9px] sm:text-[10px] font-bold uppercase flex items-center justify-center gap-1.5 transition shadow w-full"><i class="fas fa-plus text-sm"></i> Add to Order</button>`
                             : `<button disabled class="bg-gray-200 text-gray-400 py-2 sm:py-2.5 text-[9px] sm:text-[10px] font-bold uppercase w-full cursor-not-allowed">Out of Stock</button>`}
                     </div>
                 </div>`;
@@ -825,7 +903,7 @@
                         <div class="space-y-3">
                             <button onclick="window.addToCart('${product.name.replace(/'/g,"\\'")}', _pdpPackSize);openCart();"
                                 class="w-full bg-brand-maroon hover:bg-brand-dark text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
-                                <i class="fas fa-shopping-cart text-lg"></i> Add to Cart
+                                <i class="fas fa-plus text-lg"></i> Add to Order
                             </button>
                             <button onclick="window.inquireProduct('${product.name.replace(/'/g,"\\'")}','${product.category}','${itemLink}')"
                                 class="w-full bg-green-500 hover:bg-green-600 text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
@@ -1013,6 +1091,7 @@
         window.closeLightbox = () => document.getElementById('lightbox').style.display = 'none';
 
         fetchProducts();
+        fetchSettings();
     </script>
 </body>
 </html>

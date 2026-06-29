@@ -114,6 +114,37 @@
             class="text-xs border border-gray-300 text-gray-500 hover:border-brand-maroon hover:text-brand-maroon px-4 py-2.5 transition flex items-center gap-2">
             <i class="fas fa-file-import"></i> Import from Sheets
         </button>
+        <button onclick="openSettings()"
+            class="text-xs border border-gray-300 text-gray-500 hover:border-brand-maroon hover:text-brand-maroon px-4 py-2.5 transition flex items-center gap-2" title="Shop settings">
+            <i class="fas fa-cog"></i> Settings
+        </button>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-overlay" class="hidden fixed inset-0 bg-black/60 z-[400]" onclick="closeSettings()"></div>
+    <div id="settings-modal" class="hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-xl z-[410] w-full max-w-sm p-6">
+        <div class="flex items-center justify-between mb-5">
+            <h3 class="font-bold text-sm uppercase tracking-widest text-brand-dark">Shop Settings</h3>
+            <button onclick="closeSettings()" class="text-gray-400 hover:text-gray-700 text-xl leading-none">&times;</button>
+        </div>
+        <div class="space-y-4">
+            <div>
+                <label class="label">Minimum Order Value for Delivery</label>
+                <div class="flex gap-2 items-center">
+                    <span class="text-xs text-gray-500 flex-shrink-0">Rs.</span>
+                    <input id="s-min-order" type="number" min="0" step="100" class="field flex-1"
+                        placeholder="e.g. 5000 — leave 0 to disable">
+                </div>
+                <p class="text-[10px] text-gray-400 mt-1">Shown as a note in the customer order form. Set to 0 to hide.</p>
+            </div>
+        </div>
+        <div class="flex gap-3 mt-6">
+            <button onclick="saveSettings()" class="flex-1 bg-brand-maroon text-white font-bold py-2.5 text-xs uppercase tracking-widest hover:bg-brand-gold hover:text-brand-dark transition flex items-center justify-center gap-2">
+                <i id="settings-spinner" class="fas fa-circle-notch spinner hidden"></i>
+                <span id="settings-label">Save Settings</span>
+            </button>
+            <button onclick="closeSettings()" class="border border-gray-200 text-gray-500 px-4 py-2.5 text-xs hover:border-brand-maroon hover:text-brand-maroon transition">Cancel</button>
+        </div>
     </div>
 
     <!-- Product Table -->
@@ -625,6 +656,40 @@ function renderImagePreviews() {
 function removeImage(idx) {
     currentImages.splice(idx, 1);
     renderImagePreviews();
+}
+
+// ── Settings ──────────────────────────────────────────────────────
+async function openSettings() {
+    try {
+        const doc = await db.collection('settings').doc('shop').get();
+        const data = doc.exists ? doc.data() : {};
+        document.getElementById('s-min-order').value = data.minOrderValue || 0;
+    } catch (e) {
+        document.getElementById('s-min-order').value = 0;
+    }
+    document.getElementById('settings-modal').classList.remove('hidden');
+    document.getElementById('settings-overlay').classList.remove('hidden');
+}
+function closeSettings() {
+    document.getElementById('settings-modal').classList.add('hidden');
+    document.getElementById('settings-overlay').classList.add('hidden');
+}
+async function saveSettings() {
+    const spinner = document.getElementById('settings-spinner');
+    const label   = document.getElementById('settings-label');
+    spinner.classList.remove('hidden');
+    label.textContent = 'Saving…';
+    try {
+        const minOrderValue = parseInt(document.getElementById('s-min-order').value) || 0;
+        await db.collection('settings').doc('shop').set({ minOrderValue }, { merge: true });
+        showToast('Settings saved ✓', 'green');
+        closeSettings();
+    } catch (err) {
+        showToast('Error: ' + err.message, 'red');
+    } finally {
+        spinner.classList.add('hidden');
+        label.textContent = 'Save Settings';
+    }
 }
 
 // ── Save Product ──────────────────────────────────────────────────
