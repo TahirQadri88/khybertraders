@@ -142,6 +142,9 @@
         .product-thumb.active, .product-thumb:hover { opacity: 1; border-color: #500000; }
         #cart-drawer { transition: transform 0.3s ease; transform: translateX(100%); }
         #cart-drawer.open { transform: translateX(0); }
+        #cart-items-list::-webkit-scrollbar { width: 5px; }
+        #cart-items-list::-webkit-scrollbar-track { background: #f4f4f5; border-radius: 3px; }
+        #cart-items-list::-webkit-scrollbar-thumb { background: #500000; border-radius: 3px; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased selection:bg-brand-maroon selection:text-white">
@@ -437,7 +440,10 @@
             <p class="text-xs text-center">Browse products and tap <strong>Add to Order</strong> to build your order</p>
         </div>
         <div id="cart-filled" class="hidden flex-1 flex flex-col overflow-hidden">
-            <div id="cart-items-list" class="flex-1 overflow-y-auto px-4 py-3 space-y-2"></div>
+            <div class="relative flex-1 overflow-hidden">
+                <div id="cart-items-list" class="h-full overflow-y-scroll px-4 py-3 space-y-2"></div>
+                <div id="cart-scroll-fade" class="pointer-events-none absolute bottom-0 left-0 right-0 h-10 transition-opacity duration-200" style="background:linear-gradient(to top,#fff 20%,transparent)"></div>
+            </div>
             <div class="border-t border-gray-100 px-4 py-3 flex-shrink-0 bg-gray-50">
                 <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-2 font-bold">Your Details <span class="font-normal normal-case text-brand-maroon">(required)</span></p>
                 <input id="cart-customer-name" type="text" placeholder="Your name *" required
@@ -515,6 +521,11 @@
             document.getElementById('cart-overlay').classList.remove('hidden');
             document.getElementById('cart-drawer').classList.add('open');
             renderCart();
+            const list = document.getElementById('cart-items-list');
+            if (list && !list._scrollBound) {
+                list.addEventListener('scroll', updateCartScrollFade);
+                list._scrollBound = true;
+            }
         }
         function closeCart() {
             document.getElementById('cart-overlay').classList.add('hidden');
@@ -554,6 +565,14 @@
             badge.textContent = total > 9 ? '9+' : String(total);
             total > 0 ? badge.classList.remove('hidden') : badge.classList.add('hidden');
         }
+        function updateCartScrollFade() {
+            const list = document.getElementById('cart-items-list');
+            const fade = document.getElementById('cart-scroll-fade');
+            if (!list || !fade) return;
+            const canScroll = list.scrollHeight > list.clientHeight + 4;
+            const atBottom  = list.scrollHeight - list.scrollTop <= list.clientHeight + 8;
+            fade.style.opacity = (canScroll && !atBottom) ? '1' : '0';
+        }
         function renderCart() {
             const filled = document.getElementById('cart-filled');
             const empty  = document.getElementById('cart-empty-state');
@@ -584,6 +603,7 @@
                     <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Estimated Total</span>
                     <span class="text-sm font-bold text-brand-maroon">${totalAmt > 0 ? (allPriced ? formatPKR(totalAmt) : '~ ' + formatPKR(totalAmt) + '+') : '—'}</span>
                 </div>` : '');
+            setTimeout(updateCartScrollFade, 0);
         }
         function clearCart() {
             if (!cart.length) return;
