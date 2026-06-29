@@ -293,25 +293,32 @@
     </section>
 
     <!-- Catalog Section with Compact Tiles -->
-    <section id="products" class="py-24 bg-brand-light border-y border-gray-200">
-        <div class="container mx-auto px-6 text-center">
-            <div class="mb-16">
-                <span class="text-brand-maroon font-bold uppercase tracking-widest text-xs">Catalog</span>
-                <h2 class="text-4xl font-serif font-bold text-brand-dark mt-3">Product Categories</h2>
-                <div class="h-1 w-20 bg-brand-gold mx-auto mt-6"></div>
+    <section id="products" class="py-6 sm:py-10 bg-brand-light border-y border-gray-200">
+        <div class="container mx-auto px-4 sm:px-6 text-center">
+            <div class="mb-4 flex items-center justify-between max-w-2xl mx-auto text-left">
+                <div>
+                    <span class="text-brand-maroon font-bold uppercase tracking-widest text-[10px]">Catalog</span>
+                    <h2 class="text-xl sm:text-2xl font-serif font-bold text-brand-dark mt-0.5 leading-tight">Product Categories</h2>
+                </div>
+                <div class="h-6 w-1 bg-brand-gold flex-shrink-0 ml-4"></div>
             </div>
             <!-- How to Order note -->
-            <div class="mb-8 max-w-2xl mx-auto bg-white border border-brand-gold/40 px-5 py-4 text-left shadow-sm">
-                <p class="text-xs font-bold text-brand-maroon uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fas fa-info-circle"></i> How to Place an Order</p>
-                <ol class="text-sm text-gray-600 space-y-2">
-                    <li class="flex gap-2.5"><span class="font-bold text-brand-gold w-4 flex-shrink-0">1.</span><span>Browse the categories below and open any product to view details.</span></li>
-                    <li class="flex gap-2.5"><span class="font-bold text-brand-gold w-4 flex-shrink-0">2.</span><span>Tap <strong class="text-brand-dark">Add to Order</strong> on the products you need — you can add as many as you like.</span></li>
-                    <li class="flex gap-2.5"><span class="font-bold text-brand-gold w-4 flex-shrink-0">3.</span><span>Open your <strong class="text-brand-dark">Order List</strong> (cart icon, top right), add your name &amp; address, then tap <strong class="text-brand-dark">Send on WhatsApp</strong>.</span></li>
-                    <li class="flex gap-2.5"><span class="font-bold text-brand-gold w-4 flex-shrink-0">4.</span><span>Our representative will confirm pricing and arrange payment &amp; dispatch for you.</span></li>
-                </ol>
-            </div>
+            <details class="mb-4 max-w-2xl mx-auto bg-white border border-brand-gold/40 text-left shadow-sm">
+                <summary class="px-4 py-3 text-xs font-bold text-brand-maroon uppercase tracking-widest flex items-center gap-2 cursor-pointer select-none list-none">
+                    <i class="fas fa-info-circle"></i> How to Place an Order
+                    <i class="fas fa-chevron-down ml-auto text-[10px] text-gray-400"></i>
+                </summary>
+                <div class="px-4 pb-3 pt-1 border-t border-brand-gold/20">
+                    <ol class="text-sm text-gray-600 space-y-2">
+                        <li class="flex gap-2.5"><span class="font-bold text-brand-gold w-4 flex-shrink-0">1.</span><span>Browse the categories below and open any product to view details.</span></li>
+                        <li class="flex gap-2.5"><span class="font-bold text-brand-gold w-4 flex-shrink-0">2.</span><span>Tap <strong class="text-brand-dark">Add to Order</strong> on the products you need — you can add as many as you like.</span></li>
+                        <li class="flex gap-2.5"><span class="font-bold text-brand-gold w-4 flex-shrink-0">3.</span><span>Open your <strong class="text-brand-dark">Order List</strong> (cart icon, top right), add your name &amp; address, then tap <strong class="text-brand-dark">Send on WhatsApp</strong>.</span></li>
+                        <li class="flex gap-2.5"><span class="font-bold text-brand-gold w-4 flex-shrink-0">4.</span><span>Our representative will confirm pricing and arrange payment &amp; dispatch for you.</span></li>
+                    </ol>
+                </div>
+            </details>
 
-            <div class="mb-8 max-w-xl mx-auto">
+            <div class="mb-4 max-w-2xl mx-auto">
                 <div class="relative">
                     <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
                     <input id="product-search" type="text" placeholder="Search products, e.g. Antox, Vaccine, Liver Tonic..."
@@ -322,7 +329,7 @@
                     </button>
                 </div>
             </div>
-            <div id="search-results" class="hidden mb-8 text-left"></div>
+            <div id="search-results" class="hidden mb-4 text-left"></div>
             <div id="tiles-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-2xl mx-auto text-left">
                 <div class="col-span-full text-center py-10"><i class="fas fa-circle-notch fa-spin text-brand-gold text-3xl"></i></div>
             </div>
