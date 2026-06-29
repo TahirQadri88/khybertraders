@@ -72,7 +72,11 @@
         }
     </script>
 
-    <!-- 4. STYLING & FONTS -->
+    <!-- 4. FIREBASE SDK (Firestore — products database) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+    <!-- 5. STYLING & FONTS -->
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -388,18 +392,41 @@
     <canvas id="share-canvas"></canvas>
 
     <script>
-        const SHEET_ID = '1-s7frQnY1Muh4XOizcz2V3KnkkHV8owNWYzyDrYFSic'; 
-        const BASE_URL = 'https://animalhealth.pk'; 
+        // ── Firebase config ──────────────────────────────────────────────
+        // Fill in apiKey and appId from:
+        // Firebase Console → Project Settings → Your apps → Web app → Config
+        const firebaseConfig = {
+            apiKey:            "REPLACE_WITH_API_KEY",
+            authDomain:        "khyber-traders.firebaseapp.com",
+            projectId:         "khyber-traders",
+            storageBucket:     "khyber-traders.appspot.com",
+            messagingSenderId: "292355832428",
+            appId:             "REPLACE_WITH_APP_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const BASE_URL = 'https://animalhealth.pk';
         let allProducts = [];
 
         async function fetchProducts() {
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('item') || urlParams.get('cat')) document.getElementById('link-loader').style.display = 'flex';
-            const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
             try {
-                const response = await fetch(url);
-                const text = await response.text();
-                allProducts = parseCSV(text);
+                const snapshot = await db.collection('products')
+                    .orderBy('category').orderBy('sortOrder').get();
+                allProducts = [];
+                snapshot.forEach(doc => {
+                    const d = doc.data();
+                    allProducts.push({
+                        category:     d.category || '',
+                        name:         d.name || '',
+                        desc:         d.desc || '',
+                        images:       d.images || [],
+                        priceDisplay: d.priceDisplay || '',
+                        inStock:      d.inStock !== false
+                    });
+                });
                 generateTiles();
                 checkForDirectLink();
             } catch (error) {
@@ -423,26 +450,6 @@
         function getCleanSlug(name) {
             if(!name) return '';
             return name.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-        }
-
-        function parseCSV(str) {
-            const arr = []; let quote = false, col = 0, c = 0;
-            arr[col] = []; arr[col][c] = "";
-            for (let r = 0; r < str.length; r++) {
-                let cc = str[r], nc = str[r+1];
-                if (!arr[col]) arr[col] = []; if (arr[col][c] === undefined) arr[col][c] = "";
-                if (cc == '"' && quote && nc == '"') { arr[col][c] += cc; ++r; }
-                else if (cc == '"') { quote = !quote; }
-                else if (cc == ',' && !quote) { ++c; arr[col][c] = ""; }
-                else if (cc == '\n' && !quote) { ++col; c = 0; arr[col] = []; arr[col][c] = ""; }
-                else { arr[col][c] += cc; }
-            }
-            return arr.slice(1).filter(r => r.length > 1).map(r => ({ 
-                category: r[0].toLowerCase().trim(), 
-                name: r[1], 
-                desc: r[2] || '', 
-                images: (r[3] || '').split(',').map(u => u.trim()).filter(u => u.length > 5) 
-            }));
         }
 
         function generateTiles() {
@@ -484,16 +491,20 @@
                     <div class="aspect-square overflow-hidden relative bg-gray-50 border-b">
                         ${slides}
                         ${p.images.length > 1 ? `<span id="img-count-${index}" class="absolute bottom-2 right-2 z-[15] bg-black/50 text-white text-[8px] px-1.5 py-0.5 rounded pointer-events-none">1 / ${p.images.length}</span>` : ''}
+                        ${!p.inStock ? `<div class="absolute inset-0 bg-black/50 flex items-center justify-center pointer-events-none z-10"><span class="bg-red-600 text-white text-[9px] sm:text-[10px] font-bold uppercase tracking-widest px-3 py-1">Out of Stock</span></div>` : ''}
                     </div>
                     <div class="p-3 sm:p-4 flex flex-col flex-grow">
-                        <a href="${redirectLink}" target="_blank" class="font-bold text-brand-dark mb-1 text-[13px] sm:text-base font-serif leading-tight hover:text-brand-maroon transition block">${p.name}</a>
-                        <span class="inline-block bg-brand-maroon/10 text-brand-maroon text-[7px] sm:text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 mb-2 self-start">${p.category}</span>
+                        <a href="${redirectLink}" target="_blank" class="font-bold text-brand-dark mb-0.5 text-[13px] sm:text-base font-serif leading-tight hover:text-brand-maroon transition block">${p.name}</a>
+                        <span class="inline-block bg-brand-maroon/10 text-brand-maroon text-[7px] sm:text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 mb-1 self-start">${p.category}</span>
+                        ${p.priceDisplay ? `<div class="text-[10px] sm:text-xs font-bold text-brand-maroon mb-1">${p.priceDisplay}</div>` : ''}
                         <p class="text-[10px] sm:text-xs text-gray-500 mb-3 line-clamp-2 leading-relaxed">${plainDesc}</p>
                         <div class="grid grid-cols-2 border border-gray-100 mb-2 mt-auto">
                             <button onclick="openProductByName('${p.name.replace(/'/g,"\\'")}');" class="py-2 text-[9px] sm:text-[10px] font-bold uppercase text-brand-maroon hover:bg-brand-maroon/5 flex items-center justify-center gap-1 transition border-r border-gray-100"><i class="fas fa-expand-alt text-[9px]"></i> View</button>
                             <button onclick="shareProductNative(event,'${p.name.replace(/'/g,"\\'")}','${p.category}','${(p.desc||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}','${imageLink}')" class="py-2 text-[9px] sm:text-[10px] font-bold uppercase text-gray-500 hover:bg-gray-50 flex items-center justify-center gap-1 transition"><i class="fas fa-share-alt text-[9px]"></i> Share</button>
                         </div>
-                        <a href="https://wa.me/923352999006?text=${encodeURIComponent('📦 *Product:* ' + p.name + '\n🔗 *Link:* ' + redirectLink)}" target="_blank" onclick="trackInquiry('${p.name.replace(/'/g,"\\'")}','${p.category}')" class="bg-green-500 hover:bg-green-600 text-white py-2 sm:py-2.5 text-[9px] sm:text-[10px] font-bold uppercase flex items-center justify-center gap-1.5 transition shadow"><i class="fab fa-whatsapp text-sm"></i> Inquire on WhatsApp</a>
+                        ${p.inStock
+                            ? `<a href="https://wa.me/923352999006?text=${encodeURIComponent('📦 *Product:* ' + p.name + '\n🔗 *Link:* ' + redirectLink)}" target="_blank" onclick="trackInquiry('${p.name.replace(/'/g,"\\'")}','${p.category}')" class="bg-green-500 hover:bg-green-600 text-white py-2 sm:py-2.5 text-[9px] sm:text-[10px] font-bold uppercase flex items-center justify-center gap-1.5 transition shadow"><i class="fab fa-whatsapp text-sm"></i> Inquire on WhatsApp</a>`
+                            : `<button disabled class="bg-gray-200 text-gray-400 py-2 sm:py-2.5 text-[9px] sm:text-[10px] font-bold uppercase w-full cursor-not-allowed">Out of Stock</button>`}
                     </div>
                 </div>`;
             }).join('');

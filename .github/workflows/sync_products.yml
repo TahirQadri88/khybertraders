@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write 
+  contents: write
 
 jobs:
   build:
@@ -21,82 +21,135 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Install Requests
-        run: pip install requests
+      - name: Install Dependencies
+        run: pip install firebase-admin
 
       - name: Generate Redirect Files
         shell: python
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
-          import csv
-          import requests
-          import os
-          import re
-          import urllib.parse
+          import os, re, json, urllib.parse, tempfile
 
-          SHEET_URL = "https://docs.google.com/spreadsheets/d/1-s7frQnY1Muh4XOizcz2V3KnkkHV8owNWYzyDrYFSic/gviz/tq?tqx=out:csv"
           BASE_URL = "https://animalhealth.pk"
-          
+
           def get_clean_slug(name):
               if not name: return ""
-              # MATCHES TITANIUM V50 JS LOGIC EXACTLY
               name = name.lower()
               name = re.sub(r'&', 'and', name)
               name = re.sub(r'\s+', '-', name)
               name = re.sub(r'[^a-z0-9-]', '', name)
               return name
 
-          try:
-              response = requests.get(SHEET_URL)
-              response.raise_for_status()
-              decoded_content = response.content.decode('utf-8')
-              cr = csv.reader(decoded_content.splitlines(), delimiter=',')
-              rows = list(cr)
+          # --- Check if Firebase service account is available ---
+          sa_json = os.environ.get('FIREBASE_SERVICE_ACCOUNT', '')
 
-              if not os.path.exists('s'):
-                  os.makedirs('s')
+          if sa_json and sa_json.strip() != '':
+              # ── Read from Firestore (primary source after Firebase migration) ──
+              import firebase_admin
+              from firebase_admin import credentials, firestore
 
-              # Clean existing html files to prevent dead links
-              for f in os.listdir('s'):
-                  if f.endswith('.html'):
-                      os.remove(os.path.join('s', f))
+              with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+                  f.write(sa_json)
+                  sa_path = f.name
 
-              import json
-              products_data = []
+              cred = credentials.Certificate(sa_path)
+              firebase_admin.initialize_app(cred)
+              db = firestore.client()
 
-              for row in rows[1:]:
-                  if len(row) < 2 or not row[1].strip(): continue
-                  category = row[0].strip() if len(row) > 0 else ""
-                  name = row[1].strip()
-                  desc = row[2].strip() if len(row) > 2 else ""
-                  img = row[3].strip() if len(row) > 3 and len(row[3]) > 5 else "https://tahirqadri88.github.io/khybertraders/images/website%20banner.jpg"
-                  slug = get_clean_slug(name)
-                  target = f"{BASE_URL}/?item={urllib.parse.quote(name)}"
+              try:
+                  docs = db.collection('products').order_by('category').order_by('sortOrder').stream()
+                  rows = []
+                  for doc in docs:
+                      d = doc.to_dict()
+                      name = (d.get('name') or '').strip()
+                      if not name: continue
+                      rows.append({
+                          'name':         name,
+                          'category':     (d.get('category') or '').strip(),
+                          'desc':         (d.get('desc') or '').strip(),
+                          'images':       d.get('images') or [],
+                          'priceDisplay': (d.get('priceDisplay') or '').strip(),
+                          'inStock':      d.get('inStock', True),
+                      })
+                  print(f"Loaded {len(rows)} products from Firestore.")
+              except Exception as e:
+                  print(f"Firestore error: {e}")
+                  exit(1)
 
-                  products_data.append({"category": category, "name": name, "slug": slug})
+          else:
+              # ── Fallback: read from Google Sheets (pre-migration) ──
+              import csv, requests
+              SHEET_URL = "https://docs.google.com/spreadsheets/d/1-s7frQnY1Muh4XOizcz2V3KnkkHV8owNWYzyDrYFSic/gviz/tq?tqx=out:csv"
+              try:
+                  response = requests.get(SHEET_URL)
+                  response.raise_for_status()
+                  decoded_content = response.content.decode('utf-8')
+                  cr = csv.reader(decoded_content.splitlines(), delimiter=',')
+                  sheet_rows = list(cr)
+                  rows = []
+                  for row in sheet_rows[1:]:
+                      if len(row) < 2 or not row[1].strip(): continue
+                      rows.append({
+                          'name':         row[1].strip(),
+                          'category':     row[0].strip() if len(row) > 0 else '',
+                          'desc':         row[2].strip() if len(row) > 2 else '',
+                          'images':       [u.strip() for u in (row[3].split(',') if len(row) > 3 else []) if len(u.strip()) > 5],
+                          'priceDisplay': '',
+                          'inStock':      True,
+                      })
+                  print(f"Loaded {len(rows)} products from Google Sheets (fallback).")
+              except Exception as e:
+                  print(f"Google Sheets error: {e}")
+                  exit(1)
 
-                  file_content = f"""<!DOCTYPE html><html><head><meta charset="UTF-8">
-                  <title>{name} | AnimalHealth.pk</title>
-                  <meta property="og:title" content="{name}">
-                  <meta property="og:description" content="{desc[:150]}">
-                  <meta property="og:image" content="{img}">
-                  <meta property="og:url" content="{target}">
-                  <meta property="og:type" content="website">
-                  <meta http-equiv="refresh" content="0;url={target}" />
-                  </head><body style="font-family:sans-serif;text-align:center;padding-top:50px;">
-                  <p>Redirecting to <strong>{name}</strong>...</p>
-                  <script>window.location.href="{target}";</script>
-                  </body></html>"""
+          # ── Generate /s/ redirect files and products.json ──
+          if not os.path.exists('s'):
+              os.makedirs('s')
 
-                  with open(f"s/{slug}.html", "w", encoding="utf-8") as f:
-                      f.write(file_content)
+          for f in os.listdir('s'):
+              if f.endswith('.html'):
+                  os.remove(os.path.join('s', f))
 
-              with open("products.json", "w", encoding="utf-8") as jf:
-                  json.dump(products_data, jf, ensure_ascii=False, indent=2)
-              print(f"Files generated successfully. {len(products_data)} products written to products.json.")
-          except Exception as e:
-              print(f"Error: {e}")
-              exit(1)
-          
+          products_data = []
+
+          for p in rows:
+              name  = p['name']
+              desc  = p['desc']
+              imgs  = p['images']
+              slug  = get_clean_slug(name)
+              img   = imgs[0] if imgs else "https://tahirqadri88.github.io/khybertraders/images/website%20banner.jpg"
+              target = f"{BASE_URL}/?item={urllib.parse.quote(name)}"
+
+              file_content = f"""<!DOCTYPE html><html><head><meta charset="UTF-8">
+              <title>{name} | AnimalHealth.pk</title>
+              <meta property="og:title" content="{name}">
+              <meta property="og:description" content="{desc[:150]}">
+              <meta property="og:image" content="{img}">
+              <meta property="og:url" content="{target}">
+              <meta property="og:type" content="website">
+              <meta http-equiv="refresh" content="0;url={target}" />
+              </head><body style="font-family:sans-serif;text-align:center;padding-top:50px;">
+              <p>Redirecting to <strong>{name}</strong>...</p>
+              <script>window.location.href="{target}";<\/script>
+              </body></html>"""
+
+              with open(f"s/{slug}.html", "w", encoding="utf-8") as fh:
+                  fh.write(file_content)
+
+              products_data.append({
+                  "category":     p['category'],
+                  "name":         name,
+                  "slug":         slug,
+                  "inStock":      p['inStock'],
+                  "priceDisplay": p['priceDisplay'],
+              })
+
+          with open("products.json", "w", encoding="utf-8") as jf:
+              json.dump(products_data, jf, ensure_ascii=False, indent=2)
+
+          print(f"Generated {len(products_data)} redirect files and products.json.")
+
       - name: Commit and Push Changes
         run: |
           git config --global user.name "Product-Bot"
