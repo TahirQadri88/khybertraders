@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — Khyber Traders</title>
+    <link rel="icon" type="image/jpeg" href="images/KT_Logo.JPG">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { brand: { maroon: '#500000', gold: '#D4AF37', dark: '#0a0a0a' } } } }
+        }
+    </script>
+
+    <!-- Firebase SDK v9 compat (Auth + Firestore only — images use Cloudinary) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        body { font-family: 'Manrope', sans-serif; }
+        .drag-over { border-color: #500000 !important; background: #fff5f5; }
+        .thumb-preview { position: relative; display: inline-block; }
+        .thumb-preview img { width: 80px; height: 80px; object-fit: cover; border: 2px solid #e5e7eb; }
+        .thumb-preview .remove-img {
+            position: absolute; top: -6px; right: -6px; width: 20px; height: 20px;
+            background: #ef4444; color: white; border-radius: 50%; font-size: 11px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            line-height: 1;
+        }
+        #drawer { transition: transform 0.3s ease; transform: translateX(100%); }
+        #drawer.open { transform: translateX(0); }
+        .spinner { animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .toast {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+            z-index: 9999; padding: 10px 20px; border-radius: 4px; font-size: 13px;
+            font-weight: 600; transition: opacity 0.4s;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen text-gray-800">
+
+<!-- ─── LOGIN SCREEN ──────────────────────────────── -->
+<div id="login-screen" class="min-h-screen flex items-center justify-center bg-gray-50">
+    <div class="bg-white shadow-lg border border-gray-100 p-10 w-full max-w-sm">
+        <div class="flex items-center gap-3 mb-8">
+            <img src="images/KT_Logo.JPG" alt="KT" class="w-12 h-12 object-cover">
+            <div>
+                <div class="font-bold text-brand-dark text-lg leading-none">Khyber Traders</div>
+                <div class="text-xs text-brand-maroon uppercase tracking-widest font-bold">Admin Panel</div>
+            </div>
+        </div>
+        <div id="login-error" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 mb-4 rounded"></div>
+        <div class="mb-4">
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Email</label>
+            <input id="login-email" type="email" placeholder="admin@example.com"
+                class="w-full border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-maroon transition"
+                onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+        <div class="mb-6">
+            <label class="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Password</label>
+            <input id="login-pass" type="password" placeholder="••••••••"
+                class="w-full border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-maroon transition"
+                onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+        <button onclick="doLogin()" id="login-btn"
+            class="w-full bg-brand-maroon text-white font-bold py-3 uppercase tracking-widest text-sm hover:bg-brand-gold hover:text-brand-dark transition">
+            Sign In
+        </button>
+    </div>
+</div>
+
+<!-- ─── DASHBOARD ──────────────────────────────────── -->
+<div id="dashboard" class="hidden min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-brand-dark text-white px-6 py-4 flex items-center justify-between sticky top-0 z-40 shadow">
+        <div class="flex items-center gap-3">
+            <img src="images/KT_Logo.JPG" class="w-9 h-9 object-cover">
+            <span class="font-bold text-sm">Khyber Traders <span class="text-brand-gold">Admin</span></span>
+        </div>
+        <div class="flex items-center gap-3">
+            <span id="admin-email" class="text-xs text-gray-400 hidden sm:block"></span>
+            <a href="/" target="_blank" class="text-xs text-gray-400 hover:text-brand-gold transition">
+                <i class="fas fa-external-link-alt mr-1"></i>View Site
+            </a>
+            <button onclick="doLogout()" class="text-xs border border-gray-600 text-gray-300 hover:border-brand-gold hover:text-brand-gold px-3 py-1.5 transition">
+                Sign Out
+            </button>
+        </div>
+    </header>
+
+    <!-- Action Bar -->
+    <div class="bg-white border-b border-gray-200 px-6 py-4 flex flex-wrap items-center gap-3">
+        <button onclick="openDrawer(null)"
+            class="bg-brand-maroon text-white font-bold px-5 py-2.5 text-xs uppercase tracking-widest hover:bg-brand-gold hover:text-brand-dark transition flex items-center gap-2">
+            <i class="fas fa-plus"></i> Add Product
+        </button>
+        <div class="relative flex-1 max-w-xs">
+            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+            <input id="search-input" type="text" placeholder="Search products..."
+                class="w-full border border-gray-200 pl-8 pr-3 py-2.5 text-xs focus:outline-none focus:border-brand-maroon transition"
+                oninput="filterTable(this.value)">
+        </div>
+        <select id="cat-filter" onchange="filterTable(document.getElementById('search-input').value)"
+            class="border border-gray-200 px-3 py-2.5 text-xs focus:outline-none focus:border-brand-maroon transition bg-white">
+            <option value="">All categories</option>
+        </select>
+        <span id="product-count" class="text-xs text-gray-400 ml-auto"></span>
+        <button id="import-btn" onclick="importFromSheets()"
+            class="text-xs border border-gray-300 text-gray-500 hover:border-brand-maroon hover:text-brand-maroon px-4 py-2.5 transition flex items-center gap-2">
+            <i class="fas fa-file-import"></i> Import from Sheets
+        </button>
+    </div>
+
+    <!-- Product Table -->
+    <div class="flex-1 overflow-auto px-4 py-4">
+        <div id="loading-state" class="text-center py-20 text-gray-400">
+            <i class="fas fa-circle-notch fa-spin text-3xl mb-3 block text-brand-maroon"></i>
+            Loading products...
+        </div>
+        <table id="product-table" class="hidden w-full bg-white shadow-sm border border-gray-100 text-sm">
+            <thead>
+                <tr class="bg-gray-50 text-xs font-bold uppercase tracking-widest text-gray-500 border-b">
+                    <th class="p-3 text-left w-16"></th>
+                    <th class="p-3 text-left">Product</th>
+                    <th class="p-3 text-left hidden md:table-cell">Category</th>
+                    <th class="p-3 text-left hidden sm:table-cell">Price</th>
+                    <th class="p-3 text-left">Stock</th>
+                    <th class="p-3 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+        </table>
+        <div id="empty-state" class="hidden text-center py-20 text-gray-400">
+            <i class="fas fa-box-open text-4xl mb-4 block text-gray-200"></i>
+            <p class="font-bold text-gray-400 mb-2">No products yet</p>
+            <p class="text-xs mb-4">Click <strong>Import from Sheets</strong> to load your existing products, or <strong>Add Product</strong> to add one manually.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ─── ADD / EDIT DRAWER ──────────────────────────── -->
+<div id="drawer-overlay" class="hidden fixed inset-0 bg-black/40 z-50" onclick="closeDrawer()"></div>
+<div id="drawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-50 flex flex-col overflow-hidden">
+    <div class="flex items-center justify-between px-6 py-4 border-b bg-brand-dark text-white flex-shrink-0">
+        <h2 id="drawer-title" class="font-bold text-sm uppercase tracking-widest">Add Product</h2>
+        <button onclick="closeDrawer()" class="text-gray-400 hover:text-white text-xl">&times;</button>
+    </div>
+
+    <form id="product-form" class="flex-1 overflow-y-auto px-6 py-5 space-y-4" onsubmit="return false">
+        <input type="hidden" id="f-id">
+
+        <div>
+            <label class="label">Category</label>
+            <input id="f-category" list="cat-list" type="text" placeholder="e.g. vaccines"
+                class="field" required>
+            <datalist id="cat-list"></datalist>
+        </div>
+
+        <div>
+            <label class="label">Product Name</label>
+            <input id="f-name" type="text" class="field" required
+                placeholder="e.g. IVOMEC 50ml (Brazil)"
+                oninput="updateSlugPreview()">
+            <p id="slug-preview" class="text-[10px] text-gray-400 mt-1"></p>
+        </div>
+
+        <div>
+            <label class="label">Description</label>
+            <textarea id="f-desc" rows="5" class="field resize-none"
+                placeholder="Product details, usage, dosage..."></textarea>
+        </div>
+
+        <div>
+            <label class="label">Price Display</label>
+            <input id="f-price" type="text" class="field"
+                placeholder='e.g. "Rs. 1,500" or "Rs. 800–1,200" or "Contact for Price"'>
+            <p class="text-[10px] text-gray-400 mt-1">Free text — customers see exactly what you type here.</p>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <label class="label mb-0">In Stock</label>
+            <div class="ml-auto flex items-center gap-2">
+                <span id="stock-label" class="text-xs font-bold text-green-600">In Stock</span>
+                <button type="button" id="stock-toggle"
+                    onclick="toggleStock()"
+                    class="relative inline-flex h-6 w-11 items-center rounded-full bg-green-500 transition-colors focus:outline-none">
+                    <span id="stock-dot" class="inline-block h-4 w-4 transform translate-x-6 rounded-full bg-white transition-transform"></span>
+                </button>
+            </div>
+            <input type="hidden" id="f-instock" value="true">
+        </div>
+
+        <div>
+            <label class="label">Sort Order <span class="text-gray-400 font-normal">(within category)</span></label>
+            <input id="f-sort" type="number" min="0" value="0" class="field w-24">
+        </div>
+
+        <!-- Image Upload -->
+        <div>
+            <label class="label">Images</label>
+            <div id="drop-zone"
+                class="border-2 border-dashed border-gray-300 rounded p-6 text-center cursor-pointer hover:border-brand-maroon transition"
+                onclick="document.getElementById('file-input').click()"
+                ondragover="handleDragOver(event)"
+                ondragleave="handleDragLeave(event)"
+                ondrop="handleDrop(event)">
+                <i class="fas fa-cloud-upload-alt text-3xl text-gray-300 mb-2 block"></i>
+                <p class="text-sm text-gray-400">Drag & drop images here, or click to select</p>
+                <p class="text-xs text-gray-300 mt-1">JPG, PNG, WEBP — compressed to 800px automatically</p>
+            </div>
+            <input id="file-input" type="file" multiple accept="image/*" class="hidden"
+                onchange="handleFileSelect(this.files)">
+
+            <!-- Upload progress -->
+            <div id="upload-progress" class="hidden mt-2">
+                <div class="bg-gray-100 rounded h-1.5 overflow-hidden">
+                    <div id="progress-bar" class="bg-brand-maroon h-full transition-all" style="width:0%"></div>
+                </div>
+                <p id="progress-text" class="text-[10px] text-gray-400 mt-1"></p>
+            </div>
+
+            <!-- Image previews -->
+            <div id="image-previews" class="flex flex-wrap gap-2 mt-3"></div>
+        </div>
+    </form>
+
+    <div class="px-6 py-4 border-t flex gap-3 flex-shrink-0 bg-white">
+        <button onclick="saveProduct()"
+            class="flex-1 bg-brand-maroon text-white font-bold py-3 text-xs uppercase tracking-widest hover:bg-brand-gold hover:text-brand-dark transition flex items-center justify-center gap-2">
+            <i id="save-spinner" class="fas fa-circle-notch spinner hidden"></i>
+            <span id="save-label">Save Product</span>
+        </button>
+        <button onclick="closeDrawer()"
+            class="border border-gray-200 text-gray-500 px-5 py-3 text-xs font-bold uppercase hover:bg-gray-50 transition">
+            Cancel
+        </button>
+    </div>
+</div>
+
+<!-- ─── DELETE CONFIRM MODAL ───────────────────────── -->
+<div id="delete-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white max-w-sm w-full p-6 shadow-xl">
+        <h3 class="font-bold text-brand-dark mb-2">Delete Product?</h3>
+        <p id="delete-msg" class="text-sm text-gray-500 mb-5"></p>
+        <div class="flex gap-3">
+            <button id="confirm-delete-btn" onclick="confirmDelete()"
+                class="flex-1 bg-red-500 text-white font-bold py-2.5 text-xs uppercase hover:bg-red-600 transition">
+                Delete
+            </button>
+            <button onclick="document.getElementById('delete-modal').classList.add('hidden')"
+                class="flex-1 border border-gray-200 text-gray-500 py-2.5 text-xs font-bold uppercase hover:bg-gray-50 transition">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast notification -->
+<div id="toast" class="toast hidden"></div>
+
+<style>
+    .label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #6b7280; margin-bottom: 4px; }
+    .field { display: block; width: 100%; border: 1px solid #e5e7eb; padding: 8px 12px; font-size: 13px; outline: none; transition: border-color 0.2s; font-family: inherit; }
+    .field:focus { border-color: #500000; }
+</style>
+
+<script>
+// ── Firebase Config ─────────────────────────────────────────────
+// STEP: Replace REPLACE_WITH_API_KEY and REPLACE_WITH_APP_ID
+// Get these from: Firebase Console → Project Settings → Your apps → Web app → Config
+const firebaseConfig = {
+    apiKey:            "AIzaSyDmP8suwaaxxklzxLn3tYx0TsYTDAzaank",
+    authDomain:        "khyber-traders.firebaseapp.com",
+    projectId:         "khyber-traders",
+    storageBucket:     "khyber-traders.firebasestorage.app",
+    messagingSenderId: "292355832428",
+    appId:             "1:292355832428:web:5983dcc70914cf18fb3649"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+// ── Cloudinary Config (image hosting — free, no billing required) ──
+const CLOUDINARY_CLOUD  = 'dkay9chpe';
+const CLOUDINARY_PRESET = 'khybertraders';
+
+// ── State ─────────────────────────────────────────────────────────
+let allProductsCache = [];
+let currentImages   = [];   // URLs (Storage or external) for the open drawer
+let pendingDeleteId = null;
+let isStockOn       = true;
+
+// ── Auth ──────────────────────────────────────────────────────────
+auth.onAuthStateChanged(user => {
+    if (user) {
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('dashboard').classList.remove('hidden');
+        document.getElementById('admin-email').textContent = user.email;
+        loadProducts();
+    } else {
+        document.getElementById('login-screen').classList.remove('hidden');
+        document.getElementById('dashboard').classList.add('hidden');
+    }
+});
+
+async function doLogin() {
+    const email = document.getElementById('login-email').value.trim();
+    const pass  = document.getElementById('login-pass').value;
+    const errEl = document.getElementById('login-error');
+    const btn   = document.getElementById('login-btn');
+    errEl.classList.add('hidden');
+    btn.textContent = 'Signing in…';
+    btn.disabled = true;
+    try {
+        await auth.signInWithEmailAndPassword(email, pass);
+    } catch (err) {
+        errEl.textContent = err.message;
+        errEl.classList.remove('hidden');
+        btn.textContent = 'Sign In';
+        btn.disabled = false;
+    }
+}
+
+function doLogout() {
+    auth.signOut();
+}
+
+// ── Load Products ─────────────────────────────────────────────────
+async function loadProducts() {
+    try {
+        const snap = await db.collection('products')
+            .orderBy('category').orderBy('sortOrder').get();
+
+        allProductsCache = [];
+        snap.forEach(doc => allProductsCache.push({ id: doc.id, ...doc.data() }));
+
+        renderTable(allProductsCache);
+        populateCatFilter();
+        document.getElementById('loading-state').classList.add('hidden');
+
+        if (allProductsCache.length === 0) {
+            document.getElementById('empty-state').classList.remove('hidden');
+            document.getElementById('product-table').classList.add('hidden');
+        } else {
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('product-table').classList.remove('hidden');
+        }
+    } catch (err) {
+        document.getElementById('loading-state').innerHTML =
+            `<i class="fas fa-exclamation-circle text-red-400 text-3xl mb-3 block"></i>
+             <p class="text-red-500 font-bold">${err.message}</p>
+             <p class="text-xs text-gray-400 mt-2">Check your Firebase config and Firestore rules.</p>`;
+    }
+}
+
+function renderTable(products) {
+    const tbody = document.getElementById('table-body');
+    if (!products.length) { tbody.innerHTML = ''; return; }
+
+    tbody.innerHTML = products.map(p => {
+        const thumb = (p.images && p.images[0])
+            ? `<img src="${p.images[0]}" class="w-12 h-12 object-cover border border-gray-100">`
+            : `<div class="w-12 h-12 bg-gray-100 flex items-center justify-center text-gray-300 text-xl"><i class="fas fa-image"></i></div>`;
+        const stockBadge = p.inStock !== false
+            ? `<span class="bg-green-100 text-green-700 text-[9px] font-bold uppercase px-2 py-0.5">In Stock</span>`
+            : `<span class="bg-red-100 text-red-600 text-[9px] font-bold uppercase px-2 py-0.5">Out of Stock</span>`;
+        return `<tr class="border-b border-gray-50 hover:bg-gray-50 transition" data-name="${esc(p.name)}" data-cat="${esc(p.category || '')}">
+            <td class="p-3">${thumb}</td>
+            <td class="p-3">
+                <div class="font-bold text-brand-dark text-xs leading-tight max-w-[200px]">${esc(p.name)}</div>
+                <div class="text-[10px] text-gray-400 mt-0.5 md:hidden capitalize">${esc(p.category || '')}</div>
+            </td>
+            <td class="p-3 hidden md:table-cell text-xs capitalize text-gray-500">${esc(p.category || '')}</td>
+            <td class="p-3 hidden sm:table-cell text-xs text-brand-maroon font-semibold">${esc(p.priceDisplay || '—')}</td>
+            <td class="p-3">${stockBadge}</td>
+            <td class="p-3 text-right">
+                <button onclick="openDrawer('${p.id}')" class="text-[10px] bg-brand-maroon text-white px-3 py-1.5 hover:bg-brand-gold hover:text-brand-dark transition mr-1 font-bold uppercase">Edit</button>
+                <button onclick="askDelete('${p.id}','${esc(p.name)}')" class="text-[10px] border border-red-200 text-red-400 px-3 py-1.5 hover:bg-red-50 transition font-bold uppercase">Del</button>
+            </td>
+        </tr>`;
+    }).join('');
+
+    document.getElementById('product-count').textContent = `${products.length} product${products.length !== 1 ? 's' : ''}`;
+}
+
+function filterTable(query) {
+    const q   = query.trim().toLowerCase();
+    const cat = document.getElementById('cat-filter').value.toLowerCase();
+    const filtered = allProductsCache.filter(p => {
+        const matchQ   = !q || p.name.toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q);
+        const matchCat = !cat || (p.category || '').toLowerCase() === cat;
+        return matchQ && matchCat;
+    });
+    renderTable(filtered);
+}
+
+function populateCatFilter() {
+    const cats = [...new Set(allProductsCache.map(p => p.category || '').filter(Boolean))].sort();
+    const sel  = document.getElementById('cat-filter');
+    sel.innerHTML = '<option value="">All categories</option>' +
+        cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+    // also populate datalist for the form
+    const dl = document.getElementById('cat-list');
+    dl.innerHTML = cats.map(c => `<option value="${esc(c)}">`).join('');
+}
+
+// ── Drawer ────────────────────────────────────────────────────────
+function openDrawer(productId) {
+    resetForm();
+    if (productId) {
+        const p = allProductsCache.find(x => x.id === productId);
+        if (!p) return;
+        document.getElementById('drawer-title').textContent = 'Edit Product';
+        document.getElementById('f-id').value       = p.id;
+        document.getElementById('f-category').value = p.category || '';
+        document.getElementById('f-name').value     = p.name || '';
+        document.getElementById('f-desc').value     = p.desc || '';
+        document.getElementById('f-price').value    = p.priceDisplay || '';
+        document.getElementById('f-sort').value     = p.sortOrder || 0;
+        setStock(p.inStock !== false);
+        currentImages = [...(p.images || [])];
+        renderImagePreviews();
+        updateSlugPreview();
+    } else {
+        document.getElementById('drawer-title').textContent = 'Add Product';
+    }
+    document.getElementById('drawer').classList.add('open');
+    document.getElementById('drawer-overlay').classList.remove('hidden');
+}
+
+function closeDrawer() {
+    document.getElementById('drawer').classList.remove('open');
+    document.getElementById('drawer-overlay').classList.add('hidden');
+}
+
+function resetForm() {
+    document.getElementById('product-form').reset();
+    document.getElementById('f-id').value = '';
+    currentImages = [];
+    renderImagePreviews();
+    setStock(true);
+    document.getElementById('slug-preview').textContent = '';
+    document.getElementById('upload-progress').classList.add('hidden');
+}
+
+// ── Stock Toggle ──────────────────────────────────────────────────
+function setStock(on) {
+    isStockOn = on;
+    document.getElementById('f-instock').value = String(on);
+    const toggle = document.getElementById('stock-toggle');
+    const dot    = document.getElementById('stock-dot');
+    const label  = document.getElementById('stock-label');
+    if (on) {
+        toggle.classList.replace('bg-red-400', 'bg-green-500');
+        dot.classList.replace('translate-x-1', 'translate-x-6');
+        label.textContent = 'In Stock';
+        label.className = 'text-xs font-bold text-green-600';
+    } else {
+        toggle.classList.replace('bg-green-500', 'bg-red-400');
+        dot.classList.replace('translate-x-6', 'translate-x-1');
+        label.textContent = 'Out of Stock';
+        label.className = 'text-xs font-bold text-red-500';
+    }
+}
+
+function toggleStock() {
+    setStock(!isStockOn);
+}
+
+// ── Slug preview ──────────────────────────────────────────────────
+function updateSlugPreview() {
+    const name = document.getElementById('f-name').value;
+    const slug = getCleanSlug(name);
+    document.getElementById('slug-preview').textContent =
+        slug ? `Link: animalhealth.pk/s/${slug}.html` : '';
+}
+
+function getCleanSlug(name) {
+    if (!name) return '';
+    return name.toLowerCase()
+        .replace(/&/g, 'and')
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-]/g, '');
+}
+
+// ── Image Upload ──────────────────────────────────────────────────
+function handleDragOver(e) {
+    e.preventDefault();
+    document.getElementById('drop-zone').classList.add('drag-over');
+}
+function handleDragLeave(e) {
+    document.getElementById('drop-zone').classList.remove('drag-over');
+}
+function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('drop-zone').classList.remove('drag-over');
+    const files = [...e.dataTransfer.files].filter(f => f.type.startsWith('image/'));
+    if (files.length) handleFileSelect(files);
+}
+function handleFileSelect(files) {
+    [...files].forEach(uploadImage);
+}
+
+async function uploadImage(file) {
+    const blob = await compressImage(file, 800);
+
+    const prog = document.getElementById('upload-progress');
+    const bar  = document.getElementById('progress-bar');
+    const txt  = document.getElementById('progress-text');
+    prog.classList.remove('hidden');
+    bar.style.width = '60%';
+    txt.textContent = `Uploading ${file.name}…`;
+
+    try {
+        const formData = new FormData();
+        formData.append('file', blob, file.name);
+        formData.append('upload_preset', CLOUDINARY_PRESET);
+        formData.append('folder', 'khybertraders/products');
+
+        const res  = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+
+        if (data.secure_url) {
+            bar.style.width = '100%';
+            currentImages.push(data.secure_url);
+            renderImagePreviews();
+            showToast('Image uploaded ✓', 'green');
+        } else {
+            showToast('Upload failed: ' + (data.error?.message || 'Unknown error'), 'red');
+        }
+    } catch (err) {
+        showToast('Upload failed: ' + err.message, 'red');
+    } finally {
+        prog.classList.add('hidden');
+        bar.style.width = '0%';
+    }
+}
+
+function compressImage(file, maxPx) {
+    return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const img = new Image();
+            img.onload = () => {
+                let w = img.width, h = img.height;
+                if (w > maxPx) { h = Math.round(h * maxPx / w); w = maxPx; }
+                const canvas = document.createElement('canvas');
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                canvas.toBlob(resolve, 'image/jpeg', 0.82);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+function renderImagePreviews() {
+    const el = document.getElementById('image-previews');
+    el.innerHTML = currentImages.map((url, i) =>
+        `<div class="thumb-preview">
+            <img src="${url}" alt="img ${i+1}">
+            <span class="remove-img" onclick="removeImage(${i})"><i class="fas fa-times"></i></span>
+        </div>`
+    ).join('');
+}
+
+function removeImage(idx) {
+    currentImages.splice(idx, 1);
+    renderImagePreviews();
+}
+
+// ── Save Product ──────────────────────────────────────────────────
+async function saveProduct() {
+    const name     = document.getElementById('f-name').value.trim();
+    const category = document.getElementById('f-category').value.trim().toLowerCase();
+    if (!name)     { showToast('Product name is required', 'red'); return; }
+    if (!category) { showToast('Category is required', 'red'); return; }
+
+    const spinner = document.getElementById('save-spinner');
+    const label   = document.getElementById('save-label');
+    spinner.classList.remove('hidden');
+    label.textContent = 'Saving…';
+
+    const data = {
+        category,
+        name,
+        desc:         document.getElementById('f-desc').value.trim(),
+        priceDisplay: document.getElementById('f-price').value.trim(),
+        inStock:      document.getElementById('f-instock').value === 'true',
+        sortOrder:    parseInt(document.getElementById('f-sort').value) || 0,
+        images:       currentImages,
+        slug:         getCleanSlug(name),
+        updatedAt:    firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    try {
+        const id = document.getElementById('f-id').value;
+        if (id) {
+            await db.collection('products').doc(id).update(data);
+            showToast('Product updated ✓', 'green');
+        } else {
+            await db.collection('products').add(data);
+            showToast('Product added ✓', 'green');
+        }
+        closeDrawer();
+        await loadProducts();
+    } catch (err) {
+        showToast('Error: ' + err.message, 'red');
+    } finally {
+        spinner.classList.add('hidden');
+        label.textContent = 'Save Product';
+    }
+}
+
+// ── Delete ─────────────────────────────────────────────────────────
+function askDelete(id, name) {
+    pendingDeleteId = id;
+    document.getElementById('delete-msg').textContent = `"${name}" will be permanently deleted. This cannot be undone.`;
+    document.getElementById('delete-modal').classList.remove('hidden');
+}
+
+async function confirmDelete() {
+    if (!pendingDeleteId) return;
+    try {
+        await db.collection('products').doc(pendingDeleteId).delete();
+        document.getElementById('delete-modal').classList.add('hidden');
+        pendingDeleteId = null;
+        showToast('Product deleted', 'green');
+        await loadProducts();
+    } catch (err) {
+        showToast('Delete failed: ' + err.message, 'red');
+    }
+}
+
+// ── Import from Google Sheets ─────────────────────────────────────
+async function importFromSheets() {
+    if (!confirm('Import products from Google Sheets?\n\nProducts already in Firestore (matched by slug) will be skipped — only new products are added.')) return;
+
+    const btn = document.getElementById('import-btn');
+    btn.innerHTML = '<i class="fas fa-circle-notch spinner"></i> Importing…';
+    btn.disabled = true;
+
+    try {
+        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1-s7frQnY1Muh4XOizcz2V3KnkkHV8owNWYzyDrYFSic/gviz/tq?tqx=out:csv';
+        const res  = await fetch(SHEET_URL);
+        const text = await res.text();
+        const rows = parseCSV(text);
+
+        // Get existing slugs to avoid duplicates
+        const snap = await db.collection('products').get();
+        const existingSlugs = new Set(snap.docs.map(d => d.data().slug).filter(Boolean));
+
+        let added = 0;
+        for (const p of rows) {
+            const slug = getCleanSlug(p.name);
+            if (!p.name || existingSlugs.has(slug)) continue;
+            await db.collection('products').add({
+                category:     p.category || '',
+                name:         p.name,
+                desc:         p.desc || '',
+                images:       p.images || [],
+                priceDisplay: '',
+                inStock:      true,
+                sortOrder:    0,
+                slug,
+                updatedAt:    firebase.firestore.FieldValue.serverTimestamp()
+            });
+            added++;
+        }
+        showToast(`Imported ${added} products ✓`, 'green');
+        await loadProducts();
+    } catch (err) {
+        showToast('Import failed: ' + err.message, 'red');
+    } finally {
+        btn.innerHTML = '<i class="fas fa-file-import"></i> Import from Sheets';
+        btn.disabled = false;
+    }
+}
+
+// CSV parser (same logic as index.html)
+function parseCSV(str) {
+    const arr = []; let quote = false, col = 0, c = 0;
+    arr[col] = []; arr[col][c] = "";
+    for (let r = 0; r < str.length; r++) {
+        let cc = str[r], nc = str[r+1];
+        if (!arr[col]) arr[col] = []; if (arr[col][c] === undefined) arr[col][c] = "";
+        if (cc == '"' && quote && nc == '"') { arr[col][c] += cc; ++r; }
+        else if (cc == '"') { quote = !quote; }
+        else if (cc == ',' && !quote) { ++c; arr[col][c] = ""; }
+        else if (cc == '\n' && !quote) { ++col; c = 0; arr[col] = []; arr[col][c] = ""; }
+        else { arr[col][c] += cc; }
+    }
+    return arr.slice(1).filter(r => r.length > 1).map(r => ({
+        category: (r[0] || '').toLowerCase().trim(),
+        name:     (r[1] || '').trim(),
+        desc:     (r[2] || '').trim(),
+        images:   (r[3] || '').split(',').map(u => u.trim()).filter(u => u.length > 5)
+    }));
+}
+
+// ── Helpers ───────────────────────────────────────────────────────
+function esc(s) {
+    return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+let toastTimer;
+function showToast(msg, color) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `toast ${color === 'green' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`;
+    t.classList.remove('hidden');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.add('hidden'), 3000);
+}
+
+// Escape key closes modals/drawer
+document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if (!document.getElementById('delete-modal').classList.contains('hidden')) {
+        document.getElementById('delete-modal').classList.add('hidden');
+    } else if (document.getElementById('drawer').classList.contains('open')) {
+        closeDrawer();
+    }
+});
+</script>
+</body>
+</html>
