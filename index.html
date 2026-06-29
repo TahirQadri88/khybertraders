@@ -736,21 +736,30 @@
                      style="background:${c.bg}; border:1px solid ${c.bar}55"
                      onclick="openCategoryModal('${safeCat}')">
                     <div class="w-1.5 self-stretch flex-shrink-0" style="background:${c.bar}"></div>
-                    <div class="w-12 h-12 rounded-full flex items-center justify-center mx-3 my-3.5 flex-shrink-0"
-                         style="background:${c.iconBg}">
-                        <i class="fas fa-box-open text-sm" style="color:${c.iconFg}"></i>
+                    <div class="w-13 h-13 rounded-full flex items-center justify-center mx-3 my-4 flex-shrink-0"
+                         style="background:${c.iconBg}; width:3.25rem; height:3.25rem;">
+                        <i class="fas fa-box-open text-base" style="color:${c.iconFg}"></i>
                     </div>
-                    <div class="flex-1 min-w-0 py-3.5 pr-1">
+                    <div class="flex-1 min-w-0 py-4 pr-2">
                         <h3 class="font-semibold text-base leading-tight capitalize text-gray-800 font-sans">${cat}</h3>
-                        <p class="text-xs mt-0.5 font-medium" style="color:${c.bar}bb">${count} product${count !== 1 ? 's' : ''}</p>
+                        <p class="text-xs mt-1 font-medium" style="color:${c.bar}bb">${count} product${count !== 1 ? 's' : ''}</p>
                     </div>
-                    <button onclick="shareCategory(event, '${safeCat}')"
-                            class="px-4 self-stretch flex flex-col items-center justify-center gap-1 transition flex-shrink-0 border-l hover:opacity-80"
-                            style="border-left-color:${c.bar}44; color:${c.bar}"
-                            title="Share category">
-                        <i class="fas fa-share-alt text-sm"></i>
-                        <span class="text-[9px] font-bold uppercase tracking-wide">Share</span>
-                    </button>
+                    <div class="self-stretch flex flex-col flex-shrink-0 border-l" style="border-left-color:${c.bar}44; min-width:3.5rem">
+                        <button onclick="openCategoryModal('${safeCat}')"
+                                class="flex-1 flex flex-col items-center justify-center gap-0.5 px-3 transition hover:opacity-70 border-b"
+                                style="color:${c.bar}; border-bottom-color:${c.bar}33"
+                                title="View products">
+                            <i class="fas fa-eye text-sm"></i>
+                            <span class="text-[9px] font-bold uppercase tracking-wide">View</span>
+                        </button>
+                        <button onclick="shareCategory(event, '${safeCat}')"
+                                class="flex-1 flex flex-col items-center justify-center gap-0.5 px-3 transition hover:opacity-70"
+                                style="color:${c.bar}"
+                                title="Share category">
+                            <i class="fas fa-share-alt text-sm"></i>
+                            <span class="text-[9px] font-bold uppercase tracking-wide">Share</span>
+                        </button>
+                    </div>
                 </div>`
             }).join('');
         }
