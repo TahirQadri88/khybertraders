@@ -607,7 +607,6 @@
         }
         function clearCart() {
             if (!cart.length) return;
-            if (!confirm('Clear all items from your order?')) return;
             cart = [];
             updateCartBadge();
             renderCart();
