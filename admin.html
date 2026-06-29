@@ -371,8 +371,8 @@ function renderTable(products) {
             ? `<img src="${p.images[0]}" class="w-12 h-12 object-cover border border-gray-100">`
             : `<div class="w-12 h-12 bg-gray-100 flex items-center justify-center text-gray-300 text-xl"><i class="fas fa-image"></i></div>`;
         const stockBadge = p.inStock !== false
-            ? `<span class="bg-green-100 text-green-700 text-[9px] font-bold uppercase px-2 py-0.5">In Stock</span>`
-            : `<span class="bg-red-100 text-red-600 text-[9px] font-bold uppercase px-2 py-0.5">Out of Stock</span>`;
+            ? `<button onclick="toggleStockRow('${p.id}',true)" class="bg-green-100 text-green-700 text-[9px] font-bold uppercase px-2 py-0.5 hover:bg-red-100 hover:text-red-600 transition cursor-pointer" title="Click to mark Out of Stock">In Stock</button>`
+            : `<button onclick="toggleStockRow('${p.id}',false)" class="bg-red-100 text-red-600 text-[9px] font-bold uppercase px-2 py-0.5 hover:bg-green-100 hover:text-green-700 transition cursor-pointer" title="Click to mark In Stock">Out of Stock</button>`;
         return `<tr class="border-b border-gray-50 hover:bg-gray-50 transition" data-name="${esc(p.name)}" data-cat="${esc(p.category || '')}">
             <td class="p-3">${thumb}</td>
             <td class="p-3">
@@ -380,7 +380,10 @@ function renderTable(products) {
                 <div class="text-[10px] text-gray-400 mt-0.5 md:hidden capitalize">${esc(p.category || '')}</div>
             </td>
             <td class="p-3 hidden md:table-cell text-xs capitalize text-gray-500">${esc(p.category || '')}</td>
-            <td class="p-3 hidden sm:table-cell text-xs text-brand-maroon font-semibold">${esc(p.priceDisplay || '—')}</td>
+            <td class="p-3 hidden sm:table-cell cursor-pointer select-none" onclick="startPriceEdit('${p.id}',this)" data-price="${esc(p.priceDisplay||'')}" title="Click to edit price">
+                <span class="text-xs text-brand-maroon font-semibold">${esc(p.priceDisplay || '—')}</span>
+                <i class="fas fa-pen text-[8px] text-gray-300 ml-1"></i>
+            </td>
             <td class="p-3">${stockBadge}</td>
             <td class="p-3 text-right">
                 <button onclick="openDrawer('${p.id}')" class="text-[10px] bg-brand-maroon text-white px-3 py-1.5 hover:bg-brand-gold hover:text-brand-dark transition mr-1 font-bold uppercase">Edit</button>
@@ -709,6 +712,73 @@ function parseCSV(str) {
         desc:     (r[2] || '').trim(),
         images:   (r[3] || '').split(',').map(u => u.trim()).filter(u => u.length > 5)
     }));
+}
+
+// ── Inline price editing ──────────────────────────────────────────
+function startPriceEdit(productId, cell) {
+    if (cell.dataset.editing) return;
+    cell.dataset.editing = '1';
+    const currentPrice = cell.dataset.price || '';
+    cell.innerHTML = `<input type="text" class="w-full border border-brand-maroon px-2 py-1 text-xs focus:outline-none min-w-[90px]" placeholder="Rs. 1,500">`;
+    const input = cell.querySelector('input');
+    input.value = currentPrice;
+    input.focus();
+    input.select();
+
+    let done = false;
+    async function save() {
+        if (done) return;
+        done = true;
+        delete cell.dataset.editing;
+        const newPrice = input.value.trim();
+        if (newPrice === currentPrice) { restorePriceCell(cell, currentPrice); return; }
+        try {
+            await db.collection('products').doc(productId).update({
+                priceDisplay: newPrice,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            const p = allProductsCache.find(x => x.id === productId);
+            if (p) p.priceDisplay = newPrice;
+            restorePriceCell(cell, newPrice);
+            showToast('Price updated ✓', 'green');
+        } catch (err) {
+            showToast('Error: ' + err.message, 'red');
+            restorePriceCell(cell, currentPrice);
+        }
+    }
+    function cancel() {
+        if (done) return;
+        done = true;
+        delete cell.dataset.editing;
+        restorePriceCell(cell, currentPrice);
+    }
+    input.addEventListener('blur', save);
+    input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+        if (e.key === 'Escape') { input.removeEventListener('blur', save); cancel(); }
+    });
+}
+
+function restorePriceCell(cell, price) {
+    cell.dataset.price = price;
+    cell.innerHTML = `<span class="text-xs text-brand-maroon font-semibold">${esc(price || '—')}</span><i class="fas fa-pen text-[8px] text-gray-300 ml-1"></i>`;
+}
+
+// ── Inline stock toggle ───────────────────────────────────────────
+async function toggleStockRow(productId, currentStock) {
+    const newStock = !currentStock;
+    try {
+        await db.collection('products').doc(productId).update({
+            inStock: newStock,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        const p = allProductsCache.find(x => x.id === productId);
+        if (p) p.inStock = newStock;
+        await loadProducts();
+        showToast(newStock ? 'Marked In Stock ✓' : 'Marked Out of Stock ✓', 'green');
+    } catch (err) {
+        showToast('Error: ' + err.message, 'red');
+    }
 }
 
 // ── Helpers ───────────────────────────────────────────────────────

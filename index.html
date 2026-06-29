@@ -140,6 +140,8 @@
         .search-highlight { background: #D4AF37; color: #0a0a0a; padding: 0 2px; border-radius: 1px; }
         .product-thumb { cursor: pointer; opacity: 0.5; transition: opacity 0.2s, border-color 0.2s; border: 2px solid transparent; }
         .product-thumb.active, .product-thumb:hover { opacity: 1; border-color: #500000; }
+        #cart-drawer { transition: transform 0.3s ease; transform: translateX(100%); }
+        #cart-drawer.open { transform: translateX(0); }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased selection:bg-brand-maroon selection:text-white">
@@ -177,9 +179,16 @@
                 <a href="#products" class="hover:text-brand-maroon transition duration-300">Products</a>
                 <a href="#contact" class="hover:text-brand-maroon transition duration-300">Contact</a>
             </div>
-            <button id="nav-toggle" class="md:hidden text-brand-maroon text-2xl p-1" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu">
-                <i class="fas fa-bars"></i>
-            </button>
+            <div class="flex items-center gap-3">
+                <button id="cart-btn" onclick="openCart()"
+                    class="relative text-brand-maroon p-1" aria-label="View order cart">
+                    <i class="fas fa-shopping-cart text-xl"></i>
+                    <span id="cart-badge" class="hidden absolute -top-1 -right-1 bg-brand-maroon text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none"></span>
+                </button>
+                <button id="nav-toggle" class="md:hidden text-brand-maroon text-2xl p-1" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
         </div>
         <div id="mobile-menu" class="md:hidden border-t border-gray-100 bg-white">
             <div class="container mx-auto px-6 py-4 flex flex-col gap-5 text-xs font-bold uppercase tracking-widest text-gray-500">
@@ -391,6 +400,49 @@
     <!-- Invisible Canvas for Share Proxy -->
     <canvas id="share-canvas"></canvas>
 
+    <!-- Cart added toast -->
+    <div id="cart-toast" class="hidden fixed bottom-28 left-1/2 -translate-x-1/2 z-[300] bg-brand-dark text-white text-xs font-bold px-4 py-2.5 shadow-xl pointer-events-none max-w-xs text-center"></div>
+
+    <!-- Cart overlay -->
+    <div id="cart-overlay" class="hidden fixed inset-0 bg-black/60 z-[250]" onclick="closeCart()"></div>
+
+    <!-- Cart drawer -->
+    <div id="cart-drawer" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white z-[260] shadow-2xl flex flex-col">
+        <div class="flex items-center justify-between px-5 py-4 bg-brand-dark text-white flex-shrink-0">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-shopping-cart text-brand-gold"></i>
+                <span class="font-bold text-sm uppercase tracking-widest">Your Order</span>
+            </div>
+            <button onclick="closeCart()" class="text-gray-400 hover:text-white text-2xl leading-none">&times;</button>
+        </div>
+        <div id="cart-empty-state" class="flex-1 flex flex-col items-center justify-center text-gray-400 p-8">
+            <i class="fas fa-shopping-cart text-5xl mb-4 text-gray-200"></i>
+            <p class="font-bold text-gray-500 mb-1">Your order is empty</p>
+            <p class="text-xs text-center">Browse products and tap <strong>Add to Cart</strong> to build your order</p>
+        </div>
+        <div id="cart-filled" class="hidden flex-1 flex flex-col overflow-hidden">
+            <div id="cart-items-list" class="flex-1 overflow-y-auto px-4 py-3 space-y-2"></div>
+            <div class="border-t border-gray-100 px-4 py-3 flex-shrink-0 bg-gray-50">
+                <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-2 font-bold">Your Details <span class="font-normal normal-case">(optional)</span></p>
+                <input id="cart-customer-name" type="text" placeholder="Your name"
+                    class="w-full border border-gray-200 px-3 py-2 text-xs mb-2 focus:outline-none focus:border-brand-maroon transition bg-white">
+                <input id="cart-customer-city" type="text" placeholder="City / Area"
+                    class="w-full border border-gray-200 px-3 py-2 text-xs focus:outline-none focus:border-brand-maroon transition bg-white">
+            </div>
+            <div class="px-4 pb-5 pt-3 flex-shrink-0 bg-white border-t">
+                <p class="text-[10px] text-gray-400 mb-3 text-center">Prices confirmed on WhatsApp. <strong class="text-brand-maroon">Wholesale orders only.</strong></p>
+                <button onclick="checkoutViaWhatsApp()"
+                    class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3.5 text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition shadow-md">
+                    <i class="fab fa-whatsapp text-lg"></i> Send Order on WhatsApp
+                </button>
+                <button onclick="clearCart()"
+                    class="w-full mt-2 text-[10px] text-gray-400 hover:text-red-500 transition py-1 uppercase tracking-widest">
+                    Clear all items
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ── Firebase config ──────────────────────────────────────────────
         // Fill in apiKey and appId from:
@@ -408,6 +460,103 @@
 
         const BASE_URL = 'https://animalhealth.pk';
         let allProducts = [];
+
+        // ── Cart ─────────────────────────────────────────────────────────
+        let cart = [];
+
+        function openCart() {
+            document.getElementById('cart-overlay').classList.remove('hidden');
+            document.getElementById('cart-drawer').classList.add('open');
+            renderCart();
+        }
+        function closeCart() {
+            document.getElementById('cart-overlay').classList.add('hidden');
+            document.getElementById('cart-drawer').classList.remove('open');
+        }
+        window.addToCart = function(name) {
+            const p = allProducts.find(x => x.name === name);
+            if (!p || p.inStock === false) return;
+            const existing = cart.find(x => x.name === name);
+            if (existing) { existing.qty++; } else {
+                cart.push({ name: p.name, category: p.category, priceDisplay: p.priceDisplay || '', image: p.images[0] || '', qty: 1 });
+            }
+            updateCartBadge();
+            const toast = document.getElementById('cart-toast');
+            toast.textContent = '✓ ' + (name.length > 28 ? name.substring(0, 28) + '…' : name);
+            toast.classList.remove('hidden');
+            clearTimeout(toast._t);
+            toast._t = setTimeout(() => toast.classList.add('hidden'), 2000);
+        };
+        window.removeFromCart = function(name) {
+            cart = cart.filter(x => x.name !== name);
+            updateCartBadge();
+            renderCart();
+        };
+        window.updateCartQty = function(name, qty) {
+            const item = cart.find(x => x.name === name);
+            if (!item) return;
+            if (qty < 1) { window.removeFromCart(name); return; }
+            item.qty = qty;
+            updateCartBadge();
+            renderCart();
+        };
+        function updateCartBadge() {
+            const total = cart.reduce((s, x) => s + x.qty, 0);
+            const badge = document.getElementById('cart-badge');
+            badge.textContent = total > 9 ? '9+' : String(total);
+            total > 0 ? badge.classList.remove('hidden') : badge.classList.add('hidden');
+        }
+        function renderCart() {
+            const filled = document.getElementById('cart-filled');
+            const empty  = document.getElementById('cart-empty-state');
+            const list   = document.getElementById('cart-items-list');
+            if (cart.length === 0) { filled.classList.add('hidden'); empty.classList.remove('hidden'); return; }
+            empty.classList.add('hidden');
+            filled.classList.remove('hidden');
+            list.innerHTML = cart.map(item => {
+                const sn = item.name.replace(/'/g, "\\'");
+                return `<div class="flex items-center gap-2 bg-gray-50 border border-gray-100 p-2">
+                    ${item.image ? `<img src="${item.image}" class="w-12 h-12 object-cover flex-shrink-0 border border-gray-200">` : '<div class="w-12 h-12 bg-gray-200 flex-shrink-0 flex items-center justify-center"><i class="fas fa-box-open text-gray-300 text-sm"></i></div>'}
+                    <div class="flex-1 min-w-0">
+                        <div class="font-bold text-brand-dark text-[11px] leading-tight line-clamp-2">${item.name}</div>
+                        <div class="text-[9px] text-gray-400 capitalize mt-0.5">${item.category}</div>
+                        ${item.priceDisplay ? '<div class="text-[10px] font-bold text-brand-maroon">' + item.priceDisplay + '</div>' : ''}
+                    </div>
+                    <div class="flex items-center gap-0.5 flex-shrink-0">
+                        <button onclick="window.updateCartQty('${sn}',${item.qty-1})" class="w-7 h-7 bg-gray-200 hover:bg-brand-maroon hover:text-white font-bold text-sm flex items-center justify-center transition">−</button>
+                        <span class="w-6 text-center text-xs font-bold">${item.qty}</span>
+                        <button onclick="window.updateCartQty('${sn}',${item.qty+1})" class="w-7 h-7 bg-gray-200 hover:bg-brand-maroon hover:text-white font-bold text-sm flex items-center justify-center transition">+</button>
+                        <button onclick="window.removeFromCart('${sn}')" class="w-7 h-7 text-gray-300 hover:text-red-500 text-sm flex items-center justify-center transition ml-0.5"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+        function clearCart() {
+            if (!cart.length) return;
+            if (!confirm('Clear all items from your order?')) return;
+            cart = [];
+            updateCartBadge();
+            renderCart();
+        }
+        function checkoutViaWhatsApp() {
+            if (!cart.length) return;
+            const name  = document.getElementById('cart-customer-name').value.trim();
+            const city  = document.getElementById('cart-customer-city').value.trim();
+            const total = cart.reduce((s, x) => s + x.qty, 0);
+            const lines = cart.map((x, i) => (i+1) + '. ' + x.name + (x.qty > 1 ? ' ×' + x.qty : '')).join('\n');
+            let msg = '🛒 *ORDER REQUEST — Khyber Traders*\n━━━━━━━━━━━━━━━━━━\n';
+            if (name) msg += '👤 Name: ' + name + '\n';
+            if (city) msg += '📍 City: ' + city + '\n';
+            if (name || city) msg += '━━━━━━━━━━━━━━━━━━\n';
+            msg += '📦 *Items (' + total + '):*\n' + lines + '\n━━━━━━━━━━━━━━━━━━\n💬 Please confirm availability and pricing.';
+            window.open('https://wa.me/923352999006?text=' + encodeURIComponent(msg), '_blank');
+            if (typeof gtag !== 'undefined') gtag('event', 'generate_lead', { method: 'whatsapp_cart', value: total });
+        }
+        window.inquireProduct = function(name, category, link) {
+            const text = '📦 *Product:* ' + name + '\n🔗 *Link:* ' + link;
+            window.open('https://wa.me/923352999006?text=' + encodeURIComponent(text), '_blank');
+            if (typeof gtag !== 'undefined') gtag('event', 'generate_lead', { item_name: name, item_category: category });
+        };
 
         async function fetchProducts() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -506,7 +655,7 @@
                             <button onclick="shareProductNative(event,'${p.name.replace(/'/g,"\\'")}','${p.category}','${(p.desc||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}','${imageLink}')" class="py-2 text-[9px] sm:text-[10px] font-bold uppercase text-gray-500 hover:bg-gray-50 flex items-center justify-center gap-1 transition"><i class="fas fa-share-alt text-[9px]"></i> Share</button>
                         </div>
                         ${p.inStock
-                            ? `<a href="https://wa.me/923352999006?text=${encodeURIComponent('📦 *Product:* ' + p.name + '\n🔗 *Link:* ' + redirectLink)}" target="_blank" onclick="trackInquiry('${p.name.replace(/'/g,"\\'")}','${p.category}')" class="bg-green-500 hover:bg-green-600 text-white py-2 sm:py-2.5 text-[9px] sm:text-[10px] font-bold uppercase flex items-center justify-center gap-1.5 transition shadow"><i class="fab fa-whatsapp text-sm"></i> Inquire on WhatsApp</a>`
+                            ? `<button onclick="window.addToCart('${p.name.replace(/'/g,"\\'")}')" class="bg-brand-maroon hover:bg-brand-dark text-white py-2 sm:py-2.5 text-[9px] sm:text-[10px] font-bold uppercase flex items-center justify-center gap-1.5 transition shadow w-full"><i class="fas fa-shopping-cart text-sm"></i> Add to Cart</button>`
                             : `<button disabled class="bg-gray-200 text-gray-400 py-2 sm:py-2.5 text-[9px] sm:text-[10px] font-bold uppercase w-full cursor-not-allowed">Out of Stock</button>`}
                     </div>
                 </div>`;
@@ -636,7 +785,6 @@
 
             const formattedDesc = (product.desc || '').replace(/\n/g, '<br>');
             const shareParams = `event,'${product.name.replace(/'/g,"\\'")}','${product.category}','${(product.desc||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}','${firstImg}'`;
-            const waText = encodeURIComponent('📦 *Product:* ' + product.name + '\n🔗 *Link:* ' + redirectLink);
 
             document.getElementById('pdp-content').innerHTML = `
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
@@ -644,16 +792,20 @@
                     <div class="flex flex-col">
                         <span class="inline-block bg-brand-maroon/10 text-brand-maroon text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 mb-3 self-start">${product.category}</span>
                         <h1 class="text-2xl sm:text-3xl font-serif font-bold text-brand-dark mb-4 leading-tight">${product.name}</h1>
-                        <div class="h-0.5 w-12 bg-brand-gold mb-5"></div>
+                        <div class="h-0.5 w-12 bg-brand-gold mb-3"></div>
+                        ${product.priceDisplay ? `<div class="text-base font-bold text-brand-maroon mb-4">${product.priceDisplay}</div>` : ''}
                         ${formattedDesc
                             ? `<div class="text-sm text-gray-600 leading-relaxed formatted-text mb-8">${formattedDesc}</div>`
                             : `<p class="text-gray-400 text-sm mb-8 italic">No description available.</p>`}
                         <div class="space-y-3">
-                            <a href="https://wa.me/923352999006?text=${waText}" target="_blank"
-                               onclick="trackInquiry('${product.name.replace(/'/g,"\\'")}','${product.category}')"
-                               class="w-full bg-green-500 hover:bg-green-600 text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
+                            <button onclick="window.addToCart('${product.name.replace(/'/g,"\\'")}');openCart();"
+                                class="w-full bg-brand-maroon hover:bg-brand-dark text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
+                                <i class="fas fa-shopping-cart text-lg"></i> Add to Cart
+                            </button>
+                            <button onclick="window.inquireProduct('${product.name.replace(/'/g,"\\'")}','${product.category}','${redirectLink}')"
+                                class="w-full bg-green-500 hover:bg-green-600 text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
                                 <i class="fab fa-whatsapp text-lg"></i> Inquire on WhatsApp
-                            </a>
+                            </button>
                             <button onclick="shareProductNative(${shareParams})"
                                     class="w-full bg-brand-gold hover:bg-brand-maroon hover:text-white text-brand-dark py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
                                 <i class="fas fa-share-alt"></i> Share Product
@@ -791,6 +943,8 @@
                 closeLightbox();
             } else if (!document.getElementById('product-detail-page').classList.contains('hidden')) {
                 closeProductDetailPage();
+            } else if (document.getElementById('cart-drawer').classList.contains('open')) {
+                closeCart();
             } else if (!document.getElementById('category-modal').classList.contains('hidden')) {
                 closeCategoryModal();
             } else {
