@@ -176,10 +176,19 @@
         </div>
 
         <div>
-            <label class="label">Price Display</label>
+            <label class="label">Pack Sizes &amp; Prices</label>
+            <div id="pack-sizes-list" class="space-y-2 mb-2"></div>
+            <button type="button" onclick="addPackSizeRow()"
+                class="text-[10px] border border-brand-maroon/40 text-brand-maroon px-3 py-1.5 hover:bg-brand-maroon hover:text-white transition font-bold uppercase tracking-widest">
+                + Add Pack Size
+            </button>
+            <p class="text-[10px] text-gray-400 mt-1">e.g. "100ml" → "Rs. 500" — leave empty if using single price below.</p>
+        </div>
+
+        <div>
+            <label class="label">Single Price <span class="text-gray-400 font-normal">(if no pack sizes above)</span></label>
             <input id="f-price" type="text" class="field"
-                placeholder='e.g. "Rs. 1,500" or "Rs. 800–1,200" or "Contact for Price"'>
-            <p class="text-[10px] text-gray-400 mt-1">Free text — customers see exactly what you type here.</p>
+                placeholder='e.g. "Rs. 1,500" or "Contact for Price"'>
         </div>
 
         <div class="flex items-center gap-3">
@@ -291,10 +300,11 @@ const CLOUDINARY_CLOUD  = 'dkay9chpe';
 const CLOUDINARY_PRESET = 'khybertraders';
 
 // ── State ─────────────────────────────────────────────────────────
-let allProductsCache = [];
-let currentImages   = [];   // URLs (Storage or external) for the open drawer
-let pendingDeleteId = null;
-let isStockOn       = true;
+let allProductsCache  = [];
+let currentImages    = [];
+let currentPackSizes = [];
+let pendingDeleteId  = null;
+let isStockOn        = true;
 
 // ── Auth ──────────────────────────────────────────────────────────
 auth.onAuthStateChanged(user => {
@@ -381,7 +391,9 @@ function renderTable(products) {
             </td>
             <td class="p-3 hidden md:table-cell text-xs capitalize text-gray-500">${esc(p.category || '')}</td>
             <td class="p-3 hidden sm:table-cell cursor-pointer select-none" onclick="startPriceEdit('${p.id}',this)" data-price="${esc(p.priceDisplay||'')}" title="Click to edit price">
-                <span class="text-xs text-brand-maroon font-semibold">${esc(p.priceDisplay || '—')}</span>
+                ${p.packSizes && p.packSizes.length
+                    ? p.packSizes.map(ps => `<span class="inline-block text-[9px] bg-brand-maroon/10 text-brand-maroon font-bold px-1.5 py-0.5 mr-0.5 mb-0.5">${esc(ps.size)} ${esc(ps.price)}</span>`).join('')
+                    : `<span class="text-xs text-brand-maroon font-semibold">${esc(p.priceDisplay || '—')}</span>`}
                 <i class="fas fa-pen text-[8px] text-gray-300 ml-1"></i>
             </td>
             <td class="p-3">${stockBadge}</td>
@@ -416,6 +428,32 @@ function populateCatFilter() {
     dl.innerHTML = cats.map(c => `<option value="${esc(c)}">`).join('');
 }
 
+// ── Pack Sizes ────────────────────────────────────────────────────
+function addPackSizeRow(size = '', price = '') {
+    currentPackSizes.push({ size, price });
+    renderPackSizes();
+}
+function removePackSizeRow(idx) {
+    currentPackSizes.splice(idx, 1);
+    renderPackSizes();
+}
+function renderPackSizes() {
+    const el = document.getElementById('pack-sizes-list');
+    if (!el) return;
+    el.innerHTML = currentPackSizes.map((ps, i) => `
+        <div class="flex gap-1.5 items-center">
+            <input type="text" value="${esc(ps.size)}" placeholder="Size (e.g. 100ml)"
+                class="field flex-1 text-xs" style="padding:6px 8px"
+                oninput="currentPackSizes[${i}].size=this.value">
+            <input type="text" value="${esc(ps.price)}" placeholder="Price (e.g. Rs. 500)"
+                class="field flex-1 text-xs" style="padding:6px 8px"
+                oninput="currentPackSizes[${i}].price=this.value">
+            <button type="button" onclick="removePackSizeRow(${i})"
+                class="text-red-400 hover:text-red-600 text-lg leading-none w-5 flex-shrink-0">&times;</button>
+        </div>`
+    ).join('');
+}
+
 // ── Drawer ────────────────────────────────────────────────────────
 function openDrawer(productId) {
     resetForm();
@@ -432,6 +470,8 @@ function openDrawer(productId) {
         setStock(p.inStock !== false);
         currentImages = [...(p.images || [])];
         renderImagePreviews();
+        currentPackSizes = (p.packSizes || []).map(ps => ({ ...ps }));
+        renderPackSizes();
         updateSlugPreview();
     } else {
         document.getElementById('drawer-title').textContent = 'Add Product';
@@ -450,6 +490,8 @@ function resetForm() {
     document.getElementById('f-id').value = '';
     currentImages = [];
     renderImagePreviews();
+    currentPackSizes = [];
+    renderPackSizes();
     setStock(true);
     document.getElementById('slug-preview').textContent = '';
     document.getElementById('upload-progress').classList.add('hidden');
@@ -602,6 +644,7 @@ async function saveProduct() {
         name,
         desc:         document.getElementById('f-desc').value.trim(),
         priceDisplay: document.getElementById('f-price').value.trim(),
+        packSizes:    currentPackSizes.filter(ps => ps.size && ps.size.trim()),
         inStock:      document.getElementById('f-instock').value === 'true',
         sortOrder:    parseInt(document.getElementById('f-sort').value) || 0,
         images:       currentImages,

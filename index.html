@@ -426,7 +426,11 @@
                 <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-2 font-bold">Your Details <span class="font-normal normal-case">(optional)</span></p>
                 <input id="cart-customer-name" type="text" placeholder="Your name"
                     class="w-full border border-gray-200 px-3 py-2 text-xs mb-2 focus:outline-none focus:border-brand-maroon transition bg-white">
+                <input id="cart-customer-phone" type="tel" placeholder="Contact number"
+                    class="w-full border border-gray-200 px-3 py-2 text-xs mb-2 focus:outline-none focus:border-brand-maroon transition bg-white">
                 <input id="cart-customer-city" type="text" placeholder="City / Area"
+                    class="w-full border border-gray-200 px-3 py-2 text-xs mb-2 focus:outline-none focus:border-brand-maroon transition bg-white">
+                <input id="cart-customer-address" type="text" placeholder="Delivery address"
                     class="w-full border border-gray-200 px-3 py-2 text-xs focus:outline-none focus:border-brand-maroon transition bg-white">
             </div>
             <div class="px-4 pb-5 pt-3 flex-shrink-0 bg-white border-t">
@@ -463,6 +467,7 @@
 
         // ── Cart ─────────────────────────────────────────────────────────
         let cart = [];
+        let _pdpPackSize = null;
 
         function openCart() {
             document.getElementById('cart-overlay').classList.remove('hidden');
@@ -473,30 +478,35 @@
             document.getElementById('cart-overlay').classList.add('hidden');
             document.getElementById('cart-drawer').classList.remove('open');
         }
-        window.addToCart = function(name) {
+        window.addToCart = function(name, packSize) {
             const p = allProducts.find(x => x.name === name);
             if (!p || p.inStock === false) return;
-            const existing = cart.find(x => x.name === name);
+            if (p.packSizes && p.packSizes.length > 1 && !packSize) {
+                closeCategoryModal();
+                openProductDetailPage(p);
+                return;
+            }
+            const ps  = packSize || (p.packSizes && p.packSizes.length === 1 ? p.packSizes[0] : null);
+            const key = name + (ps ? '‖' + ps.size : '');
+            const existing = cart.find(x => x.key === key);
             if (existing) { existing.qty++; } else {
-                cart.push({ name: p.name, category: p.category, priceDisplay: p.priceDisplay || '', image: p.images[0] || '', qty: 1 });
+                cart.push({ key, name: p.name, category: p.category, packSize: ps, priceDisplay: ps ? ps.price : (p.priceDisplay || ''), image: p.images[0] || '', qty: 1 });
             }
             updateCartBadge();
             const toast = document.getElementById('cart-toast');
-            toast.textContent = '✓ ' + (name.length > 28 ? name.substring(0, 28) + '…' : name);
+            toast.textContent = '✓ ' + (name.length > 24 ? name.substring(0, 24) + '…' : name) + (ps ? ' (' + ps.size + ')' : '');
             toast.classList.remove('hidden');
             clearTimeout(toast._t);
             toast._t = setTimeout(() => toast.classList.add('hidden'), 2000);
         };
-        window.removeFromCart = function(name) {
-            cart = cart.filter(x => x.name !== name);
+        window.removeFromCart = function(idx) {
+            cart.splice(idx, 1);
             updateCartBadge();
             renderCart();
         };
-        window.updateCartQty = function(name, qty) {
-            const item = cart.find(x => x.name === name);
-            if (!item) return;
-            if (qty < 1) { window.removeFromCart(name); return; }
-            item.qty = qty;
+        window.updateCartQty = function(idx, qty) {
+            if (qty < 1) { window.removeFromCart(idx); return; }
+            if (cart[idx]) cart[idx].qty = qty;
             updateCartBadge();
             renderCart();
         };
@@ -513,23 +523,20 @@
             if (cart.length === 0) { filled.classList.add('hidden'); empty.classList.remove('hidden'); return; }
             empty.classList.add('hidden');
             filled.classList.remove('hidden');
-            list.innerHTML = cart.map(item => {
-                const sn = item.name.replace(/'/g, "\\'");
-                return `<div class="flex items-center gap-2 bg-gray-50 border border-gray-100 p-2">
+            list.innerHTML = cart.map((item, idx) => `<div class="flex items-center gap-2 bg-gray-50 border border-gray-100 p-2">
                     ${item.image ? `<img src="${item.image}" class="w-12 h-12 object-cover flex-shrink-0 border border-gray-200">` : '<div class="w-12 h-12 bg-gray-200 flex-shrink-0 flex items-center justify-center"><i class="fas fa-box-open text-gray-300 text-sm"></i></div>'}
                     <div class="flex-1 min-w-0">
                         <div class="font-bold text-brand-dark text-[11px] leading-tight line-clamp-2">${item.name}</div>
-                        <div class="text-[9px] text-gray-400 capitalize mt-0.5">${item.category}</div>
+                        ${item.packSize ? '<div class="text-[9px] text-gray-500 font-semibold mt-0.5">' + item.packSize.size + '</div>' : '<div class="text-[9px] text-gray-400 capitalize mt-0.5">' + item.category + '</div>'}
                         ${item.priceDisplay ? '<div class="text-[10px] font-bold text-brand-maroon">' + item.priceDisplay + '</div>' : ''}
                     </div>
                     <div class="flex items-center gap-0.5 flex-shrink-0">
-                        <button onclick="window.updateCartQty('${sn}',${item.qty-1})" class="w-7 h-7 bg-gray-200 hover:bg-brand-maroon hover:text-white font-bold text-sm flex items-center justify-center transition">−</button>
+                        <button onclick="window.updateCartQty(${idx},${item.qty-1})" class="w-7 h-7 bg-gray-200 hover:bg-brand-maroon hover:text-white font-bold text-sm flex items-center justify-center transition">−</button>
                         <span class="w-6 text-center text-xs font-bold">${item.qty}</span>
-                        <button onclick="window.updateCartQty('${sn}',${item.qty+1})" class="w-7 h-7 bg-gray-200 hover:bg-brand-maroon hover:text-white font-bold text-sm flex items-center justify-center transition">+</button>
-                        <button onclick="window.removeFromCart('${sn}')" class="w-7 h-7 text-gray-300 hover:text-red-500 text-sm flex items-center justify-center transition ml-0.5"><i class="fas fa-trash-alt"></i></button>
+                        <button onclick="window.updateCartQty(${idx},${item.qty+1})" class="w-7 h-7 bg-gray-200 hover:bg-brand-maroon hover:text-white font-bold text-sm flex items-center justify-center transition">+</button>
+                        <button onclick="window.removeFromCart(${idx})" class="w-7 h-7 text-gray-300 hover:text-red-500 text-sm flex items-center justify-center transition ml-0.5"><i class="fas fa-trash-alt"></i></button>
                     </div>
-                </div>`;
-            }).join('');
+                </div>`).join('');
         }
         function clearCart() {
             if (!cart.length) return;
@@ -540,20 +547,25 @@
         }
         function checkoutViaWhatsApp() {
             if (!cart.length) return;
-            const name  = document.getElementById('cart-customer-name').value.trim();
-            const city  = document.getElementById('cart-customer-city').value.trim();
-            const total = cart.reduce((s, x) => s + x.qty, 0);
-            const lines = cart.map((x, i) => (i+1) + '. ' + x.name + (x.qty > 1 ? ' ×' + x.qty : '')).join('\n');
-            let msg = '🛒 *ORDER REQUEST — Khyber Traders*\n━━━━━━━━━━━━━━━━━━\n';
-            if (name) msg += '👤 Name: ' + name + '\n';
-            if (city) msg += '📍 City: ' + city + '\n';
-            if (name || city) msg += '━━━━━━━━━━━━━━━━━━\n';
-            msg += '📦 *Items (' + total + '):*\n' + lines + '\n━━━━━━━━━━━━━━━━━━\n💬 Please confirm availability and pricing.';
+            const name    = document.getElementById('cart-customer-name').value.trim();
+            const phone   = document.getElementById('cart-customer-phone').value.trim();
+            const city    = document.getElementById('cart-customer-city').value.trim();
+            const address = document.getElementById('cart-customer-address').value.trim();
+            const total   = cart.reduce((s, x) => s + x.qty, 0);
+            const lines   = cart.map((x, i) => (i+1) + '. ' + x.name + (x.packSize ? ' — ' + x.packSize.size : '') + (x.qty > 1 ? ' ×' + x.qty : '')).join('\n');
+            const SEP = '━━━━━━━━━━━━━━━━━━';
+            let msg = '\uD83D\uDED2 *ORDER REQUEST — Khyber Traders*\n' + SEP + '\n';
+            if (name)    msg += '\uD83D\uDC64 Name: '    + name    + '\n';
+            if (phone)   msg += '\uD83D\uDCDE Phone: '   + phone   + '\n';
+            if (city)    msg += '\uD83D\uDCCD City: '    + city    + '\n';
+            if (address) msg += '\uD83C\uDFE0 Address: ' + address + '\n';
+            if (name || phone || city || address) msg += SEP + '\n';
+            msg += '\uD83D\uDCE6 *Items (' + total + '):*\n' + lines + '\n' + SEP + '\n\uD83D\uDCAC Please confirm availability and pricing.';
             window.open('https://wa.me/923352999006?text=' + encodeURIComponent(msg), '_blank');
             if (typeof gtag !== 'undefined') gtag('event', 'generate_lead', { method: 'whatsapp_cart', value: total });
         }
         window.inquireProduct = function(name, category, link) {
-            const text = '📦 *Product:* ' + name + '\n🔗 *Link:* ' + link;
+            const text = '\uD83D\uDCE6 *Product:* ' + name + '\n\uD83D\uDD17 *Link:* ' + link;
             window.open('https://wa.me/923352999006?text=' + encodeURIComponent(text), '_blank');
             if (typeof gtag !== 'undefined') gtag('event', 'generate_lead', { item_name: name, item_category: category });
         };
@@ -571,6 +583,7 @@
                         name:         d.name || '',
                         desc:         d.desc || '',
                         images:       d.images || [],
+                        packSizes:    d.packSizes || [],
                         priceDisplay: d.priceDisplay || '',
                         inStock:      d.inStock !== false
                     });
@@ -649,7 +662,9 @@
                     <div class="p-3 sm:p-4 flex flex-col flex-grow">
                         <a href="${itemLink}" target="_blank" class="font-bold text-brand-dark mb-0.5 text-[13px] sm:text-base font-serif leading-tight hover:text-brand-maroon transition block">${p.name}</a>
                         <span class="inline-block bg-brand-maroon/10 text-brand-maroon text-[7px] sm:text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 mb-1 self-start">${p.category}</span>
-                        ${p.priceDisplay ? `<div class="text-[10px] sm:text-xs font-bold text-brand-maroon mb-1">${p.priceDisplay}</div>` : ''}
+                        ${p.packSizes && p.packSizes.length
+                            ? `<div class="flex flex-wrap gap-1 mb-1">${p.packSizes.map(ps => `<span class="text-[8px] bg-brand-maroon/10 text-brand-maroon font-bold px-1.5 py-0.5">${ps.size} — ${ps.price}</span>`).join('')}</div>`
+                            : p.priceDisplay ? `<div class="text-[10px] sm:text-xs font-bold text-brand-maroon mb-1">${p.priceDisplay}</div>` : ''}
                         <p class="text-[10px] sm:text-xs text-gray-500 mb-3 line-clamp-2 leading-relaxed">${plainDesc}</p>
                         <div class="grid grid-cols-2 border border-gray-100 mb-2 mt-auto">
                             <button onclick="openProductByName('${p.name.replace(/'/g,"\\'")}');" class="py-2 text-[9px] sm:text-[10px] font-bold uppercase text-brand-maroon hover:bg-brand-maroon/5 flex items-center justify-center gap-1 transition border-r border-gray-100"><i class="fas fa-expand-alt text-[9px]"></i> View</button>
@@ -763,6 +778,8 @@
 
         // Product detail page
         window.openProductDetailPage = function(product) {
+            window._currentPdpProduct = product;
+            _pdpPackSize = (product.packSizes && product.packSizes.length) ? product.packSizes[0] : null;
             const slug = getCleanSlug(product.name);
             const redirectLink = `https://animalhealth.pk/s/${slug}.html`;
             const itemLink = `https://animalhealth.pk/?item=${encodeURIComponent(product.name)}`;
@@ -794,12 +811,19 @@
                         <span class="inline-block bg-brand-maroon/10 text-brand-maroon text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 mb-3 self-start">${product.category}</span>
                         <h1 class="text-2xl sm:text-3xl font-serif font-bold text-brand-dark mb-4 leading-tight">${product.name}</h1>
                         <div class="h-0.5 w-12 bg-brand-gold mb-3"></div>
-                        ${product.priceDisplay ? `<div class="text-base font-bold text-brand-maroon mb-4">${product.priceDisplay}</div>` : ''}
+                        ${product.packSizes && product.packSizes.length
+                            ? `<div class="mb-4">
+                                <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Select Pack Size</p>
+                                <div class="flex flex-wrap gap-2">
+                                    ${product.packSizes.map((ps, i) => `<button class="pdp-ps-btn px-3 py-2 border-2 text-xs font-bold transition ${i===0 ? 'border-brand-maroon bg-brand-maroon/5 text-brand-maroon' : 'border-gray-200 text-gray-600 hover:border-brand-gold'}" onclick="window.selectPdpPackSize(${i})"><div>${ps.size}</div><div class="text-brand-maroon">${ps.price}</div></button>`).join('')}
+                                </div>
+                               </div>`
+                            : product.priceDisplay ? `<div class="text-base font-bold text-brand-maroon mb-4">${product.priceDisplay}</div>` : ''}
                         ${formattedDesc
                             ? `<div class="text-sm text-gray-600 leading-relaxed formatted-text mb-8">${formattedDesc}</div>`
                             : `<p class="text-gray-400 text-sm mb-8 italic">No description available.</p>`}
                         <div class="space-y-3">
-                            <button onclick="window.addToCart('${product.name.replace(/'/g,"\\'")}');openCart();"
+                            <button onclick="window.addToCart('${product.name.replace(/'/g,"\\'")}', _pdpPackSize);openCart();"
                                 class="w-full bg-brand-maroon hover:bg-brand-dark text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
                                 <i class="fas fa-shopping-cart text-lg"></i> Add to Cart
                             </button>
@@ -828,6 +852,20 @@
             document.title = 'Khyber Traders | Wholesale Veterinary Pharmacy';
             history.replaceState(null, '', '/');
             document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+        };
+
+        window.selectPdpPackSize = function(idx) {
+            if (!window._currentPdpProduct) return;
+            _pdpPackSize = window._currentPdpProduct.packSizes[idx];
+            document.querySelectorAll('.pdp-ps-btn').forEach((btn, i) => {
+                if (i === idx) {
+                    btn.classList.add('border-brand-maroon', 'bg-brand-maroon/5', 'text-brand-maroon');
+                    btn.classList.remove('border-gray-200', 'text-gray-600');
+                } else {
+                    btn.classList.remove('border-brand-maroon', 'bg-brand-maroon/5', 'text-brand-maroon');
+                    btn.classList.add('border-gray-200', 'text-gray-600');
+                }
+            });
         };
 
         window.pdpSetImage = function(src, thumbEl) {
