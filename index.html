@@ -299,8 +299,8 @@
             </div>
             <!-- How to Order note -->
             <div class="mb-8 max-w-2xl mx-auto bg-white border border-brand-gold/40 px-5 py-4 text-left shadow-sm">
-                <p class="text-[10px] font-bold text-brand-maroon uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fas fa-info-circle"></i> How to Place an Order</p>
-                <ol class="text-xs text-gray-600 space-y-2">
+                <p class="text-xs font-bold text-brand-maroon uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fas fa-info-circle"></i> How to Place an Order</p>
+                <ol class="text-sm text-gray-600 space-y-2">
                     <li class="flex gap-2.5"><span class="font-bold text-brand-gold w-4 flex-shrink-0">1.</span><span>Browse the categories below and open any product to view details.</span></li>
                     <li class="flex gap-2.5"><span class="font-bold text-brand-gold w-4 flex-shrink-0">2.</span><span>Tap <strong class="text-brand-dark">Add to Order</strong> on the products you need — you can add as many as you like.</span></li>
                     <li class="flex gap-2.5"><span class="font-bold text-brand-gold w-4 flex-shrink-0">3.</span><span>Open your <strong class="text-brand-dark">Order List</strong> (cart icon, top right), add your name &amp; address, then tap <strong class="text-brand-dark">Send on WhatsApp</strong>.</span></li>
@@ -736,8 +736,8 @@
                         <i class="fas fa-box-open text-sm" style="color:${c.iconFg}"></i>
                     </div>
                     <div class="flex-1 min-w-0 py-3 pr-1">
-                        <h3 class="font-bold text-[13px] leading-tight capitalize text-gray-800" style="font-family:'Playfair Display',serif">${cat}</h3>
-                        <p class="text-[10px] text-gray-400 mt-0.5 font-medium">${count} product${count !== 1 ? 's' : ''}</p>
+                        <h3 class="font-bold text-sm leading-tight capitalize text-gray-800" style="font-family:'Playfair Display',serif">${cat}</h3>
+                        <p class="text-xs text-gray-400 mt-0.5 font-medium">${count} product${count !== 1 ? 's' : ''}</p>
                     </div>
                     <button onclick="shareCategory(event, '${safeCat}')"
                             class="px-3 self-stretch flex items-center text-gray-300 hover:text-gray-500 transition flex-shrink-0 border-l"
@@ -773,19 +773,19 @@
                         ${!p.inStock ? `<div class="absolute inset-0 bg-black/50 flex items-center justify-center pointer-events-none z-10"><span class="bg-red-600 text-white text-[9px] sm:text-[10px] font-bold uppercase tracking-widest px-3 py-1">Out of Stock</span></div>` : ''}
                     </div>
                     <div class="p-3 sm:p-4 flex flex-col flex-grow">
-                        <a href="${itemLink}" target="_blank" class="font-semibold text-brand-dark mb-0.5 text-[13px] sm:text-base font-sans leading-tight hover:text-brand-maroon transition block">${p.name}</a>
-                        <span class="inline-block bg-brand-maroon/10 text-brand-maroon text-[7px] sm:text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 mb-1 self-start">${p.category}</span>
+                        <a href="${itemLink}" target="_blank" class="font-semibold text-brand-dark mb-1 text-sm sm:text-base font-sans leading-snug hover:text-brand-maroon transition block">${p.name}</a>
+                        <span class="inline-block bg-brand-maroon/10 text-brand-maroon text-[9px] sm:text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 mb-1.5 self-start">${p.category}</span>
                         ${p.packSizes && p.packSizes.length
-                            ? `<div class="flex flex-wrap gap-1 mb-1">${p.packSizes.map(ps => `<span class="text-[8px] bg-brand-maroon/10 text-brand-maroon font-bold px-1.5 py-0.5">${ps.size} — ${ps.price}</span>`).join('')}</div>`
-                            : p.priceDisplay ? `<div class="text-[10px] sm:text-xs font-bold text-brand-maroon mb-1">${p.priceDisplay}</div>` : ''}
-                        <p class="text-[10px] sm:text-xs text-gray-500 mb-3 line-clamp-2 leading-relaxed">${plainDesc}</p>
+                            ? `<div class="flex flex-wrap gap-1 mb-1.5">${p.packSizes.map(ps => `<span class="text-[10px] bg-brand-maroon/10 text-brand-maroon font-bold px-2 py-0.5">${ps.size} — ${ps.price}</span>`).join('')}</div>`
+                            : p.priceDisplay ? `<div class="text-xs font-bold text-brand-maroon mb-1.5">${p.priceDisplay}</div>` : ''}
+                        <p class="text-xs text-gray-500 mb-3 line-clamp-2 leading-relaxed">${plainDesc}</p>
                         <div class="grid grid-cols-2 border border-gray-100 mb-2 mt-auto">
-                            <button onclick="openProductByName('${p.name.replace(/'/g,"\\'")}');" class="py-2 text-[9px] sm:text-[10px] font-bold uppercase text-brand-maroon hover:bg-brand-maroon/5 flex items-center justify-center gap-1 transition border-r border-gray-100"><i class="fas fa-expand-alt text-[9px]"></i> View</button>
-                            <button onclick="shareProductNative(event,'${p.name.replace(/'/g,"\\'")}','${p.category}','${(p.desc||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}','${imageLink}')" class="py-2 text-[9px] sm:text-[10px] font-bold uppercase text-gray-500 hover:bg-gray-50 flex items-center justify-center gap-1 transition"><i class="fas fa-share-alt text-[9px]"></i> Share</button>
+                            <button onclick="openProductByName('${p.name.replace(/'/g,"\\'")}');" class="py-2.5 text-[10px] sm:text-xs font-bold uppercase text-brand-maroon hover:bg-brand-maroon/5 flex items-center justify-center gap-1 transition border-r border-gray-100"><i class="fas fa-expand-alt text-[9px]"></i> View</button>
+                            <button onclick="shareProductNative(event,'${p.name.replace(/'/g,"\\'")}','${p.category}','${(p.desc||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}','${imageLink}')" class="py-2.5 text-[10px] sm:text-xs font-bold uppercase text-gray-500 hover:bg-gray-50 flex items-center justify-center gap-1 transition"><i class="fas fa-share-alt text-[9px]"></i> Share</button>
                         </div>
                         ${p.inStock
-                            ? `<button onclick="window.addToCart('${p.name.replace(/'/g,"\\'")}')" class="bg-brand-maroon hover:bg-brand-dark text-white py-2 sm:py-2.5 text-[9px] sm:text-[10px] font-bold uppercase flex items-center justify-center gap-1.5 transition shadow w-full"><i class="fas fa-plus text-sm"></i> Add to Order</button>`
-                            : `<button disabled class="bg-gray-200 text-gray-400 py-2 sm:py-2.5 text-[9px] sm:text-[10px] font-bold uppercase w-full cursor-not-allowed">Out of Stock</button>`}
+                            ? `<button onclick="window.addToCart('${p.name.replace(/'/g,"\\'")}')" class="bg-brand-maroon hover:bg-brand-dark text-white py-2.5 text-[10px] sm:text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition shadow w-full"><i class="fas fa-plus text-sm"></i> Add to Order</button>`
+                            : `<button disabled class="bg-gray-200 text-gray-400 py-2.5 text-[10px] sm:text-xs font-bold uppercase w-full cursor-not-allowed">Out of Stock</button>`}
                     </div>
                 </div>`;
             }).join('');

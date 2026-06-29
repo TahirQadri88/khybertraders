@@ -110,10 +110,6 @@
             <option value="">All categories</option>
         </select>
         <span id="product-count" class="text-xs text-gray-400 ml-auto"></span>
-        <button id="import-btn" onclick="importFromSheets()"
-            class="text-xs border border-gray-300 text-gray-500 hover:border-brand-maroon hover:text-brand-maroon px-4 py-2.5 transition flex items-center gap-2">
-            <i class="fas fa-file-import"></i> Import from Sheets
-        </button>
         <button onclick="openSettings()"
             class="text-xs border border-gray-300 text-gray-500 hover:border-brand-maroon hover:text-brand-maroon px-4 py-2.5 transition flex items-center gap-2" title="Shop settings">
             <i class="fas fa-cog"></i> Settings
@@ -174,7 +170,7 @@
         <div id="empty-state" class="hidden text-center py-20 text-gray-400">
             <i class="fas fa-box-open text-4xl mb-4 block text-gray-200"></i>
             <p class="font-bold text-gray-400 mb-2">No products yet</p>
-            <p class="text-xs mb-4">Click <strong>Import from Sheets</strong> to load your existing products, or <strong>Add Product</strong> to add one manually.</p>
+            <p class="text-xs mb-4">Click <strong>Add Product</strong> to add your first product.</p>
         </div>
     </div>
 </div>
@@ -792,72 +788,6 @@ async function confirmDelete() {
     } catch (err) {
         showToast('Delete failed: ' + err.message, 'red');
     }
-}
-
-// ── Import from Google Sheets ─────────────────────────────────────
-async function importFromSheets() {
-    if (!confirm('Import products from Google Sheets?\n\nProducts already in Firestore (matched by slug) will be skipped — only new products are added.')) return;
-
-    const btn = document.getElementById('import-btn');
-    btn.innerHTML = '<i class="fas fa-circle-notch spinner"></i> Importing…';
-    btn.disabled = true;
-
-    try {
-        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1-s7frQnY1Muh4XOizcz2V3KnkkHV8owNWYzyDrYFSic/gviz/tq?tqx=out:csv';
-        const res  = await fetch(SHEET_URL);
-        const text = await res.text();
-        const rows = parseCSV(text);
-
-        // Get existing slugs to avoid duplicates
-        const snap = await db.collection('products').get();
-        const existingSlugs = new Set(snap.docs.map(d => d.data().slug).filter(Boolean));
-
-        let added = 0;
-        for (const p of rows) {
-            const slug = getCleanSlug(p.name);
-            if (!p.name || existingSlugs.has(slug)) continue;
-            await db.collection('products').add({
-                category:     p.category || '',
-                name:         p.name,
-                desc:         p.desc || '',
-                images:       p.images || [],
-                priceDisplay: '',
-                inStock:      true,
-                sortOrder:    0,
-                slug,
-                updatedAt:    firebase.firestore.FieldValue.serverTimestamp()
-            });
-            added++;
-        }
-        showToast(`Imported ${added} products ✓`, 'green');
-        await loadProducts();
-    } catch (err) {
-        showToast('Import failed: ' + err.message, 'red');
-    } finally {
-        btn.innerHTML = '<i class="fas fa-file-import"></i> Import from Sheets';
-        btn.disabled = false;
-    }
-}
-
-// CSV parser (same logic as index.html)
-function parseCSV(str) {
-    const arr = []; let quote = false, col = 0, c = 0;
-    arr[col] = []; arr[col][c] = "";
-    for (let r = 0; r < str.length; r++) {
-        let cc = str[r], nc = str[r+1];
-        if (!arr[col]) arr[col] = []; if (arr[col][c] === undefined) arr[col][c] = "";
-        if (cc == '"' && quote && nc == '"') { arr[col][c] += cc; ++r; }
-        else if (cc == '"') { quote = !quote; }
-        else if (cc == ',' && !quote) { ++c; arr[col][c] = ""; }
-        else if (cc == '\n' && !quote) { ++col; c = 0; arr[col] = []; arr[col][c] = ""; }
-        else { arr[col][c] += cc; }
-    }
-    return arr.slice(1).filter(r => r.length > 1).map(r => ({
-        category: (r[0] || '').toLowerCase().trim(),
-        name:     (r[1] || '').trim(),
-        desc:     (r[2] || '').trim(),
-        images:   (r[3] || '').split(',').map(u => u.trim()).filter(u => u.length > 5)
-    }));
 }
 
 // ── Inline price editing ──────────────────────────────────────────
