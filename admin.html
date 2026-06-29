@@ -122,12 +122,12 @@
 
     <!-- Settings Modal -->
     <div id="settings-overlay" class="hidden fixed inset-0 bg-black/60 z-[400]" onclick="closeSettings()"></div>
-    <div id="settings-modal" class="hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-xl z-[410] w-full max-w-sm p-6">
+    <div id="settings-modal" class="hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-xl z-[410] w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between mb-5">
             <h3 class="font-bold text-sm uppercase tracking-widest text-brand-dark">Shop Settings</h3>
             <button onclick="closeSettings()" class="text-gray-400 hover:text-gray-700 text-xl leading-none">&times;</button>
         </div>
-        <div class="space-y-4">
+        <div class="space-y-5">
             <div>
                 <label class="label">Minimum Order Value for Delivery</label>
                 <div class="flex gap-2 items-center">
@@ -136,6 +136,11 @@
                         placeholder="e.g. 5000 — leave 0 to disable">
                 </div>
                 <p class="text-[10px] text-gray-400 mt-1">Shown as a note in the customer order form. Set to 0 to hide.</p>
+            </div>
+            <div>
+                <label class="label">Category Order</label>
+                <p class="text-[10px] text-gray-400 mb-2">Use arrows to set the order categories appear on the website.</p>
+                <div id="s-cat-order" class="space-y-1 max-h-56 overflow-y-auto"></div>
             </div>
         </div>
         <div class="flex gap-3 mt-6">
@@ -659,14 +664,46 @@ function removeImage(idx) {
 }
 
 // ── Settings ──────────────────────────────────────────────────────
+let settingsCatOrder = [];
+
+function renderCategoryOrder() {
+    const el = document.getElementById('s-cat-order');
+    if (!settingsCatOrder.length) {
+        el.innerHTML = '<p class="text-[10px] text-gray-400 italic">No categories found. Add some products first.</p>';
+        return;
+    }
+    el.innerHTML = settingsCatOrder.map((cat, i) => `
+        <div class="flex items-center gap-2 bg-gray-50 border border-gray-100 px-3 py-2">
+            <i class="fas fa-grip-lines text-gray-300 text-xs mr-1"></i>
+            <span class="flex-1 text-xs capitalize text-gray-700 truncate">${cat}</span>
+            <button type="button" onclick="moveCat(${i}, -1)" class="text-gray-400 hover:text-brand-maroon w-6 h-6 flex items-center justify-center transition ${i === 0 ? 'opacity-20 pointer-events-none' : ''}"><i class="fas fa-chevron-up text-[10px]"></i></button>
+            <button type="button" onclick="moveCat(${i}, 1)" class="text-gray-400 hover:text-brand-maroon w-6 h-6 flex items-center justify-center transition ${i === settingsCatOrder.length - 1 ? 'opacity-20 pointer-events-none' : ''}"><i class="fas fa-chevron-down text-[10px]"></i></button>
+        </div>`).join('');
+}
+
+function moveCat(idx, dir) {
+    const ni = idx + dir;
+    if (ni < 0 || ni >= settingsCatOrder.length) return;
+    [settingsCatOrder[idx], settingsCatOrder[ni]] = [settingsCatOrder[ni], settingsCatOrder[idx]];
+    renderCategoryOrder();
+}
+
 async function openSettings() {
+    let saved = [];
     try {
         const doc = await db.collection('settings').doc('shop').get();
         const data = doc.exists ? doc.data() : {};
         document.getElementById('s-min-order').value = data.minOrderValue || 0;
+        saved = data.categoryOrder || [];
     } catch (e) {
         document.getElementById('s-min-order').value = 0;
     }
+    const allCats = [...new Set(allProducts.map(p => p.category).filter(Boolean))];
+    settingsCatOrder = [
+        ...saved.filter(c => allCats.includes(c)),
+        ...allCats.filter(c => !saved.includes(c))
+    ];
+    renderCategoryOrder();
     document.getElementById('settings-modal').classList.remove('hidden');
     document.getElementById('settings-overlay').classList.remove('hidden');
 }
@@ -681,7 +718,8 @@ async function saveSettings() {
     label.textContent = 'Saving…';
     try {
         const minOrderValue = parseInt(document.getElementById('s-min-order').value) || 0;
-        await db.collection('settings').doc('shop').set({ minOrderValue }, { merge: true });
+        const categoryOrder = settingsCatOrder;
+        await db.collection('settings').doc('shop').set({ minOrderValue, categoryOrder }, { merge: true });
         showToast('Settings saved ✓', 'green');
         closeSettings();
     } catch (err) {

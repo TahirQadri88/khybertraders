@@ -498,6 +498,7 @@
                     note.textContent = 'Minimum order value for delivery: ' + formatPKR(shopSettings.minOrderValue) + '. Wholesale orders only.';
                     note.classList.remove('hidden');
                 }
+                if (allProducts.length) generateTiles();
             } catch (e) { /* settings not yet configured — silent */ }
         }
 
@@ -710,7 +711,17 @@
 
         function generateTiles() {
             const container = document.getElementById('tiles-container');
-            const uniqueCats = [...new Set(allProducts.map(p => p.category))];
+            let uniqueCats = [...new Set(allProducts.map(p => p.category))];
+            if (shopSettings.categoryOrder && shopSettings.categoryOrder.length) {
+                const order = shopSettings.categoryOrder;
+                uniqueCats.sort((a, b) => {
+                    const ia = order.indexOf(a), ib = order.indexOf(b);
+                    if (ia === -1 && ib === -1) return a.localeCompare(b);
+                    if (ia === -1) return 1;
+                    if (ib === -1) return -1;
+                    return ia - ib;
+                });
+            }
             container.innerHTML = uniqueCats.map((cat, i) => {
                 const c = CAT_COLORS[i % CAT_COLORS.length];
                 const safeCat = cat.replace(/'/g, "\\'");
@@ -762,7 +773,7 @@
                         ${!p.inStock ? `<div class="absolute inset-0 bg-black/50 flex items-center justify-center pointer-events-none z-10"><span class="bg-red-600 text-white text-[9px] sm:text-[10px] font-bold uppercase tracking-widest px-3 py-1">Out of Stock</span></div>` : ''}
                     </div>
                     <div class="p-3 sm:p-4 flex flex-col flex-grow">
-                        <a href="${itemLink}" target="_blank" class="font-bold text-brand-dark mb-0.5 text-[13px] sm:text-base font-serif leading-tight hover:text-brand-maroon transition block">${p.name}</a>
+                        <a href="${itemLink}" target="_blank" class="font-semibold text-brand-dark mb-0.5 text-[13px] sm:text-base font-sans leading-tight hover:text-brand-maroon transition block">${p.name}</a>
                         <span class="inline-block bg-brand-maroon/10 text-brand-maroon text-[7px] sm:text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 mb-1 self-start">${p.category}</span>
                         ${p.packSizes && p.packSizes.length
                             ? `<div class="flex flex-wrap gap-1 mb-1">${p.packSizes.map(ps => `<span class="text-[8px] bg-brand-maroon/10 text-brand-maroon font-bold px-1.5 py-0.5">${ps.size} — ${ps.price}</span>`).join('')}</div>`
@@ -911,7 +922,7 @@
                     <div>${galleryHtml}</div>
                     <div class="flex flex-col">
                         <span class="inline-block bg-brand-maroon/10 text-brand-maroon text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 mb-3 self-start">${product.category}</span>
-                        <h1 class="text-2xl sm:text-3xl font-serif font-bold text-brand-dark mb-4 leading-tight">${product.name}</h1>
+                        <h1 class="text-2xl sm:text-3xl font-sans font-bold text-brand-dark mb-4 leading-tight">${product.name}</h1>
                         <div class="h-0.5 w-12 bg-brand-gold mb-3"></div>
                         ${product.packSizes && product.packSizes.length
                             ? `<div class="mb-4">
@@ -1035,7 +1046,7 @@
                             ${thumb ? `<img src="${thumb}" class="w-14 h-14 sm:w-16 sm:h-16 object-cover flex-shrink-0 bg-gray-50 border" loading="lazy">` : `<div class="w-14 h-14 bg-gray-100 flex items-center justify-center flex-shrink-0 border"><i class="fas fa-box-open text-gray-300"></i></div>`}
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-start gap-2 flex-wrap mb-1">
-                                    <span class="font-bold text-brand-dark text-sm font-serif leading-tight">${highlight(p.name, query)}</span>
+                                    <span class="font-semibold text-brand-dark text-sm font-sans leading-tight">${highlight(p.name, query)}</span>
                                     <span class="bg-brand-maroon/10 text-brand-maroon text-[8px] font-bold uppercase tracking-widest px-1.5 py-0.5 flex-shrink-0">${highlight(p.category, query)}</span>
                                 </div>
                                 <p class="text-xs text-gray-500 leading-relaxed line-clamp-2">${highlight(snippet(p.desc, q), query)}</p>
