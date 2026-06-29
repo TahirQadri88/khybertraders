@@ -615,20 +615,30 @@
             const lines = cart.map((x, i) => {
                 const up = parsePrice(x.priceDisplay);
                 if (up !== null) totalAmt += up * x.qty; else allPriced = false;
-                const lineTotal = (up !== null && x.qty > 1) ? ' = ' + formatPKR(up * x.qty) : '';
-                const priceStr = x.priceDisplay ? ' [' + x.priceDisplay + (x.qty > 1 ? ' x' + x.qty + lineTotal : '') + ']' : '';
-                return (i+1) + '. ' + x.name + (x.packSize ? ' — ' + x.packSize.size : '') + (x.qty > 1 ? ' x' + x.qty : '') + priceStr;
+                const packStr = x.packSize ? ' (' + x.packSize.size + ')' : '';
+                let detail = '';
+                if (x.priceDisplay) {
+                    if (x.qty > 1 && up !== null) {
+                        detail = '\n   Qty: ' + x.qty + ' x ' + x.priceDisplay + ' = *' + formatPKR(up * x.qty) + '*';
+                    } else if (x.qty > 1) {
+                        detail = '\n   Qty: ' + x.qty + ' x ' + x.priceDisplay;
+                    } else {
+                        detail = '  — ' + x.priceDisplay;
+                    }
+                } else if (x.qty > 1) {
+                    detail = '\n   Qty: ' + x.qty;
+                }
+                return (i+1) + '. ' + x.name + packStr + detail;
             }).join('\n');
-            const SEP = '━━━━━━━━━━━━━━━━━━';
-            let msg = '\uD83D\uDED2 *ORDER REQUEST — Khyber Traders*\n' + SEP + '\n';
-            if (name)    msg += '\uD83D\uDC64 Name: '    + name    + '\n';
-            if (phone)   msg += '\uD83D\uDCDE Phone: '   + phone   + '\n';
-            if (city)    msg += '\uD83D\uDCCD City: '    + city    + '\n';
-            if (address) msg += '\uD83C\uDFE0 Address: ' + address + '\n';
-            if (name || phone || city || address) msg += SEP + '\n';
-            msg += '\uD83D\uDCE6 *Items (' + itemCount + '):*\n' + lines + '\n' + SEP + '\n';
+            const SEP = '──────────';
+            let msg = '\uD83D\uDED2 *Order Request — Khyber Traders*\n' + SEP + '\n';
+            msg += '\uD83D\uDC64 ' + name + '\n';
+            msg += '\uD83D\uDCDE ' + phone + '\n';
+            msg += '\uD83D\uDCCD ' + city + (address ? ', ' + address : '') + '\n';
+            msg += SEP + '\n';
+            msg += '*Items (' + itemCount + ' unit' + (itemCount !== 1 ? 's' : '') + '):*\n' + lines + '\n' + SEP + '\n';
             if (totalAmt > 0) msg += '\uD83D\uDCB0 ' + (allPriced ? 'Total' : 'Approx. Total') + ': *' + formatPKR(totalAmt) + (allPriced ? '' : '+') + '*\n' + SEP + '\n';
-            msg += '\uD83D\uDCAC Please confirm availability and arrange delivery.';
+            msg += 'Please confirm availability and payment details.';
             window.open('https://wa.me/923352999006?text=' + encodeURIComponent(msg), '_blank');
             if (typeof gtag !== 'undefined') gtag('event', 'generate_lead', { method: 'whatsapp_cart', value: itemCount });
         }
