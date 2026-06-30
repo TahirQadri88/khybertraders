@@ -463,7 +463,7 @@
                 <div id="cart-scroll-fade" class="pointer-events-none absolute bottom-0 left-0 right-0 h-10 transition-opacity duration-200" style="background:linear-gradient(to top,#fff 20%,transparent)"></div>
             </div>
             <div class="border-t border-gray-100 px-4 py-3 flex-shrink-0 bg-gray-50">
-                <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-2 font-bold">Your Details <span class="font-normal normal-case text-brand-maroon">(required)</span></p>
+                <p class="text-[10px] text-gray-700 uppercase tracking-widest mb-2 font-bold">Your Details <span class="font-normal normal-case text-brand-maroon">(required)</span></p>
                 <input id="cart-customer-name" type="text" placeholder="Your name *" required
                     class="w-full border border-gray-200 px-3 py-2 text-xs mb-2 focus:outline-none focus:border-brand-maroon transition bg-white">
                 <input id="cart-customer-phone" type="tel" placeholder="Contact number *" required
@@ -475,7 +475,7 @@
             </div>
             <div class="px-4 pb-5 pt-3 flex-shrink-0 bg-white border-t space-y-2">
                 <div id="cart-min-order-note" class="hidden text-[10px] text-amber-800 bg-amber-50 border border-amber-200 px-3 py-2 text-center leading-relaxed"></div>
-                <p class="text-[10px] text-gray-400 text-center leading-relaxed">
+                <p class="text-[10px] text-gray-600 text-center leading-relaxed">
                     <i class="fas fa-truck mr-1"></i>Delivery time depends on your area and will be confirmed by our representative on WhatsApp.
                 </p>
                 <button onclick="checkoutViaWhatsApp()"
@@ -483,7 +483,7 @@
                     <i class="fab fa-whatsapp text-lg"></i> Send Order on WhatsApp
                 </button>
                 <button onclick="clearCart()"
-                    class="w-full text-[10px] text-gray-400 hover:text-red-500 transition py-1 uppercase tracking-widest">
+                    class="w-full text-[10px] text-gray-500 hover:text-red-500 transition py-1 uppercase tracking-widest">
                     Clear all items
                 </button>
             </div>
@@ -624,7 +624,7 @@
                     </div>
                 </div>`;
             }).join('') + (cart.length > 0 ? `<div class="flex justify-between items-center border-t border-dashed border-gray-300 pt-2 mt-1 px-1">
-                    <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Estimated Total</span>
+                    <span class="text-[10px] font-bold text-gray-700 uppercase tracking-widest">Estimated Total</span>
                     <span class="text-sm font-bold text-brand-maroon">${totalAmt > 0 ? (allPriced ? formatPKR(totalAmt) : '~ ' + formatPKR(totalAmt) + '+') : '—'}</span>
                 </div>` : '');
             setTimeout(updateCartScrollFade, 0);
