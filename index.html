@@ -688,8 +688,8 @@
             msg += '\uD83D\uDCCb *Order & Delivery Terms*\n';
             if (shopSettings.minOrderValue > 0) msg += '\u2022 Minimum order for delivery: *' + formatPKR(shopSettings.minOrderValue) + '*\n';
             msg += '\u2022 Delivery charges depend on area and vehicle\n';
-            msg += '\u2022 Order dispatched after payment confirmation\n';
-            msg += '\u2022 Delivery time confirmed by our WhatsApp representative';
+            msg += '\u2022 Order will be dispatched after payment confirmation\n';
+            msg += '\u2022 Delivery time will be confirmed by our WhatsApp representative';
             window.open('https://wa.me/923352999006?text=' + encodeURIComponent(msg), '_blank');
             if (typeof gtag !== 'undefined') gtag('event', 'generate_lead', { method: 'whatsapp_cart', value: itemCount });
         }
