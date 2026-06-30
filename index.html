@@ -177,7 +177,7 @@
                     <span class="text-[10px] uppercase tracking-[0.25em] text-brand-maroon font-bold mt-1">Wholesale Veterinary Pharmacy</span>
                 </div>
             </div>
-            <div class="hidden md:flex gap-10 text-xs font-bold uppercase tracking-widest text-gray-500">
+            <div class="hidden md:flex gap-10 text-xs font-bold uppercase tracking-widest text-gray-700">
                 <a href="#about" class="hover:text-brand-maroon transition duration-300">Profile</a>
                 <a href="#products" class="hover:text-brand-maroon transition duration-300">Products</a>
                 <a href="#contact" class="hover:text-brand-maroon transition duration-300">Contact</a>
@@ -194,7 +194,7 @@
             </div>
         </div>
         <div id="mobile-menu" class="md:hidden border-t border-gray-100 bg-white">
-            <div class="container mx-auto px-6 py-4 flex flex-col gap-5 text-xs font-bold uppercase tracking-widest text-gray-500">
+            <div class="container mx-auto px-6 py-4 flex flex-col gap-5 text-xs font-bold uppercase tracking-widest text-gray-700">
                 <a href="#about" class="hover:text-brand-maroon transition" onclick="closeMobileMenu()">Profile</a>
                 <a href="#products" class="hover:text-brand-maroon transition" onclick="closeMobileMenu()">Products</a>
                 <a href="#contact" class="hover:text-brand-maroon transition" onclick="closeMobileMenu()">Contact</a>
@@ -411,7 +411,7 @@
                     <i class="fas fa-arrow-left"></i> All Products
                 </button>
                 <span class="text-gray-200">|</span>
-                <span id="pdp-nav-title" class="text-xs text-gray-500 truncate"></span>
+                <span id="pdp-nav-title" class="text-xs text-gray-700 truncate"></span>
             </div>
         </div>
         <div class="container mx-auto px-4 py-8 sm:py-12 max-w-4xl">
@@ -454,7 +454,7 @@
         </div>
         <div id="cart-empty-state" class="flex-1 flex flex-col items-center justify-center text-gray-400 p-8">
             <i class="fas fa-shopping-cart text-5xl mb-4 text-gray-200"></i>
-            <p class="font-bold text-gray-500 mb-1">Your order list is empty</p>
+            <p class="font-bold text-gray-700 mb-1">Your order list is empty</p>
             <p class="text-xs text-center">Browse products and tap <strong>Add to Order</strong> to build your order</p>
         </div>
         <div id="cart-filled" class="hidden flex-1 flex flex-col overflow-hidden">
@@ -613,7 +613,7 @@
                     ${item.image ? `<img src="${item.image}" class="w-12 h-12 object-cover flex-shrink-0 border border-gray-200">` : '<div class="w-12 h-12 bg-gray-200 flex-shrink-0 flex items-center justify-center"><i class="fas fa-box-open text-gray-300 text-sm"></i></div>'}
                     <div class="flex-1 min-w-0">
                         <div class="font-bold text-brand-dark text-[11px] leading-tight line-clamp-2">${item.name}</div>
-                        ${item.packSize ? '<div class="text-[9px] text-gray-500 font-semibold mt-0.5">' + item.packSize.size + '</div>' : '<div class="text-[9px] text-gray-400 capitalize mt-0.5">' + item.category + '</div>'}
+                        ${item.packSize ? '<div class="text-[9px] text-gray-600 font-semibold mt-0.5">' + item.packSize.size + '</div>' : '<div class="text-[9px] text-gray-600 capitalize mt-0.5">' + item.category + '</div>'}
                         ${item.priceDisplay ? '<div class="text-[10px] font-bold text-brand-maroon">' + item.priceDisplay + (item.qty > 1 ? ' \xD7' + item.qty : '') + '</div>' : ''}
                     </div>
                     <div class="flex items-center gap-0.5 flex-shrink-0">
@@ -731,7 +731,7 @@
                         <div class="col-span-full text-center py-16 px-6">
                             <i class="fas fa-exclamation-circle text-brand-maroon text-4xl mb-4"></i>
                             <p class="text-brand-dark font-bold text-lg mb-2">Could not load products</p>
-                            <p class="text-gray-500 text-sm mb-6">Please check your connection and try again.</p>
+                            <p class="text-gray-600 text-sm mb-6">Please check your connection and try again.</p>
                             <button onclick="fetchProducts()" class="bg-brand-maroon text-white font-bold py-3 px-8 hover:bg-brand-gold hover:text-brand-dark transition">
                                 <i class="fas fa-redo mr-2"></i> Retry
                             </button>
@@ -840,7 +840,7 @@
                         ${p.packSizes && p.packSizes.length
                             ? `<div class="flex flex-wrap gap-1 mb-1.5">${p.packSizes.map(ps => `<span class="text-[10px] bg-brand-maroon/10 text-brand-maroon font-bold px-2 py-0.5">${ps.size} — ${ps.price}</span>`).join('')}</div>`
                             : p.priceDisplay ? `<div class="text-xs font-bold text-brand-maroon mb-1.5">${p.priceDisplay}</div>` : ''}
-                        <p class="text-xs text-gray-500 mb-3 line-clamp-2 leading-relaxed">${plainDesc}</p>
+                        <p class="text-xs text-gray-700 mb-3 line-clamp-2 leading-relaxed">${plainDesc}</p>
                         <div class="grid grid-cols-2 border border-gray-100 mb-2 mt-auto">
                             <button onclick="openProductByName('${p.name.replace(/'/g,"\\'")}');" class="py-2.5 text-[10px] sm:text-xs font-bold uppercase text-brand-maroon hover:bg-brand-maroon/5 flex items-center justify-center gap-1 transition border-r border-gray-100"><i class="fas fa-expand-alt text-[9px]"></i> View</button>
                             <button onclick="shareProductNative(event,'${p.name.replace(/'/g,"\\'")}','${p.category}','${(p.desc||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}','${imageLink}')" class="py-2.5 text-[10px] sm:text-xs font-bold uppercase text-gray-500 hover:bg-gray-50 flex items-center justify-center gap-1 transition"><i class="fas fa-share-alt text-[9px]"></i> Share</button>
@@ -988,7 +988,7 @@
                         <div class="h-0.5 w-12 bg-brand-gold mb-3"></div>
                         ${product.packSizes && product.packSizes.length
                             ? `<div class="mb-4">
-                                <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Select Pack Size</p>
+                                <p class="text-[10px] font-bold uppercase tracking-widest text-gray-600 mb-2">Select Pack Size</p>
                                 <div class="flex flex-wrap gap-2">
                                     ${product.packSizes.map((ps, i) => `<button class="pdp-ps-btn px-3 py-2 border-2 text-xs font-bold transition ${i===0 ? 'border-brand-maroon bg-brand-maroon/5 text-brand-maroon' : 'border-gray-200 text-gray-600 hover:border-brand-gold'}" onclick="window.selectPdpPackSize(${i})"><div>${ps.size}</div><div class="text-brand-maroon">${ps.price}</div></button>`).join('')}
                                 </div>
@@ -996,7 +996,7 @@
                             : product.priceDisplay ? `<div class="text-base font-bold text-brand-maroon mb-4">${product.priceDisplay}</div>` : ''}
                         ${formattedDesc
                             ? `<div class="text-sm text-gray-600 leading-relaxed formatted-text mb-8">${formattedDesc}</div>`
-                            : `<p class="text-gray-400 text-sm mb-8 italic">No description available.</p>`}
+                            : `<p class="text-gray-600 text-sm mb-8 italic">No description available.</p>`}
                         <div class="space-y-3">
                             <button onclick="window.addToCart('${product.name.replace(/'/g,"\\'")}', _pdpPackSize);"
                                 class="w-full bg-brand-maroon hover:bg-brand-dark text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
@@ -1011,7 +1011,7 @@
                                 <i class="fas fa-share-alt"></i> Share Product
                             </button>
                             <button onclick="closeProductDetailPage()"
-                                    class="w-full border border-gray-200 text-gray-500 py-2.5 text-xs font-bold uppercase tracking-widest hover:border-brand-maroon hover:text-brand-maroon transition">
+                                    class="w-full border border-gray-200 text-gray-700 py-2.5 text-xs font-bold uppercase tracking-widest hover:border-brand-maroon hover:text-brand-maroon transition">
                                 <i class="fas fa-th-large mr-1"></i> Browse All Products
                             </button>
                         </div>
@@ -1089,7 +1089,7 @@
                 .filter(p => p.score > 0)
                 .sort((a, b) => b.score - a.score);
             if (!matched.length) {
-                results.innerHTML = `<div class="text-center py-10 text-gray-500"><i class="fas fa-search text-3xl mb-3 block text-gray-300"></i>No products found for "<strong>${query}</strong>"</div>`;
+                results.innerHTML = `<div class="text-center py-10 text-gray-600"><i class="fas fa-search text-3xl mb-3 block text-gray-400"></i>No products found for "<strong>${query}</strong>"</div>`;
                 return;
             }
             const snippet = (s, q) => {
@@ -1099,7 +1099,7 @@
                 return (start > 0 ? '…' : '') + plain.substring(start, start + 120) + (plain.length > start + 120 ? '…' : '');
             };
             results.innerHTML = `
-                <p class="text-xs text-gray-400 uppercase tracking-widest mb-4">${matched.length} result${matched.length !== 1 ? 's' : ''} for "<strong class="text-brand-maroon">${query}</strong>"</p>
+                <p class="text-xs text-gray-600 uppercase tracking-widest mb-4">${matched.length} result${matched.length !== 1 ? 's' : ''} for "<strong class="text-brand-maroon">${query}</strong>"</p>
                 <div class="flex flex-col gap-3">
                     ${matched.map(p => {
                         const thumb = p.images[0] || '';
@@ -1111,7 +1111,7 @@
                                     <span class="font-semibold text-brand-dark text-sm font-sans leading-tight">${highlight(p.name, query)}</span>
                                     <span class="bg-brand-maroon/10 text-brand-maroon text-[8px] font-bold uppercase tracking-widest px-1.5 py-0.5 flex-shrink-0">${highlight(p.category, query)}</span>
                                 </div>
-                                <p class="text-xs text-gray-500 leading-relaxed line-clamp-2">${highlight(snippet(p.desc, q), query)}</p>
+                                <p class="text-xs text-gray-700 leading-relaxed line-clamp-2">${highlight(snippet(p.desc, q), query)}</p>
                             </div>
                             <i class="fas fa-chevron-right text-gray-300 self-center flex-shrink-0 text-xs"></i>
                         </div>`;
