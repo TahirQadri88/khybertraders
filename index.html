@@ -318,6 +318,17 @@
                 </div>
             </details>
 
+            <!-- Order & Delivery Terms -->
+            <div class="mb-4 max-w-2xl mx-auto border-l-4 border-brand-maroon bg-white px-4 py-3 text-left shadow-sm">
+                <p class="font-bold text-brand-dark text-[11px] uppercase tracking-widest mb-2">Order &amp; Delivery Terms</p>
+                <ul class="text-xs text-gray-600 space-y-1 leading-relaxed">
+                    <li id="policy-min-order-line" class="hidden">• Minimum order value for delivery: <strong class="text-brand-maroon" id="policy-min-order"></strong></li>
+                    <li>• Delivery charges depend on your area and vehicle — confirmed at time of order</li>
+                    <li>• Orders are dispatched after payment confirmation</li>
+                    <li>• Delivery time will be confirmed by our WhatsApp representative</li>
+                </ul>
+            </div>
+
             <div class="mb-4 max-w-2xl mx-auto">
                 <div class="relative">
                     <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
@@ -515,6 +526,12 @@
                 if (note && shopSettings.minOrderValue > 0) {
                     note.innerHTML = 'Minimum order value for delivery: <strong>' + formatPKR(shopSettings.minOrderValue) + '</strong><br>Delivery Charges Apply according to your area and vehicle';
                     note.classList.remove('hidden');
+                }
+                const policyLine = document.getElementById('policy-min-order-line');
+                const policyVal  = document.getElementById('policy-min-order');
+                if (policyLine && policyVal && shopSettings.minOrderValue > 0) {
+                    policyVal.textContent = formatPKR(shopSettings.minOrderValue);
+                    policyLine.classList.remove('hidden');
                 }
                 if (allProducts.length) generateTiles();
             } catch (e) { /* settings not yet configured — silent */ }
