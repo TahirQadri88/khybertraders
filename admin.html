@@ -694,7 +694,7 @@ async function openSettings() {
     } catch (e) {
         document.getElementById('s-min-order').value = 0;
     }
-    const allCats = [...new Set(allProducts.map(p => p.category).filter(Boolean))];
+    const allCats = [...new Set(allProductsCache.map(p => p.category).filter(Boolean))];
     settingsCatOrder = [
         ...saved.filter(c => allCats.includes(c)),
         ...allCats.filter(c => !saved.includes(c))
