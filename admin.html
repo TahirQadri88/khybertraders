@@ -236,9 +236,16 @@
             <input type="hidden" id="f-instock" value="true">
         </div>
 
-        <div>
-            <label class="label">Sort Order <span class="text-gray-400 font-normal">(within category)</span></label>
-            <input id="f-sort" type="number" min="0" value="0" class="field w-24">
+        <div class="flex gap-6">
+            <div>
+                <label class="label">Sort Order <span class="text-gray-400 font-normal">(within category)</span></label>
+                <input id="f-sort" type="number" min="0" value="0" class="field w-24">
+            </div>
+            <div>
+                <label class="label">Min Order Qty <span class="text-gray-400 font-normal">(units)</span></label>
+                <input id="f-min-qty" type="number" min="1" value="1" class="field w-24">
+                <p class="text-[10px] text-gray-400 mt-1">Customers can't order fewer units than this.</p>
+            </div>
         </div>
 
         <!-- Image Upload -->
@@ -499,6 +506,7 @@ function openDrawer(productId) {
         document.getElementById('f-desc').value     = p.desc || '';
         document.getElementById('f-price').value    = p.priceDisplay || '';
         document.getElementById('f-sort').value     = p.sortOrder || 0;
+        document.getElementById('f-min-qty').value  = p.minQty || 1;
         setStock(p.inStock !== false);
         currentImages = [...(p.images || [])];
         renderImagePreviews();
@@ -746,6 +754,7 @@ async function saveProduct() {
         packSizes:    currentPackSizes.filter(ps => ps.size && ps.size.trim()),
         inStock:      document.getElementById('f-instock').value === 'true',
         sortOrder:    parseInt(document.getElementById('f-sort').value) || 0,
+        minQty:       Math.max(1, parseInt(document.getElementById('f-min-qty').value) || 1),
         images:       currentImages,
         slug:         getCleanSlug(name),
         updatedAt:    firebase.firestore.FieldValue.serverTimestamp()

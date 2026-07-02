@@ -462,30 +462,66 @@
                 <div id="cart-items-list" class="h-full overflow-y-scroll px-4 py-3 space-y-2"></div>
                 <div id="cart-scroll-fade" class="pointer-events-none absolute bottom-0 left-0 right-0 h-10 transition-opacity duration-200" style="background:linear-gradient(to top,#fff 20%,transparent)"></div>
             </div>
-            <div class="border-t border-gray-100 px-4 py-3 flex-shrink-0 bg-gray-50">
-                <p class="text-[10px] text-gray-700 uppercase tracking-widest mb-2 font-bold">Your Details <span class="font-normal normal-case text-brand-maroon">(required)</span></p>
-                <input id="cart-customer-name" type="text" placeholder="Your name *" required
-                    class="w-full border border-gray-200 px-3 py-2 text-xs mb-2 focus:outline-none focus:border-brand-maroon transition bg-white">
-                <input id="cart-customer-phone" type="tel" placeholder="Contact number *" required
-                    class="w-full border border-gray-200 px-3 py-2 text-xs mb-2 focus:outline-none focus:border-brand-maroon transition bg-white">
-                <input id="cart-customer-city" type="text" placeholder="City / Area *" required
-                    class="w-full border border-gray-200 px-3 py-2 text-xs mb-2 focus:outline-none focus:border-brand-maroon transition bg-white">
-                <input id="cart-customer-address" type="text" placeholder="Delivery address *" required
-                    class="w-full border border-gray-200 px-3 py-2 text-xs focus:outline-none focus:border-brand-maroon transition bg-white">
-            </div>
             <div class="px-4 pb-5 pt-3 flex-shrink-0 bg-white border-t space-y-2">
-                <div id="cart-min-order-note" class="hidden text-[10px] text-amber-800 bg-amber-50 border border-amber-200 px-3 py-2 text-center leading-relaxed"></div>
-                <p class="text-[10px] text-gray-600 text-center leading-relaxed">
-                    <i class="fas fa-truck mr-1"></i>Delivery time depends on your area and will be confirmed by our representative on WhatsApp.
-                </p>
-                <button onclick="checkoutViaWhatsApp()"
-                    class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3.5 text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition shadow-md">
-                    <i class="fab fa-whatsapp text-lg"></i> Send Order on WhatsApp
+                <button onclick="openCheckout()"
+                    class="w-full bg-brand-maroon hover:bg-brand-dark text-white font-bold py-3.5 text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition shadow-md">
+                    Review Order &amp; Checkout <i class="fas fa-arrow-right text-xs"></i>
                 </button>
                 <button onclick="clearCart()"
                     class="w-full text-[10px] text-gray-500 hover:text-red-500 transition py-1 uppercase tracking-widest">
                     Clear all items
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout screen -->
+    <div id="checkout-screen" class="hidden fixed inset-0 bg-gray-100 z-[280] flex flex-col">
+        <div class="flex items-center gap-3 px-5 py-4 bg-brand-dark text-white flex-shrink-0">
+            <button onclick="closeCheckout()" class="text-gray-300 hover:text-white p-1" aria-label="Back to order list">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <span class="font-bold text-sm uppercase tracking-widest">Checkout</span>
+            <button onclick="closeCheckout(); closeCart();" class="ml-auto text-gray-400 hover:text-white text-2xl leading-none" aria-label="Close checkout">&times;</button>
+        </div>
+        <div class="flex-1 overflow-y-auto">
+            <div class="max-w-lg mx-auto px-4 py-5 space-y-4">
+                <div class="bg-white border border-gray-200 shadow-sm">
+                    <p class="px-4 pt-3 pb-2 text-[10px] font-bold uppercase tracking-widest text-gray-700 border-b border-gray-100"><i class="fas fa-receipt mr-1 text-brand-gold"></i> Order Preview</p>
+                    <div id="checkout-items"></div>
+                </div>
+                <div class="border-l-4 border-brand-maroon bg-white px-4 py-3 shadow-sm">
+                    <p class="font-bold text-brand-dark text-[11px] uppercase tracking-widest mb-2">Order &amp; Delivery Terms</p>
+                    <ul class="text-xs text-gray-600 space-y-1 leading-relaxed">
+                        <li id="checkout-min-order-line" class="hidden">• Minimum order value for delivery: <strong class="text-brand-maroon" id="checkout-min-order"></strong></li>
+                        <li>• Delivery charges depend on your area and vehicle — confirmed at time of order</li>
+                        <li>• Orders are dispatched after payment confirmation</li>
+                        <li>• Delivery time will be confirmed by our WhatsApp representative</li>
+                    </ul>
+                </div>
+                <div class="bg-white border border-gray-200 shadow-sm px-4 py-4">
+                    <p class="text-[10px] text-gray-700 uppercase tracking-widest mb-3 font-bold">Delivery Details <span class="font-normal normal-case text-brand-maroon">(required)</span></p>
+                    <input id="cart-customer-name" type="text" placeholder="Your name *" required
+                        class="w-full border border-gray-200 px-3 py-2.5 text-sm mb-2 focus:outline-none focus:border-brand-maroon transition bg-white">
+                    <input id="cart-customer-phone" type="tel" placeholder="Contact number *" required
+                        class="w-full border border-gray-200 px-3 py-2.5 text-sm mb-2 focus:outline-none focus:border-brand-maroon transition bg-white">
+                    <input id="cart-customer-city" type="text" placeholder="City / Area *" required
+                        class="w-full border border-gray-200 px-3 py-2.5 text-sm mb-2 focus:outline-none focus:border-brand-maroon transition bg-white">
+                    <input id="cart-customer-address" type="text" placeholder="Delivery address *" required
+                        class="w-full border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-maroon transition bg-white">
+                </div>
+            </div>
+        </div>
+        <div class="flex-shrink-0 bg-white border-t px-4 py-4 shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
+            <div class="max-w-lg mx-auto space-y-2">
+                <div id="cart-min-order-note" class="hidden text-[10px] text-amber-800 bg-amber-50 border border-amber-200 px-3 py-2 text-center leading-relaxed"></div>
+                <button onclick="checkoutViaWhatsApp()"
+                    class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3.5 text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition shadow-md">
+                    <i class="fab fa-whatsapp text-lg"></i> Send Order on WhatsApp
+                </button>
+                <p class="text-[10px] text-gray-600 text-center leading-relaxed">
+                    <i class="fas fa-truck mr-1"></i>Delivery time depends on your area and will be confirmed by our representative on WhatsApp.
+                </p>
             </div>
         </div>
     </div>
@@ -533,6 +569,12 @@
                     policyVal.textContent = formatPKR(shopSettings.minOrderValue);
                     policyLine.classList.remove('hidden');
                 }
+                const coLine = document.getElementById('checkout-min-order-line');
+                const coVal  = document.getElementById('checkout-min-order');
+                if (coLine && coVal && shopSettings.minOrderValue > 0) {
+                    coVal.textContent = formatPKR(shopSettings.minOrderValue);
+                    coLine.classList.remove('hidden');
+                }
                 if (allProducts.length) generateTiles();
             } catch (e) { /* settings not yet configured — silent */ }
         }
@@ -565,9 +607,10 @@
             }
             const ps  = packSize || (p.packSizes && p.packSizes.length === 1 ? p.packSizes[0] : null);
             const key = name + (ps ? '‖' + ps.size : '');
+            const minQty = p.minQty || 1;
             const existing = cart.find(x => x.key === key);
             if (existing) { existing.qty++; } else {
-                cart.push({ key, name: p.name, category: p.category, packSize: ps, priceDisplay: ps ? ps.price : (p.priceDisplay || ''), image: p.images[0] || '', qty: 1 });
+                cart.push({ key, name: p.name, category: p.category, packSize: ps, priceDisplay: ps ? ps.price : (p.priceDisplay || ''), image: p.images[0] || '', minQty, qty: minQty });
             }
             updateCartBadge();
             openCart();
@@ -578,11 +621,27 @@
             renderCart();
         };
         window.updateCartQty = function(idx, qty) {
-            if (qty < 1) { window.removeFromCart(idx); return; }
-            if (cart[idx]) cart[idx].qty = qty;
+            const item = cart[idx];
+            if (!item) return;
+            const min = item.minQty || 1;
+            if (qty < 1 && min === 1) { window.removeFromCart(idx); return; }
+            if (qty < min) {
+                item.qty = min;
+                showCartToast('Minimum order: ' + min + ' units for this item');
+            } else {
+                item.qty = qty;
+            }
             updateCartBadge();
             renderCart();
         };
+        function showCartToast(text) {
+            const toast = document.getElementById('cart-toast');
+            if (!toast) return;
+            toast.textContent = text;
+            toast.classList.remove('hidden');
+            clearTimeout(toast._t);
+            toast._t = setTimeout(() => toast.classList.add('hidden'), 2200);
+        }
         function updateCartBadge() {
             const total = cart.reduce((s, x) => s + x.qty, 0);
             const badge = document.getElementById('cart-badge');
@@ -615,6 +674,7 @@
                         <div class="font-bold text-brand-dark text-[11px] leading-tight line-clamp-2">${item.name}</div>
                         ${item.packSize ? '<div class="text-[9px] text-gray-600 font-semibold mt-0.5">' + item.packSize.size + '</div>' : '<div class="text-[9px] text-gray-600 capitalize mt-0.5">' + item.category + '</div>'}
                         ${item.priceDisplay ? '<div class="text-[10px] font-bold text-brand-maroon">' + item.priceDisplay + (item.qty > 1 ? ' \xD7' + item.qty : '') + '</div>' : ''}
+                        ${(item.minQty || 1) > 1 ? '<div class="text-[8px] text-amber-700 font-bold uppercase tracking-wide mt-0.5">Min ' + item.minQty + ' units</div>' : ''}
                     </div>
                     <div class="flex items-center gap-0.5 flex-shrink-0">
                         <button onclick="window.updateCartQty(${idx},${item.qty-1})" class="w-7 h-7 bg-gray-200 hover:bg-brand-maroon hover:text-white font-bold text-sm flex items-center justify-center transition">−</button>
@@ -634,6 +694,31 @@
             cart = [];
             updateCartBadge();
             renderCart();
+        }
+        function openCheckout() {
+            if (!cart.length) return;
+            let totalAmt = 0, allPriced = true;
+            const rows = cart.map(item => {
+                const up = parsePrice(item.priceDisplay);
+                if (up !== null) totalAmt += up * item.qty; else allPriced = false;
+                return `<div class="flex justify-between items-start gap-3 px-4 py-2.5 border-b border-gray-50">
+                    <div class="min-w-0">
+                        <div class="text-xs font-semibold text-brand-dark leading-snug">${item.name}${item.packSize ? ' <span class="text-gray-500 font-normal">(' + item.packSize.size + ')</span>' : ''}</div>
+                        <div class="text-[11px] text-gray-600 mt-0.5">${item.qty} × ${item.priceDisplay || 'price on confirmation'}</div>
+                    </div>
+                    <div class="text-xs font-bold text-brand-maroon whitespace-nowrap pt-0.5">${up !== null ? formatPKR(up * item.qty) : '—'}</div>
+                </div>`;
+            }).join('');
+            document.getElementById('checkout-items').innerHTML = rows +
+                `<div class="flex justify-between items-center px-4 py-3 bg-gray-50">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-gray-700">${allPriced ? 'Total' : 'Approx. Total'}</span>
+                    <span class="text-base font-bold text-brand-maroon">${totalAmt > 0 ? formatPKR(totalAmt) + (allPriced ? '' : '+') : '—'}</span>
+                </div>`;
+            document.getElementById('checkout-screen').classList.remove('hidden');
+            if (typeof gtag !== 'undefined') gtag('event', 'begin_checkout', { value: totalAmt, currency: 'PKR' });
+        }
+        function closeCheckout() {
+            document.getElementById('checkout-screen').classList.add('hidden');
         }
         function checkoutViaWhatsApp() {
             if (!cart.length) return;
@@ -714,7 +799,8 @@
                         images:       d.images || [],
                         packSizes:    d.packSizes || [],
                         priceDisplay: d.priceDisplay || '',
-                        inStock:      d.inStock !== false
+                        inStock:      d.inStock !== false,
+                        minQty:       Math.max(1, parseInt(d.minQty) || 1)
                     });
                 });
                 allProducts.sort((a, b) => {
@@ -998,6 +1084,7 @@
                             ? `<div class="text-sm text-gray-600 leading-relaxed formatted-text mb-8">${formattedDesc}</div>`
                             : `<p class="text-gray-600 text-sm mb-8 italic">No description available.</p>`}
                         <div class="space-y-3">
+                            ${(product.minQty || 1) > 1 ? `<p class="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200 px-3 py-2 text-center"><i class="fas fa-layer-group mr-1"></i>Minimum order: ${product.minQty} units</p>` : ''}
                             <button onclick="window.addToCart('${product.name.replace(/'/g,"\\'")}', _pdpPackSize);"
                                 class="w-full bg-brand-maroon hover:bg-brand-dark text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
                                 <i class="fas fa-plus text-lg"></i> Add to Order
@@ -1155,6 +1242,8 @@
             if (e.key !== 'Escape') return;
             if (document.getElementById('lightbox').style.display === 'flex') {
                 closeLightbox();
+            } else if (!document.getElementById('checkout-screen').classList.contains('hidden')) {
+                closeCheckout();
             } else if (!document.getElementById('product-detail-page').classList.contains('hidden')) {
                 closeProductDetailPage();
             } else if (document.getElementById('cart-drawer').classList.contains('open')) {
