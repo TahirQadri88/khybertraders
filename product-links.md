@@ -89,8 +89,8 @@ _These links show a product/category image preview when shared on WhatsApp._
 ## Protocol Of Artificial Insemination (Ai)  (1 product)
 **Category link:** https://animalhealth.pk/c/protocol-of-artificial-insemination-ai.html
 
-- Useful Information
-  https://animalhealth.pk/s/useful-information.html
+- Useful Information - Protocol of Artificial Insemination (AI)
+  https://animalhealth.pk/s/useful-information---protocol-of-artificial-insemination-ai.html
 
 ## Toxin Binder  (3 products)
 **Category link:** https://animalhealth.pk/c/toxin-binder.html
@@ -105,8 +105,8 @@ _These links show a product/category image preview when shared on WhatsApp._
 ## Vaccine Chart And Dosage Schedule  (1 product)
 **Category link:** https://animalhealth.pk/c/vaccine-chart-and-dosage-schedule.html
 
-- Useful Information
-  https://animalhealth.pk/s/useful-information.html
+- Useful Information - Cattle Vaccination Chart & Dosage Schedule
+  https://animalhealth.pk/s/useful-information---cattle-vaccination-chart-and-dosage-schedule.html
 
 ## Vaccines  (10 products)
 **Category link:** https://animalhealth.pk/c/vaccines.html
@@ -115,10 +115,10 @@ _These links show a product/category image preview when shared on WhatsApp._
   https://animalhealth.pk/s/antox-9-100ml-russia.html
 - CUBOLAC 100ml (SPAIN)
   https://animalhealth.pk/s/cubolac-100ml-spain.html
-- FOOT & MOUTH DISEASE VACCINE
-  https://animalhealth.pk/s/foot-and-mouth-disease-vaccine.html
-- FOOT & MOUTH DISEASE VACCINE  ⚠ OUT OF STOCK
-  https://animalhealth.pk/s/foot-and-mouth-disease-vaccine.html
+- FMD (Foot & Mouth Disease) Vaccine Russian Aqua / Jel Base  ⚠ OUT OF STOCK
+  https://animalhealth.pk/s/fmd-foot-and-mouth-disease-vaccine-russian-aqua--jel-base.html
+- FMD (Foot & Mouth Disease) Vaccine Russian Oil Base
+  https://animalhealth.pk/s/fmd-foot-and-mouth-disease-vaccine-russian-oil-base.html
 - HS AND PASTURELLA VACCINE  ⚠ OUT OF STOCK
   https://animalhealth.pk/s/hs-and-pasturella-vaccine.html
 - LUMPY SKIN DISEASE (LSD) VACCINE
