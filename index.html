@@ -845,6 +845,26 @@
             { bg:'#fafaf9', bar:'#78716c', iconBg:'#f5f5f4', iconFg:'#44403c' },
         ];
 
+        const CAT_ICONS = [
+            ['shampoo', 'fa-pump-soap'], ['lice', 'fa-pump-soap'],
+            ['milk', 'fa-cow'], ['fatten', 'fa-cow'],
+            ['drench', 'fa-bottle-droplet'], ['dewormer', 'fa-bottle-droplet'], ['dewromer', 'fa-bottle-droplet'],
+            ['tag', 'fa-tags'],
+            ['feed', 'fa-wheat-awn'], ['premix', 'fa-wheat-awn'], ['mineral', 'fa-wheat-awn'],
+            ['gripe', 'fa-prescription-bottle-medical'],
+            ['insemination', 'fa-dna'],
+            ['toxin', 'fa-filter'],
+            ['chart', 'fa-calendar-days'], ['schedule', 'fa-calendar-days'],
+            ['vaccine', 'fa-shield-virus'],
+            ['inj', 'fa-syringe'], ['ivomec', 'fa-syringe'],
+            ['liver', 'fa-capsules'], ['tonic', 'fa-capsules'], ['digestive', 'fa-capsules'],
+            ['protocol', 'fa-clipboard-list'],
+        ];
+        function getCategoryIcon(cat) {
+            const c = (cat || '').toLowerCase();
+            for (const [kw, icon] of CAT_ICONS) if (c.includes(kw)) return icon;
+            return 'fa-box-open';
+        }
         function generateTiles() {
             const container = document.getElementById('tiles-container');
             let uniqueCats = [...new Set(allProducts.map(p => p.category))];
@@ -869,7 +889,7 @@
                     <div class="w-1.5 self-stretch flex-shrink-0" style="background:${c.bar}"></div>
                     <div class="w-13 h-13 rounded-full flex items-center justify-center mx-3 my-4 flex-shrink-0"
                          style="background:${c.iconBg}; width:3.25rem; height:3.25rem;">
-                        <i class="fas fa-box-open text-base" style="color:${c.iconFg}"></i>
+                        <i class="fas ${getCategoryIcon(cat)} text-base" style="color:${c.iconFg}"></i>
                     </div>
                     <div class="flex-1 min-w-0 py-4 pr-2">
                         <h3 class="font-semibold text-base leading-tight capitalize text-gray-800 font-sans">${cat}</h3>
@@ -950,7 +970,7 @@
             event.stopPropagation();
             if (typeof gtag !== 'undefined') gtag('event', 'share', { method: 'whatsapp', content_type: 'category', content_id: cat });
             const slug = getCleanSlug(cat);
-            const redirectLink = `https://animalhealth.pk/?cat=${slug}`;
+            const redirectLink = `https://animalhealth.pk/c/${slug}.html`;
             const caption = `📂 *Category:* ${cat.toUpperCase()}\nCheck out our collection here:\n🔗 ${redirectLink}`;
             
             try {
