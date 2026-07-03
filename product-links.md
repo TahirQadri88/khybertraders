@@ -121,10 +121,10 @@ _These links show a product/category image preview when shared on WhatsApp._
   https://animalhealth.pk/s/fmd-foot-and-mouth-disease-vaccine-russian-oil-base.html
 - HS AND PASTURELLA VACCINE  ⚠ OUT OF STOCK
   https://animalhealth.pk/s/hs-and-pasturella-vaccine.html
-- LUMPY SKIN DISEASE (LSD) VACCINE
-  https://animalhealth.pk/s/lumpy-skin-disease-lsd-vaccine.html
-- LUMPY SKIN DISEASE (LSD) VACCINE
-  https://animalhealth.pk/s/lumpy-skin-disease-lsd-vaccine.html
+- LSD (lumpy skin disease) Vaccine 10 dose Turkey
+  https://animalhealth.pk/s/lsd-lumpy-skin-disease-vaccine-10-dose-turkey.html
+- LSD (lumpy skin disease) Vaccine 50 dose Russia
+  https://animalhealth.pk/s/lsd-lumpy-skin-disease-vaccine-50-dose-russia.html
 - PPR Vaccine Russian 50 dose vial
   https://animalhealth.pk/s/ppr-vaccine-russian-50-dose-vial.html
 - PPR Vaccine Turkey (100 dose)
