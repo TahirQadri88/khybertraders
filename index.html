@@ -952,7 +952,7 @@
                         <p class="text-xs text-gray-700 mb-3 line-clamp-2 leading-relaxed">${plainDesc}</p>
                         <div class="grid grid-cols-2 border border-gray-100 mb-2 mt-auto">
                             <button onclick="openProductByName('${p.name.replace(/'/g,"\\'")}');" class="py-2.5 text-[10px] sm:text-xs font-bold uppercase text-brand-maroon hover:bg-brand-maroon/5 flex items-center justify-center gap-1 transition border-r border-gray-100"><i class="fas fa-expand-alt text-[9px]"></i> View</button>
-                            <button onclick="shareProductNative(event,'${p.name.replace(/'/g,"\\'")}','${p.category}','${(p.desc||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}','${imageLink}')" class="py-2.5 text-[10px] sm:text-xs font-bold uppercase text-gray-500 hover:bg-gray-50 flex items-center justify-center gap-1 transition"><i class="fas fa-share-alt text-[9px]"></i> Share</button>
+                            <button onclick="shareProductNative(event,'${p.name.replace(/'/g,"\\'")}')" class="py-2.5 text-[10px] sm:text-xs font-bold uppercase text-gray-500 hover:bg-gray-50 flex items-center justify-center gap-1 transition"><i class="fas fa-share-alt text-[9px]"></i> Share</button>
                         </div>
                         ${p.inStock
                             ? `<button onclick="window.addToCart('${p.name.replace(/'/g,"\\'")}')" class="bg-brand-maroon hover:bg-brand-dark text-white py-2.5 text-[10px] sm:text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition shadow w-full"><i class="fas fa-plus text-sm"></i> Add to Order</button>`
@@ -998,25 +998,28 @@
             }
         };
 
-        window.shareProductNative = async (event, name, cat, desc, imgUrl) => {
+        window.shareProductNative = async (event, name) => {
+            const p = allProducts.find(x => x.name === name);
+            if (!p) return;
+            const slug = getCleanSlug(name);
+            const shareLink = `https://animalhealth.pk/s/${slug}.html`;
+            const imgUrl = p.images[0] || '';
+            const cleanDesc = (p.desc || '').replace(/<[^>]*>?/gm, '');
             if (typeof gtag !== 'undefined') gtag('event', 'share', { method: 'whatsapp', content_type: 'product', content_id: name });
             const btn = event.currentTarget;
-            const itemLink = `https://animalhealth.pk/?item=${encodeURIComponent(name)}`;
-            const cleanDesc = desc.replace(/<[^>]*>?/gm, '');
-            const caption = `📦 *Product:* ${name}\n📂 *Category:* ${cat.toUpperCase()}\n📝 *Details:* ${cleanDesc}\n━━━━━━━━━━━━━━━━━━\n🔗 *Link:* ${itemLink}`;
-            const fallbackCaption = `📦 *Product:* ${name}\n📂 *Category:* ${cat.toUpperCase()}\n📝 *Details:* ${cleanDesc}\n━━━━━━━━━━━━━━━━━━\n🖼 *Image:* ${imgUrl}\n🔗 *Link:* ${itemLink}`;
+            const caption = `\uD83D\uDCE6 *Product:* ${name}\n\uD83D\uDCC2 *Category:* ${p.category.toUpperCase()}\n\uD83D\uDCDD *Details:* ${cleanDesc}\n──────────\n\uD83D\uDD17 *Link:* ${shareLink}`;
 
             btn.classList.add('btn-loading');
             try {
                 if (imgUrl && navigator.canShare && navigator.share) {
-                    const tempImg = new Image(); 
-                    tempImg.crossOrigin = "anonymous"; 
-                    tempImg.src = imgUrl + (imgUrl.includes('?') ? '&' : '?') + 't=' + new Date().getTime(); 
-                    
-                    await new Promise((res, rej) => { 
-                        tempImg.onload = res; 
-                        tempImg.onerror = rej; 
-                        setTimeout(rej, 4500); 
+                    const tempImg = new Image();
+                    tempImg.crossOrigin = "anonymous";
+                    tempImg.src = imgUrl + (imgUrl.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
+
+                    await new Promise((res, rej) => {
+                        tempImg.onload = res;
+                        tempImg.onerror = rej;
+                        setTimeout(rej, 4500);
                     });
 
                     const canvas = document.getElementById('share-canvas');
@@ -1034,9 +1037,12 @@
                         return;
                     }
                 }
-                if (navigator.share) await navigator.share({ text: fallbackCaption });
-                else { await navigator.clipboard.writeText(fallbackCaption); alert("Details copied!"); }
-            } catch (e) { window.open(`https://wa.me/?text=${encodeURIComponent(fallbackCaption)}`, '_blank'); }
+                if (navigator.share) await navigator.share({ text: caption });
+                else { await navigator.clipboard.writeText(caption); alert("Details copied!"); }
+            } catch (e) {
+                if (e && e.name === 'AbortError') { btn.classList.remove('btn-loading'); return; }
+                window.open(`https://wa.me/?text=${encodeURIComponent(caption)}`, '_blank');
+            }
             btn.classList.remove('btn-loading');
         };
 
@@ -1086,7 +1092,6 @@
                 : `<div class="w-full aspect-square bg-gray-100 flex items-center justify-center border"><i class="fas fa-box-open text-gray-300 text-5xl"></i></div>`;
 
             const formattedDesc = (product.desc || '').replace(/\n/g, '<br>');
-            const shareParams = `event,'${product.name.replace(/'/g,"\\'")}','${product.category}','${(product.desc||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}','${firstImg}'`;
 
             document.getElementById('pdp-content').innerHTML = `
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
@@ -1112,11 +1117,11 @@
                                 class="w-full bg-brand-maroon hover:bg-brand-dark text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
                                 <i class="fas fa-plus text-lg"></i> Add to Order
                             </button>
-                            <button onclick="window.inquireProduct('${product.name.replace(/'/g,"\\'")}','${product.category}','${itemLink}')"
+                            <button onclick="window.inquireProduct('${product.name.replace(/'/g,"\\'")}','${product.category}','${redirectLink}')"
                                 class="w-full bg-green-500 hover:bg-green-600 text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
                                 <i class="fab fa-whatsapp text-lg"></i> Inquire on WhatsApp
                             </button>
-                            <button onclick="shareProductNative(${shareParams})"
+                            <button onclick="shareProductNative(event,'${product.name.replace(/'/g,"\\'")}')"
                                     class="w-full bg-brand-gold hover:bg-brand-maroon hover:text-white text-brand-dark py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
                                 <i class="fas fa-share-alt"></i> Share Product
                             </button>
