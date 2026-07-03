@@ -2,132 +2,132 @@
 
 Website: https://animalhealth.pk  ·  Total products: 40  ·  Categories: 12
 
-_Share any link below — it opens that exact product/category on the website._
+_These links show a product/category image preview when shared on WhatsApp._
 
 ## Anti-Lice Shampoo For Cattle  (3 products)
-**Category link:** https://animalhealth.pk/?cat=anti-lice-shampoo-for-cattle
+**Category link:** https://animalhealth.pk/c/anti-lice-shampoo-for-cattle.html
 
 - Anti-Lice Shampoo 350ml appx
-  https://animalhealth.pk/?item=Anti-Lice%20Shampoo%20350ml%20appx
+  https://animalhealth.pk/s/anti-lice-shampoo-350ml-appx.html
 - Farm Fresh 5 Litre Shampoo
-  https://animalhealth.pk/?item=Farm%20Fresh%205%20Litre%20Shampoo
+  https://animalhealth.pk/s/farm-fresh-5-litre-shampoo.html
 - Field Fresh 5 Litre Shampoo
-  https://animalhealth.pk/?item=Field%20Fresh%205%20Litre%20Shampoo
+  https://animalhealth.pk/s/field-fresh-5-litre-shampoo.html
 
 ## Butter Milk For Fattening Cattle  (1 product)
-**Category link:** https://animalhealth.pk/?cat=butter-milk-for-fattening-cattle
+**Category link:** https://animalhealth.pk/c/butter-milk-for-fattening-cattle.html
 
 - Buttery Milk Powder (CMR) (26-28% Milk Fat with 34% Protein)
-  https://animalhealth.pk/?item=Buttery%20Milk%20Powder%20%28CMR%29%20%2826-28%25%20Milk%20Fat%20with%2034%25%20Protein%29
+  https://animalhealth.pk/s/buttery-milk-powder-cmr-26-28-milk-fat-with-34-protein.html
 
 ## Dewromer Drenches  (9 products)
-**Category link:** https://animalhealth.pk/?cat=dewromer-drenches
+**Category link:** https://animalhealth.pk/c/dewromer-drenches.html
 
 - Albensel 10% Selmore
-  https://animalhealth.pk/?item=Albensel%2010%25%20Selmore
+  https://animalhealth.pk/s/albensel-10-selmore.html
 - Avinide Drench China UM Ent.  ⚠ OUT OF STOCK
-  https://animalhealth.pk/?item=Avinide%20Drench%20China%20UM%20Ent.
+  https://animalhealth.pk/s/avinide-drench-china-um-ent.html
 - Expel Drench 1000ml Mylab
-  https://animalhealth.pk/?item=Expel%20Drench%201000ml%20Mylab
+  https://animalhealth.pk/s/expel-drench-1000ml-mylab.html
 - Nilzan Plus 1000ml
-  https://animalhealth.pk/?item=Nilzan%20Plus%201000ml
+  https://animalhealth.pk/s/nilzan-plus-1000ml.html
 - Oxanid Drench 1000ml
-  https://animalhealth.pk/?item=Oxanid%20Drench%201000ml
+  https://animalhealth.pk/s/oxanid-drench-1000ml.html
 - Oxfenox Drench 1000ml  ⚠ OUT OF STOCK
-  https://animalhealth.pk/?item=Oxfenox%20Drench%201000ml
+  https://animalhealth.pk/s/oxfenox-drench-1000ml.html
 - Proven Drench 1000ml Mylab
-  https://animalhealth.pk/?item=Proven%20Drench%201000ml%20Mylab
+  https://animalhealth.pk/s/proven-drench-1000ml-mylab.html
 - Punch 1000ml
-  https://animalhealth.pk/?item=Punch%201000ml
+  https://animalhealth.pk/s/punch-1000ml.html
 - Tramazol Drench 1000ml Univet Ireland
-  https://animalhealth.pk/?item=Tramazol%20Drench%201000ml%20Univet%20Ireland
+  https://animalhealth.pk/s/tramazol-drench-1000ml-univet-ireland.html
 
 ## Ear Tags For Cattle & Goats  (1 product)
-**Category link:** https://animalhealth.pk/?cat=ear-tags-for-cattle-and-goats
+**Category link:** https://animalhealth.pk/c/ear-tags-for-cattle-and-goats.html
 
 - Ear Tags for Cows Buffalos Sheep & Goats
-  https://animalhealth.pk/?item=Ear%20Tags%20for%20Cows%20Buffalos%20Sheep%20%26%20Goats
+  https://animalhealth.pk/s/ear-tags-for-cows-buffalos-sheep-and-goats.html
 
 ## Feed Premix & Minerals Mixture  (4 products)
-**Category link:** https://animalhealth.pk/?cat=feed-premix-and-minerals-mixture
+**Category link:** https://animalhealth.pk/c/feed-premix-and-minerals-mixture.html
 
 - FATTY VIT 6 IN 1 Powder 20kg
-  https://animalhealth.pk/?item=FATTY%20VIT%206%20IN%201%20Powder%2020kg
+  https://animalhealth.pk/s/fatty-vit-6-in-1-powder-20kg.html
 - HEAVY GOLD 5 in 1 Powder 20kg
-  https://animalhealth.pk/?item=HEAVY%20GOLD%205%20in%201%20Powder%2020kg
+  https://animalhealth.pk/s/heavy-gold-5-in-1-powder-20kg.html
 - Mega V Mix 25kg Turkey
-  https://animalhealth.pk/?item=Mega%20V%20Mix%2025kg%20Turkey
+  https://animalhealth.pk/s/mega-v-mix-25kg-turkey.html
 - Power V Mix 5kg
-  https://animalhealth.pk/?item=Power%20V%20Mix%205kg
+  https://animalhealth.pk/s/power-v-mix-5kg.html
 
 ## Gripe Water  (1 product)
-**Category link:** https://animalhealth.pk/?cat=gripe-water
+**Category link:** https://animalhealth.pk/c/gripe-water.html
 
 - Life Gripe Water 1 & 5 Litre
-  https://animalhealth.pk/?item=Life%20Gripe%20Water%201%20%26%205%20Litre
+  https://animalhealth.pk/s/life-gripe-water-1-and-5-litre.html
 
 ## Ivomec & Other Skin Inj.  (5 products)
-**Category link:** https://animalhealth.pk/?cat=ivomec-and-other-skin-inj
+**Category link:** https://animalhealth.pk/c/ivomec-and-other-skin-inj.html
 
 - ECOMECTIN UK 500ML
-  https://animalhealth.pk/?item=ECOMECTIN%20UK%20500ML
+  https://animalhealth.pk/s/ecomectin-uk-500ml.html
 - IVERMECTIN SG 100ML  ⚠ OUT OF STOCK
-  https://animalhealth.pk/?item=IVERMECTIN%20SG%20100ML
+  https://animalhealth.pk/s/ivermectin-sg-100ml.html
 - IVOMEC (Merial/Boehringer, Brazil) 50 ML
-  https://animalhealth.pk/?item=IVOMEC%20%28Merial/Boehringer%2C%20Brazil%29%2050%20ML
+  https://animalhealth.pk/s/ivomec-merialboehringer-brazil-50-ml.html
 - IVOMEC (Merial/Boehringer, Brazil) 500 ML
-  https://animalhealth.pk/?item=IVOMEC%20%28Merial/Boehringer%2C%20Brazil%29%20500%20ML
+  https://animalhealth.pk/s/ivomec-merialboehringer-brazil-500-ml.html
 - UNIMEC PLUS (Hilton Pharma, PK) 100ML
-  https://animalhealth.pk/?item=UNIMEC%20PLUS%20%28Hilton%20Pharma%2C%20PK%29%20100ML
+  https://animalhealth.pk/s/unimec-plus-hilton-pharma-pk-100ml.html
 
 ## Liver Tonic / Growth Promoter / Digestive Support  (1 product)
-**Category link:** https://animalhealth.pk/?cat=liver-tonic--growth-promoter--digestive-support
+**Category link:** https://animalhealth.pk/c/liver-tonic--growth-promoter--digestive-support.html
 
 - HeptaSef Liver Tonic 1 & 5 Litre
-  https://animalhealth.pk/?item=HeptaSef%20Liver%20Tonic%201%20%26%205%20Litre
+  https://animalhealth.pk/s/heptasef-liver-tonic-1-and-5-litre.html
 
 ## Protocol Of Artificial Insemination (Ai)  (1 product)
-**Category link:** https://animalhealth.pk/?cat=protocol-of-artificial-insemination-ai
+**Category link:** https://animalhealth.pk/c/protocol-of-artificial-insemination-ai.html
 
 - Useful Information
-  https://animalhealth.pk/?item=Useful%20Information
+  https://animalhealth.pk/s/useful-information.html
 
 ## Toxin Binder  (3 products)
-**Category link:** https://animalhealth.pk/?cat=toxin-binder
+**Category link:** https://animalhealth.pk/c/toxin-binder.html
 
 - MEGA TOX (Toxin Binder) TURKEY 25KG
-  https://animalhealth.pk/?item=MEGA%20TOX%20%28Toxin%20Binder%29%20TURKEY%2025KG
+  https://animalhealth.pk/s/mega-tox-toxin-binder-turkey-25kg.html
 - MEGA TOX PLUS (Yeast Based Toxin Binder) TURKEY 25KG
-  https://animalhealth.pk/?item=MEGA%20TOX%20PLUS%20%28Yeast%20Based%20Toxin%20Binder%29%20TURKEY%2025KG
+  https://animalhealth.pk/s/mega-tox-plus-yeast-based-toxin-binder-turkey-25kg.html
 - NOVASIL PLUS (BASF) USA 25kg
-  https://animalhealth.pk/?item=NOVASIL%20PLUS%20%28BASF%29%20USA%2025kg
+  https://animalhealth.pk/s/novasil-plus-basf-usa-25kg.html
 
 ## Vaccine Chart And Dosage Schedule  (1 product)
-**Category link:** https://animalhealth.pk/?cat=vaccine-chart-and-dosage-schedule
+**Category link:** https://animalhealth.pk/c/vaccine-chart-and-dosage-schedule.html
 
 - Useful Information
-  https://animalhealth.pk/?item=Useful%20Information
+  https://animalhealth.pk/s/useful-information.html
 
 ## Vaccines  (10 products)
-**Category link:** https://animalhealth.pk/?cat=vaccines
+**Category link:** https://animalhealth.pk/c/vaccines.html
 
 - ANTOX 9 100ml (Russia)  ⚠ OUT OF STOCK
-  https://animalhealth.pk/?item=ANTOX%209%20100ml%20%28Russia%29
+  https://animalhealth.pk/s/antox-9-100ml-russia.html
 - CUBOLAC 100ml (SPAIN)
-  https://animalhealth.pk/?item=CUBOLAC%20100ml%20%28SPAIN%29
+  https://animalhealth.pk/s/cubolac-100ml-spain.html
 - FOOT & MOUTH DISEASE VACCINE
-  https://animalhealth.pk/?item=FOOT%20%26%20MOUTH%20DISEASE%20VACCINE
+  https://animalhealth.pk/s/foot-and-mouth-disease-vaccine.html
 - FOOT & MOUTH DISEASE VACCINE  ⚠ OUT OF STOCK
-  https://animalhealth.pk/?item=FOOT%20%26%20MOUTH%20DISEASE%20VACCINE
+  https://animalhealth.pk/s/foot-and-mouth-disease-vaccine.html
 - HS AND PASTURELLA VACCINE  ⚠ OUT OF STOCK
-  https://animalhealth.pk/?item=HS%20AND%20PASTURELLA%20VACCINE
+  https://animalhealth.pk/s/hs-and-pasturella-vaccine.html
 - LUMPY SKIN DISEASE (LSD) VACCINE
-  https://animalhealth.pk/?item=LUMPY%20SKIN%20DISEASE%20%28LSD%29%20VACCINE
+  https://animalhealth.pk/s/lumpy-skin-disease-lsd-vaccine.html
 - LUMPY SKIN DISEASE (LSD) VACCINE
-  https://animalhealth.pk/?item=LUMPY%20SKIN%20DISEASE%20%28LSD%29%20VACCINE
+  https://animalhealth.pk/s/lumpy-skin-disease-lsd-vaccine.html
 - PPR Vaccine Russian 50 dose vial
-  https://animalhealth.pk/?item=PPR%20Vaccine%20Russian%2050%20dose%20vial
+  https://animalhealth.pk/s/ppr-vaccine-russian-50-dose-vial.html
 - PPR Vaccine Turkey (100 dose)
-  https://animalhealth.pk/?item=PPR%20Vaccine%20Turkey%20%28100%20dose%29
+  https://animalhealth.pk/s/ppr-vaccine-turkey-100-dose.html
 - TOXIPRA S7 100ML (Spain)  ⚠ OUT OF STOCK
-  https://animalhealth.pk/?item=TOXIPRA%20S7%20100ML%20%28Spain%29
+  https://animalhealth.pk/s/toxipra-s7-100ml-spain.html
