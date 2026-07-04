@@ -800,7 +800,8 @@
                         packSizes:    d.packSizes || [],
                         priceDisplay: d.priceDisplay || '',
                         inStock:      d.inStock !== false,
-                        minQty:       Math.max(1, parseInt(d.minQty) || 1)
+                        minQty:       Math.max(1, parseInt(d.minQty) || 1),
+                        sortOrder:    parseInt(d.sortOrder) || 0
                     });
                 });
                 allProducts.sort((a, b) => {
