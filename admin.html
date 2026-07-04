@@ -30,6 +30,19 @@
             display: flex; align-items: center; justify-content: center; cursor: pointer;
             line-height: 1;
         }
+        .thumb-preview .main-badge {
+            position: absolute; top: 2px; left: 2px; background: #D4AF37; color: #500000;
+            font-size: 8px; font-weight: 800; padding: 1px 4px; letter-spacing: 0.5px;
+        }
+        .thumb-preview .img-move {
+            display: flex; justify-content: space-between; margin-top: 2px; gap: 2px;
+        }
+        .thumb-preview .img-move button {
+            flex: 1; background: #f3f4f6; border: 1px solid #e5e7eb; color: #6b7280;
+            font-size: 9px; padding: 2px 0; cursor: pointer;
+        }
+        .thumb-preview .img-move button:hover:not(:disabled) { background: #500000; color: white; }
+        .thumb-preview .img-move button:disabled { opacity: 0.3; cursor: default; }
         #drawer { transition: transform 0.3s ease; transform: translateX(100%); }
         #drawer.open { transform: translateX(0); }
         .spinner { animation: spin 0.8s linear infinite; }
@@ -656,10 +669,22 @@ function renderImagePreviews() {
     const el = document.getElementById('image-previews');
     el.innerHTML = currentImages.map((url, i) =>
         `<div class="thumb-preview">
-            <img src="${url}" alt="img ${i+1}">
+            <img src="${url}" alt="img ${i+1}" style="${i === 0 ? 'border-color:#D4AF37' : ''}">
+            ${i === 0 ? '<span class="main-badge">MAIN</span>' : ''}
             <span class="remove-img" onclick="removeImage(${i})"><i class="fas fa-times"></i></span>
+            <div class="img-move">
+                <button type="button" onclick="moveImage(${i},-1)" ${i === 0 ? 'disabled' : ''}><i class="fas fa-chevron-left"></i></button>
+                <button type="button" onclick="moveImage(${i},1)" ${i === currentImages.length - 1 ? 'disabled' : ''}><i class="fas fa-chevron-right"></i></button>
+            </div>
         </div>`
     ).join('');
+}
+
+function moveImage(idx, dir) {
+    const ni = idx + dir;
+    if (ni < 0 || ni >= currentImages.length) return;
+    [currentImages[idx], currentImages[ni]] = [currentImages[ni], currentImages[idx]];
+    renderImagePreviews();
 }
 
 function removeImage(idx) {
