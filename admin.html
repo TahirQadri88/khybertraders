@@ -127,10 +127,6 @@
             class="text-xs border border-gray-300 text-gray-500 hover:border-brand-maroon hover:text-brand-maroon px-4 py-2.5 transition flex items-center gap-2" title="Arrange product order within a category">
             <i class="fas fa-arrows-up-down"></i> Reorder
         </button>
-        <button onclick="autoNumberSortOrder()"
-            class="text-xs border border-gray-300 text-gray-500 hover:border-brand-maroon hover:text-brand-maroon px-4 py-2.5 transition flex items-center gap-2" title="Number every product 0,1,2... within its category, in current order">
-            <i class="fas fa-sort-numeric-down"></i> Auto-Number
-        </button>
         <button onclick="openSettings()"
             class="text-xs border border-gray-300 text-gray-500 hover:border-brand-maroon hover:text-brand-maroon px-4 py-2.5 transition flex items-center gap-2" title="Shop settings">
             <i class="fas fa-cog"></i> Settings
@@ -429,35 +425,6 @@ async function doLogin() {
 
 function doLogout() {
     auth.signOut();
-}
-
-// ── Auto-Number Sort Order ──────────────────────────────────────────
-async function autoNumberSortOrder() {
-    if (!allProductsCache.length) return;
-    if (!confirm('This will number every product 0, 1, 2... within its category, based on the order they currently appear in this table. Continue?')) return;
-
-    const byCat = {};
-    allProductsCache.forEach(p => {
-        const cat = p.category || '';
-        (byCat[cat] = byCat[cat] || []).push(p);
-    });
-
-    const updates = [];
-    Object.values(byCat).forEach(items => {
-        items.forEach((p, i) => {
-            if (p.sortOrder !== i) updates.push({ id: p.id, sortOrder: i });
-        });
-    });
-
-    if (!updates.length) { showToast('Already numbered correctly ✓', 'green'); return; }
-
-    try {
-        await batchWriteSortOrders(updates);
-        showToast(`Numbered ${updates.length} products ✓`, 'green');
-        await loadProducts();
-    } catch (err) {
-        showToast('Error: ' + err.message, 'red');
-    }
 }
 
 async function batchWriteSortOrders(updates) {
