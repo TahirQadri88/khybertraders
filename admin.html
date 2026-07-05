@@ -123,6 +123,10 @@
             <option value="">All categories</option>
         </select>
         <span id="product-count" class="text-xs text-gray-400 ml-auto"></span>
+        <button onclick="openReorder()"
+            class="text-xs border border-gray-300 text-gray-500 hover:border-brand-maroon hover:text-brand-maroon px-4 py-2.5 transition flex items-center gap-2" title="Arrange product order within a category">
+            <i class="fas fa-arrows-up-down"></i> Reorder
+        </button>
         <button onclick="autoNumberSortOrder()"
             class="text-xs border border-gray-300 text-gray-500 hover:border-brand-maroon hover:text-brand-maroon px-4 py-2.5 transition flex items-center gap-2" title="Number every product 0,1,2... within its category, in current order">
             <i class="fas fa-sort-numeric-down"></i> Auto-Number
@@ -162,6 +166,34 @@
                 <span id="settings-label">Save Settings</span>
             </button>
             <button onclick="closeSettings()" class="border border-gray-200 text-gray-500 px-4 py-2.5 text-xs hover:border-brand-maroon hover:text-brand-maroon transition">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Reorder Products Modal -->
+    <div id="reorder-overlay" class="hidden fixed inset-0 bg-black/60 z-[400]" onclick="closeReorder()"></div>
+    <div id="reorder-modal" class="hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-xl z-[410] w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-5">
+            <h3 class="font-bold text-sm uppercase tracking-widest text-brand-dark">Reorder Products</h3>
+            <button onclick="closeReorder()" class="text-gray-400 hover:text-gray-700 text-xl leading-none">&times;</button>
+        </div>
+        <div class="space-y-4">
+            <div>
+                <label class="label">Category</label>
+                <select id="ro-cat-select" onchange="loadReorderCategory()" class="field">
+                    <option value="">Select a category…</option>
+                </select>
+            </div>
+            <div>
+                <p class="text-[10px] text-gray-400 mb-2">Use arrows to arrange the display order of products in this category.</p>
+                <div id="ro-product-list" class="space-y-1 max-h-72 overflow-y-auto"></div>
+            </div>
+        </div>
+        <div class="flex gap-3 mt-6">
+            <button onclick="saveReorder()" class="flex-1 bg-brand-maroon text-white font-bold py-2.5 text-xs uppercase tracking-widest hover:bg-brand-gold hover:text-brand-dark transition flex items-center justify-center gap-2">
+                <i id="reorder-spinner" class="fas fa-circle-notch spinner hidden"></i>
+                <span id="reorder-label">Save Order</span>
+            </button>
+            <button onclick="closeReorder()" class="border border-gray-200 text-gray-500 px-4 py-2.5 text-xs hover:border-brand-maroon hover:text-brand-maroon transition">Cancel</button>
         </div>
     </div>
 
@@ -206,8 +238,9 @@
         <div>
             <label class="label">Category</label>
             <input id="f-category" list="cat-list" type="text" placeholder="e.g. vaccines"
-                class="field" required>
+                class="field" required oninput="suggestNextSortOrder()">
             <datalist id="cat-list"></datalist>
+            <p id="next-sort-hint" class="text-[10px] text-gray-400 mt-1 hidden"></p>
         </div>
 
         <div>
@@ -419,19 +452,95 @@ async function autoNumberSortOrder() {
     if (!updates.length) { showToast('Already numbered correctly ✓', 'green'); return; }
 
     try {
-        const batches = [];
-        for (let i = 0; i < updates.length; i += 450) {
-            const batch = db.batch();
-            updates.slice(i, i + 450).forEach(u => {
-                batch.update(db.collection('products').doc(u.id), { sortOrder: u.sortOrder });
-            });
-            batches.push(batch.commit());
-        }
-        await Promise.all(batches);
+        await batchWriteSortOrders(updates);
         showToast(`Numbered ${updates.length} products ✓`, 'green');
         await loadProducts();
     } catch (err) {
         showToast('Error: ' + err.message, 'red');
+    }
+}
+
+async function batchWriteSortOrders(updates) {
+    const batches = [];
+    for (let i = 0; i < updates.length; i += 450) {
+        const batch = db.batch();
+        updates.slice(i, i + 450).forEach(u => {
+            batch.update(db.collection('products').doc(u.id), { sortOrder: u.sortOrder });
+        });
+        batches.push(batch.commit());
+    }
+    await Promise.all(batches);
+}
+
+// ── Reorder Products (per category) ─────────────────────────────────
+let reorderProducts = [];
+
+function openReorder() {
+    const cats = [...new Set(allProductsCache.map(p => p.category).filter(Boolean))].sort();
+    const sel = document.getElementById('ro-cat-select');
+    sel.innerHTML = '<option value="">Select a category…</option>' +
+        cats.map(c => `<option value="${c.replace(/"/g,'&quot;')}">${c}</option>`).join('');
+    reorderProducts = [];
+    document.getElementById('ro-product-list').innerHTML = '<p class="text-[10px] text-gray-400 italic">Choose a category above.</p>';
+    document.getElementById('reorder-modal').classList.remove('hidden');
+    document.getElementById('reorder-overlay').classList.remove('hidden');
+}
+
+function closeReorder() {
+    document.getElementById('reorder-modal').classList.add('hidden');
+    document.getElementById('reorder-overlay').classList.add('hidden');
+}
+
+function loadReorderCategory() {
+    const cat = document.getElementById('ro-cat-select').value;
+    const list = document.getElementById('ro-product-list');
+    if (!cat) { reorderProducts = []; list.innerHTML = '<p class="text-[10px] text-gray-400 italic">Choose a category above.</p>'; return; }
+    reorderProducts = allProductsCache
+        .filter(p => p.category === cat)
+        .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+    renderReorderList();
+}
+
+function renderReorderList() {
+    const list = document.getElementById('ro-product-list');
+    if (!reorderProducts.length) { list.innerHTML = '<p class="text-[10px] text-gray-400 italic">No products in this category.</p>'; return; }
+    list.innerHTML = reorderProducts.map((p, i) => `
+        <div class="flex items-center gap-2 bg-gray-50 border border-gray-100 px-3 py-2">
+            <span class="text-[10px] text-gray-400 w-4 flex-shrink-0">${i}</span>
+            <span class="flex-1 text-xs text-gray-700 truncate">${p.name}</span>
+            <button type="button" onclick="moveReorderItem(${i}, -1)" class="text-gray-400 hover:text-brand-maroon w-6 h-6 flex items-center justify-center transition ${i === 0 ? 'opacity-20 pointer-events-none' : ''}"><i class="fas fa-chevron-up text-[10px]"></i></button>
+            <button type="button" onclick="moveReorderItem(${i}, 1)" class="text-gray-400 hover:text-brand-maroon w-6 h-6 flex items-center justify-center transition ${i === reorderProducts.length - 1 ? 'opacity-20 pointer-events-none' : ''}"><i class="fas fa-chevron-down text-[10px]"></i></button>
+        </div>`).join('');
+}
+
+function moveReorderItem(idx, dir) {
+    const ni = idx + dir;
+    if (ni < 0 || ni >= reorderProducts.length) return;
+    [reorderProducts[idx], reorderProducts[ni]] = [reorderProducts[ni], reorderProducts[idx]];
+    renderReorderList();
+}
+
+async function saveReorder() {
+    if (!reorderProducts.length) { closeReorder(); return; }
+    const spinner = document.getElementById('reorder-spinner');
+    const label   = document.getElementById('reorder-label');
+    spinner.classList.remove('hidden');
+    label.textContent = 'Saving…';
+    try {
+        const updates = reorderProducts
+            .map((p, i) => ({ id: p.id, sortOrder: i }))
+            .filter(u => reorderProducts.find(p => p.id === u.id).sortOrder !== u.sortOrder);
+        if (updates.length) {
+            await batchWriteSortOrders(updates);
+            await loadProducts();
+        }
+        showToast('Order saved ✓', 'green');
+        closeReorder();
+    } catch (err) {
+        showToast('Error: ' + err.message, 'red');
+    } finally {
+        spinner.classList.add('hidden');
+        label.textContent = 'Save Order';
     }
 }
 
@@ -571,8 +680,20 @@ function openDrawer(productId) {
     } else {
         document.getElementById('drawer-title').textContent = 'Add Product';
     }
+    suggestNextSortOrder();
     document.getElementById('drawer').classList.add('open');
     document.getElementById('drawer-overlay').classList.remove('hidden');
+}
+
+function suggestNextSortOrder() {
+    const cat = document.getElementById('f-category').value.trim().toLowerCase();
+    const hint = document.getElementById('next-sort-hint');
+    const editingId = document.getElementById('f-id').value;
+    if (!cat) { hint.classList.add('hidden'); return; }
+    const count = allProductsCache.filter(p => (p.category || '').toLowerCase() === cat && p.id !== editingId).length;
+    hint.textContent = `Next available in "${cat}": ${count}  (${count} product${count !== 1 ? 's' : ''} already in this category)`;
+    hint.classList.remove('hidden');
+    if (!editingId) document.getElementById('f-sort').value = count;
 }
 
 function closeDrawer() {
