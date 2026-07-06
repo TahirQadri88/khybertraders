@@ -30,6 +30,19 @@
             display: flex; align-items: center; justify-content: center; cursor: pointer;
             line-height: 1;
         }
+        .thumb-preview .main-badge {
+            position: absolute; top: 2px; left: 2px; background: #D4AF37; color: #500000;
+            font-size: 8px; font-weight: 800; padding: 1px 4px; letter-spacing: 0.5px;
+        }
+        .thumb-preview .img-move {
+            display: flex; justify-content: space-between; margin-top: 2px; gap: 2px;
+        }
+        .thumb-preview .img-move button {
+            flex: 1; background: #f3f4f6; border: 1px solid #e5e7eb; color: #6b7280;
+            font-size: 9px; padding: 2px 0; cursor: pointer;
+        }
+        .thumb-preview .img-move button:hover:not(:disabled) { background: #500000; color: white; }
+        .thumb-preview .img-move button:disabled { opacity: 0.3; cursor: default; }
         #drawer { transition: transform 0.3s ease; transform: translateX(100%); }
         #drawer.open { transform: translateX(0); }
         .spinner { animation: spin 0.8s linear infinite; }
@@ -110,10 +123,108 @@
             <option value="">All categories</option>
         </select>
         <span id="product-count" class="text-xs text-gray-400 ml-auto"></span>
-        <button id="import-btn" onclick="importFromSheets()"
-            class="text-xs border border-gray-300 text-gray-500 hover:border-brand-maroon hover:text-brand-maroon px-4 py-2.5 transition flex items-center gap-2">
-            <i class="fas fa-file-import"></i> Import from Sheets
+        <button onclick="openReorder()"
+            class="text-xs border border-gray-300 text-gray-500 hover:border-brand-maroon hover:text-brand-maroon px-4 py-2.5 transition flex items-center gap-2" title="Arrange product order within a category">
+            <i class="fas fa-arrows-up-down"></i> Reorder
         </button>
+        <button onclick="openRenameCategory()"
+            class="text-xs border border-gray-300 text-gray-500 hover:border-brand-maroon hover:text-brand-maroon px-4 py-2.5 transition flex items-center gap-2" title="Rename a category across all its products">
+            <i class="fas fa-i-cursor"></i> Rename Category
+        </button>
+        <button onclick="openSettings()"
+            class="text-xs border border-gray-300 text-gray-500 hover:border-brand-maroon hover:text-brand-maroon px-4 py-2.5 transition flex items-center gap-2" title="Shop settings">
+            <i class="fas fa-cog"></i> Settings
+        </button>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-overlay" class="hidden fixed inset-0 bg-black/60 z-[400]" onclick="closeSettings()"></div>
+    <div id="settings-modal" class="hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-xl z-[410] w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-5">
+            <h3 class="font-bold text-sm uppercase tracking-widest text-brand-dark">Shop Settings</h3>
+            <button onclick="closeSettings()" class="text-gray-400 hover:text-gray-700 text-xl leading-none">&times;</button>
+        </div>
+        <div class="space-y-5">
+            <div>
+                <label class="label">Minimum Order Value for Delivery</label>
+                <div class="flex gap-2 items-center">
+                    <span class="text-xs text-gray-500 flex-shrink-0">Rs.</span>
+                    <input id="s-min-order" type="number" min="0" step="100" class="field flex-1"
+                        placeholder="e.g. 5000 — leave 0 to disable">
+                </div>
+                <p class="text-[10px] text-gray-400 mt-1">Shown as a note in the customer order form. Set to 0 to hide.</p>
+            </div>
+            <div>
+                <label class="label">Category Order</label>
+                <p class="text-[10px] text-gray-400 mb-2">Use arrows to set the order categories appear on the website.</p>
+                <div id="s-cat-order" class="space-y-1 max-h-56 overflow-y-auto"></div>
+            </div>
+        </div>
+        <div class="flex gap-3 mt-6">
+            <button onclick="saveSettings()" class="flex-1 bg-brand-maroon text-white font-bold py-2.5 text-xs uppercase tracking-widest hover:bg-brand-gold hover:text-brand-dark transition flex items-center justify-center gap-2">
+                <i id="settings-spinner" class="fas fa-circle-notch spinner hidden"></i>
+                <span id="settings-label">Save Settings</span>
+            </button>
+            <button onclick="closeSettings()" class="border border-gray-200 text-gray-500 px-4 py-2.5 text-xs hover:border-brand-maroon hover:text-brand-maroon transition">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Reorder Products Modal -->
+    <div id="reorder-overlay" class="hidden fixed inset-0 bg-black/60 z-[400]" onclick="closeReorder()"></div>
+    <div id="reorder-modal" class="hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-xl z-[410] w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-5">
+            <h3 class="font-bold text-sm uppercase tracking-widest text-brand-dark">Reorder Products</h3>
+            <button onclick="closeReorder()" class="text-gray-400 hover:text-gray-700 text-xl leading-none">&times;</button>
+        </div>
+        <div class="space-y-4">
+            <div>
+                <label class="label">Category</label>
+                <select id="ro-cat-select" onchange="loadReorderCategory()" class="field">
+                    <option value="">Select a category…</option>
+                </select>
+            </div>
+            <div>
+                <p class="text-[10px] text-gray-400 mb-2">Use arrows to arrange the display order of products in this category.</p>
+                <div id="ro-product-list" class="space-y-1 max-h-72 overflow-y-auto"></div>
+            </div>
+        </div>
+        <div class="flex gap-3 mt-6">
+            <button onclick="saveReorder()" class="flex-1 bg-brand-maroon text-white font-bold py-2.5 text-xs uppercase tracking-widest hover:bg-brand-gold hover:text-brand-dark transition flex items-center justify-center gap-2">
+                <i id="reorder-spinner" class="fas fa-circle-notch spinner hidden"></i>
+                <span id="reorder-label">Save Order</span>
+            </button>
+            <button onclick="closeReorder()" class="border border-gray-200 text-gray-500 px-4 py-2.5 text-xs hover:border-brand-maroon hover:text-brand-maroon transition">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Rename Category Modal -->
+    <div id="rename-cat-overlay" class="hidden fixed inset-0 bg-black/60 z-[400]" onclick="closeRenameCategory()"></div>
+    <div id="rename-cat-modal" class="hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-xl z-[410] w-full max-w-md p-6">
+        <div class="flex items-center justify-between mb-5">
+            <h3 class="font-bold text-sm uppercase tracking-widest text-brand-dark">Rename Category</h3>
+            <button onclick="closeRenameCategory()" class="text-gray-400 hover:text-gray-700 text-xl leading-none">&times;</button>
+        </div>
+        <div class="space-y-4">
+            <div>
+                <label class="label">Current Category</label>
+                <select id="rc-old-select" class="field">
+                    <option value="">Select a category…</option>
+                </select>
+                <p id="rc-count-hint" class="text-[10px] text-gray-400 mt-1"></p>
+            </div>
+            <div>
+                <label class="label">New Name</label>
+                <input id="rc-new-name" type="text" class="field" placeholder="e.g. Vaccines &amp; Boosters">
+                <p class="text-[10px] text-gray-400 mt-1">Updates the category on every product currently in the selected category.</p>
+            </div>
+        </div>
+        <div class="flex gap-3 mt-6">
+            <button onclick="saveRenameCategory()" class="flex-1 bg-brand-maroon text-white font-bold py-2.5 text-xs uppercase tracking-widest hover:bg-brand-gold hover:text-brand-dark transition flex items-center justify-center gap-2">
+                <i id="rename-cat-spinner" class="fas fa-circle-notch spinner hidden"></i>
+                <span id="rename-cat-label">Rename</span>
+            </button>
+            <button onclick="closeRenameCategory()" class="border border-gray-200 text-gray-500 px-4 py-2.5 text-xs hover:border-brand-maroon hover:text-brand-maroon transition">Cancel</button>
+        </div>
     </div>
 
     <!-- Product Table -->
@@ -128,7 +239,7 @@
                     <th class="p-3 text-left w-16"></th>
                     <th class="p-3 text-left">Product</th>
                     <th class="p-3 text-left hidden md:table-cell">Category</th>
-                    <th class="p-3 text-left hidden sm:table-cell">Price</th>
+                    <th class="p-3 text-left">Price</th>
                     <th class="p-3 text-left">Stock</th>
                     <th class="p-3 text-right">Actions</th>
                 </tr>
@@ -138,7 +249,7 @@
         <div id="empty-state" class="hidden text-center py-20 text-gray-400">
             <i class="fas fa-box-open text-4xl mb-4 block text-gray-200"></i>
             <p class="font-bold text-gray-400 mb-2">No products yet</p>
-            <p class="text-xs mb-4">Click <strong>Import from Sheets</strong> to load your existing products, or <strong>Add Product</strong> to add one manually.</p>
+            <p class="text-xs mb-4">Click <strong>Add Product</strong> to add your first product.</p>
         </div>
     </div>
 </div>
@@ -157,8 +268,9 @@
         <div>
             <label class="label">Category</label>
             <input id="f-category" list="cat-list" type="text" placeholder="e.g. vaccines"
-                class="field" required>
+                class="field" required oninput="suggestNextSortOrder()">
             <datalist id="cat-list"></datalist>
+            <p id="next-sort-hint" class="text-[10px] text-gray-400 mt-1 hidden"></p>
         </div>
 
         <div>
@@ -176,10 +288,19 @@
         </div>
 
         <div>
-            <label class="label">Price Display</label>
+            <label class="label">Pack Sizes &amp; Prices</label>
+            <div id="pack-sizes-list" class="space-y-2 mb-2"></div>
+            <button type="button" onclick="addPackSizeRow()"
+                class="text-[10px] border border-brand-maroon/40 text-brand-maroon px-3 py-1.5 hover:bg-brand-maroon hover:text-white transition font-bold uppercase tracking-widest">
+                + Add Pack Size
+            </button>
+            <p class="text-[10px] text-gray-400 mt-1">e.g. "100ml" → "Rs. 500" — leave empty if using single price below.</p>
+        </div>
+
+        <div>
+            <label class="label">Single Price <span class="text-gray-400 font-normal">(if no pack sizes above)</span></label>
             <input id="f-price" type="text" class="field"
-                placeholder='e.g. "Rs. 1,500" or "Rs. 800–1,200" or "Contact for Price"'>
-            <p class="text-[10px] text-gray-400 mt-1">Free text — customers see exactly what you type here.</p>
+                placeholder='e.g. "Rs. 1,500" or "Contact for Price"'>
         </div>
 
         <div class="flex items-center gap-3">
@@ -195,9 +316,17 @@
             <input type="hidden" id="f-instock" value="true">
         </div>
 
-        <div>
-            <label class="label">Sort Order <span class="text-gray-400 font-normal">(within category)</span></label>
-            <input id="f-sort" type="number" min="0" value="0" class="field w-24">
+        <div class="flex gap-6">
+            <div>
+                <label class="label">Sort Order <span class="text-gray-400 font-normal">(within category)</span></label>
+                <input id="f-sort" type="number" min="0" value="0" class="field w-24">
+                <p class="text-[10px] text-gray-400 mt-1">Lower number shows first. 0 = first, 1 = second, etc.</p>
+            </div>
+            <div>
+                <label class="label">Min Order Qty <span class="text-gray-400 font-normal">(units)</span></label>
+                <input id="f-min-qty" type="number" min="1" value="1" class="field w-24">
+                <p class="text-[10px] text-gray-400 mt-1">Customers can't order fewer units than this.</p>
+            </div>
         </div>
 
         <!-- Image Upload -->
@@ -291,10 +420,11 @@ const CLOUDINARY_CLOUD  = 'dkay9chpe';
 const CLOUDINARY_PRESET = 'khybertraders';
 
 // ── State ─────────────────────────────────────────────────────────
-let allProductsCache = [];
-let currentImages   = [];   // URLs (Storage or external) for the open drawer
-let pendingDeleteId = null;
-let isStockOn       = true;
+let allProductsCache  = [];
+let currentImages    = [];
+let currentPackSizes = [];
+let pendingDeleteId  = null;
+let isStockOn        = true;
 
 // ── Auth ──────────────────────────────────────────────────────────
 auth.onAuthStateChanged(user => {
@@ -329,6 +459,158 @@ async function doLogin() {
 
 function doLogout() {
     auth.signOut();
+}
+
+async function batchWriteSortOrders(updates) {
+    const batches = [];
+    for (let i = 0; i < updates.length; i += 450) {
+        const batch = db.batch();
+        updates.slice(i, i + 450).forEach(u => {
+            batch.update(db.collection('products').doc(u.id), { sortOrder: u.sortOrder });
+        });
+        batches.push(batch.commit());
+    }
+    await Promise.all(batches);
+}
+
+// ── Reorder Products (per category) ─────────────────────────────────
+let reorderProducts = [];
+
+function openReorder() {
+    const cats = [...new Set(allProductsCache.map(p => p.category).filter(Boolean))].sort();
+    const sel = document.getElementById('ro-cat-select');
+    sel.innerHTML = '<option value="">Select a category…</option>' +
+        cats.map(c => `<option value="${c.replace(/"/g,'&quot;')}">${c}</option>`).join('');
+    reorderProducts = [];
+    document.getElementById('ro-product-list').innerHTML = '<p class="text-[10px] text-gray-400 italic">Choose a category above.</p>';
+    document.getElementById('reorder-modal').classList.remove('hidden');
+    document.getElementById('reorder-overlay').classList.remove('hidden');
+}
+
+function closeReorder() {
+    document.getElementById('reorder-modal').classList.add('hidden');
+    document.getElementById('reorder-overlay').classList.add('hidden');
+}
+
+function loadReorderCategory() {
+    const cat = document.getElementById('ro-cat-select').value;
+    const list = document.getElementById('ro-product-list');
+    if (!cat) { reorderProducts = []; list.innerHTML = '<p class="text-[10px] text-gray-400 italic">Choose a category above.</p>'; return; }
+    reorderProducts = allProductsCache
+        .filter(p => p.category === cat)
+        .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+    renderReorderList();
+}
+
+function renderReorderList() {
+    const list = document.getElementById('ro-product-list');
+    if (!reorderProducts.length) { list.innerHTML = '<p class="text-[10px] text-gray-400 italic">No products in this category.</p>'; return; }
+    list.innerHTML = reorderProducts.map((p, i) => `
+        <div class="flex items-center gap-2 bg-gray-50 border border-gray-100 px-3 py-2">
+            <span class="text-[10px] text-gray-400 w-4 flex-shrink-0">${i}</span>
+            <span class="flex-1 text-xs text-gray-700 truncate">${p.name}</span>
+            <button type="button" onclick="moveReorderItem(${i}, -1)" class="text-gray-400 hover:text-brand-maroon w-6 h-6 flex items-center justify-center transition ${i === 0 ? 'opacity-20 pointer-events-none' : ''}"><i class="fas fa-chevron-up text-[10px]"></i></button>
+            <button type="button" onclick="moveReorderItem(${i}, 1)" class="text-gray-400 hover:text-brand-maroon w-6 h-6 flex items-center justify-center transition ${i === reorderProducts.length - 1 ? 'opacity-20 pointer-events-none' : ''}"><i class="fas fa-chevron-down text-[10px]"></i></button>
+        </div>`).join('');
+}
+
+function moveReorderItem(idx, dir) {
+    const ni = idx + dir;
+    if (ni < 0 || ni >= reorderProducts.length) return;
+    [reorderProducts[idx], reorderProducts[ni]] = [reorderProducts[ni], reorderProducts[idx]];
+    renderReorderList();
+}
+
+async function saveReorder() {
+    if (!reorderProducts.length) { closeReorder(); return; }
+    const spinner = document.getElementById('reorder-spinner');
+    const label   = document.getElementById('reorder-label');
+    spinner.classList.remove('hidden');
+    label.textContent = 'Saving…';
+    try {
+        const updates = reorderProducts
+            .map((p, i) => ({ id: p.id, sortOrder: i }))
+            .filter(u => reorderProducts.find(p => p.id === u.id).sortOrder !== u.sortOrder);
+        if (updates.length) {
+            await batchWriteSortOrders(updates);
+            await loadProducts();
+        }
+        showToast('Order saved ✓', 'green');
+        closeReorder();
+    } catch (err) {
+        showToast('Error: ' + err.message, 'red');
+    } finally {
+        spinner.classList.add('hidden');
+        label.textContent = 'Save Order';
+    }
+}
+
+// ── Rename Category ──────────────────────────────────────────────────
+function openRenameCategory() {
+    const cats = [...new Set(allProductsCache.map(p => p.category).filter(Boolean))].sort();
+    const sel = document.getElementById('rc-old-select');
+    sel.innerHTML = '<option value="">Select a category…</option>' +
+        cats.map(c => `<option value="${c.replace(/"/g,'&quot;')}">${c}</option>`).join('');
+    sel.onchange = () => {
+        const n = allProductsCache.filter(p => p.category === sel.value).length;
+        document.getElementById('rc-count-hint').textContent = sel.value ? `${n} product${n !== 1 ? 's' : ''} will be updated` : '';
+    };
+    document.getElementById('rc-new-name').value = '';
+    document.getElementById('rc-count-hint').textContent = '';
+    document.getElementById('rename-cat-modal').classList.remove('hidden');
+    document.getElementById('rename-cat-overlay').classList.remove('hidden');
+}
+
+function closeRenameCategory() {
+    document.getElementById('rename-cat-modal').classList.add('hidden');
+    document.getElementById('rename-cat-overlay').classList.add('hidden');
+}
+
+async function saveRenameCategory() {
+    const oldCat = document.getElementById('rc-old-select').value;
+    const newCat = document.getElementById('rc-new-name').value.trim().toLowerCase();
+    if (!oldCat) { showToast('Choose a category to rename', 'red'); return; }
+    if (!newCat) { showToast('Enter the new category name', 'red'); return; }
+    if (newCat === oldCat) { showToast('New name is the same as the current one', 'red'); return; }
+
+    const affected = allProductsCache.filter(p => p.category === oldCat);
+    if (!confirm(`Rename "${oldCat}" to "${newCat}" for ${affected.length} product${affected.length !== 1 ? 's' : ''}?`)) return;
+
+    const spinner = document.getElementById('rename-cat-spinner');
+    const label   = document.getElementById('rename-cat-label');
+    spinner.classList.remove('hidden');
+    label.textContent = 'Renaming…';
+    try {
+        const batches = [];
+        for (let i = 0; i < affected.length; i += 450) {
+            const batch = db.batch();
+            affected.slice(i, i + 450).forEach(p => {
+                batch.update(db.collection('products').doc(p.id), { category: newCat });
+            });
+            batches.push(batch.commit());
+        }
+        await Promise.all(batches);
+
+        // Keep saved category display order pointing at the new name
+        try {
+            const doc = await db.collection('settings').doc('shop').get();
+            const order = doc.exists ? (doc.data().categoryOrder || []) : [];
+            const idx = order.indexOf(oldCat);
+            if (idx !== -1) {
+                order[idx] = newCat;
+                await db.collection('settings').doc('shop').set({ categoryOrder: order }, { merge: true });
+            }
+        } catch (e) { /* settings not critical to the rename itself */ }
+
+        showToast(`Renamed ${affected.length} product${affected.length !== 1 ? 's' : ''} ✓`, 'green');
+        closeRenameCategory();
+        await loadProducts();
+    } catch (err) {
+        showToast('Error: ' + err.message, 'red');
+    } finally {
+        spinner.classList.add('hidden');
+        label.textContent = 'Rename';
+    }
 }
 
 // ── Load Products ─────────────────────────────────────────────────
@@ -371,8 +653,8 @@ function renderTable(products) {
             ? `<img src="${p.images[0]}" class="w-12 h-12 object-cover border border-gray-100">`
             : `<div class="w-12 h-12 bg-gray-100 flex items-center justify-center text-gray-300 text-xl"><i class="fas fa-image"></i></div>`;
         const stockBadge = p.inStock !== false
-            ? `<span class="bg-green-100 text-green-700 text-[9px] font-bold uppercase px-2 py-0.5">In Stock</span>`
-            : `<span class="bg-red-100 text-red-600 text-[9px] font-bold uppercase px-2 py-0.5">Out of Stock</span>`;
+            ? `<button onclick="toggleStockRow('${p.id}',true)" class="bg-green-100 text-green-700 text-[9px] font-bold uppercase px-2 py-0.5 hover:bg-red-100 hover:text-red-600 transition cursor-pointer" title="Click to mark Out of Stock">In Stock</button>`
+            : `<button onclick="toggleStockRow('${p.id}',false)" class="bg-red-100 text-red-600 text-[9px] font-bold uppercase px-2 py-0.5 hover:bg-green-100 hover:text-green-700 transition cursor-pointer" title="Click to mark In Stock">Out of Stock</button>`;
         return `<tr class="border-b border-gray-50 hover:bg-gray-50 transition" data-name="${esc(p.name)}" data-cat="${esc(p.category || '')}">
             <td class="p-3">${thumb}</td>
             <td class="p-3">
@@ -380,7 +662,12 @@ function renderTable(products) {
                 <div class="text-[10px] text-gray-400 mt-0.5 md:hidden capitalize">${esc(p.category || '')}</div>
             </td>
             <td class="p-3 hidden md:table-cell text-xs capitalize text-gray-500">${esc(p.category || '')}</td>
-            <td class="p-3 hidden sm:table-cell text-xs text-brand-maroon font-semibold">${esc(p.priceDisplay || '—')}</td>
+            <td class="p-3 cursor-pointer select-none" onclick="startPriceEdit('${p.id}',this)" data-price="${esc(p.priceDisplay||'')}" title="Click to edit price">
+                ${p.packSizes && p.packSizes.length
+                    ? p.packSizes.map(ps => `<span class="inline-block text-[9px] bg-brand-maroon/10 text-brand-maroon font-bold px-1.5 py-0.5 mr-0.5 mb-0.5">${esc(ps.size)} ${esc(ps.price)}</span>`).join('')
+                    : `<span class="text-xs text-brand-maroon font-semibold">${esc(p.priceDisplay || '—')}</span>`}
+                <i class="fas fa-pen text-[8px] text-gray-300 ml-1"></i>
+            </td>
             <td class="p-3">${stockBadge}</td>
             <td class="p-3 text-right">
                 <button onclick="openDrawer('${p.id}')" class="text-[10px] bg-brand-maroon text-white px-3 py-1.5 hover:bg-brand-gold hover:text-brand-dark transition mr-1 font-bold uppercase">Edit</button>
@@ -413,6 +700,32 @@ function populateCatFilter() {
     dl.innerHTML = cats.map(c => `<option value="${esc(c)}">`).join('');
 }
 
+// ── Pack Sizes ────────────────────────────────────────────────────
+function addPackSizeRow(size = '', price = '') {
+    currentPackSizes.push({ size, price });
+    renderPackSizes();
+}
+function removePackSizeRow(idx) {
+    currentPackSizes.splice(idx, 1);
+    renderPackSizes();
+}
+function renderPackSizes() {
+    const el = document.getElementById('pack-sizes-list');
+    if (!el) return;
+    el.innerHTML = currentPackSizes.map((ps, i) => `
+        <div class="flex gap-1.5 items-center">
+            <input type="text" value="${esc(ps.size)}" placeholder="Size (e.g. 100ml)"
+                class="field flex-1 text-xs" style="padding:6px 8px"
+                oninput="currentPackSizes[${i}].size=this.value">
+            <input type="text" value="${esc(ps.price)}" placeholder="Price (e.g. Rs. 500)"
+                class="field flex-1 text-xs" style="padding:6px 8px"
+                oninput="currentPackSizes[${i}].price=this.value">
+            <button type="button" onclick="removePackSizeRow(${i})"
+                class="text-red-400 hover:text-red-600 text-lg leading-none w-5 flex-shrink-0">&times;</button>
+        </div>`
+    ).join('');
+}
+
 // ── Drawer ────────────────────────────────────────────────────────
 function openDrawer(productId) {
     resetForm();
@@ -426,15 +739,30 @@ function openDrawer(productId) {
         document.getElementById('f-desc').value     = p.desc || '';
         document.getElementById('f-price').value    = p.priceDisplay || '';
         document.getElementById('f-sort').value     = p.sortOrder || 0;
+        document.getElementById('f-min-qty').value  = p.minQty || 1;
         setStock(p.inStock !== false);
         currentImages = [...(p.images || [])];
         renderImagePreviews();
+        currentPackSizes = (p.packSizes || []).map(ps => ({ ...ps }));
+        renderPackSizes();
         updateSlugPreview();
     } else {
         document.getElementById('drawer-title').textContent = 'Add Product';
     }
+    suggestNextSortOrder();
     document.getElementById('drawer').classList.add('open');
     document.getElementById('drawer-overlay').classList.remove('hidden');
+}
+
+function suggestNextSortOrder() {
+    const cat = document.getElementById('f-category').value.trim().toLowerCase();
+    const hint = document.getElementById('next-sort-hint');
+    const editingId = document.getElementById('f-id').value;
+    if (!cat) { hint.classList.add('hidden'); return; }
+    const count = allProductsCache.filter(p => (p.category || '').toLowerCase() === cat && p.id !== editingId).length;
+    hint.textContent = `Next available in "${cat}": ${count}  (${count} product${count !== 1 ? 's' : ''} already in this category)`;
+    hint.classList.remove('hidden');
+    if (!editingId) document.getElementById('f-sort').value = count;
 }
 
 function closeDrawer() {
@@ -447,6 +775,8 @@ function resetForm() {
     document.getElementById('f-id').value = '';
     currentImages = [];
     renderImagePreviews();
+    currentPackSizes = [];
+    renderPackSizes();
     setStock(true);
     document.getElementById('slug-preview').textContent = '';
     document.getElementById('upload-progress').classList.add('hidden');
@@ -571,15 +901,94 @@ function renderImagePreviews() {
     const el = document.getElementById('image-previews');
     el.innerHTML = currentImages.map((url, i) =>
         `<div class="thumb-preview">
-            <img src="${url}" alt="img ${i+1}">
+            <img src="${url}" alt="img ${i+1}" style="${i === 0 ? 'border-color:#D4AF37' : ''}">
+            ${i === 0 ? '<span class="main-badge">MAIN</span>' : ''}
             <span class="remove-img" onclick="removeImage(${i})"><i class="fas fa-times"></i></span>
+            <div class="img-move">
+                <button type="button" onclick="moveImage(${i},-1)" ${i === 0 ? 'disabled' : ''}><i class="fas fa-chevron-left"></i></button>
+                <button type="button" onclick="moveImage(${i},1)" ${i === currentImages.length - 1 ? 'disabled' : ''}><i class="fas fa-chevron-right"></i></button>
+            </div>
         </div>`
     ).join('');
+}
+
+function moveImage(idx, dir) {
+    const ni = idx + dir;
+    if (ni < 0 || ni >= currentImages.length) return;
+    [currentImages[idx], currentImages[ni]] = [currentImages[ni], currentImages[idx]];
+    renderImagePreviews();
 }
 
 function removeImage(idx) {
     currentImages.splice(idx, 1);
     renderImagePreviews();
+}
+
+// ── Settings ──────────────────────────────────────────────────────
+let settingsCatOrder = [];
+
+function renderCategoryOrder() {
+    const el = document.getElementById('s-cat-order');
+    if (!settingsCatOrder.length) {
+        el.innerHTML = '<p class="text-[10px] text-gray-400 italic">No categories found. Add some products first.</p>';
+        return;
+    }
+    el.innerHTML = settingsCatOrder.map((cat, i) => `
+        <div class="flex items-center gap-2 bg-gray-50 border border-gray-100 px-3 py-2">
+            <i class="fas fa-grip-lines text-gray-300 text-xs mr-1"></i>
+            <span class="flex-1 text-xs capitalize text-gray-700 truncate">${cat}</span>
+            <button type="button" onclick="moveCat(${i}, -1)" class="text-gray-400 hover:text-brand-maroon w-6 h-6 flex items-center justify-center transition ${i === 0 ? 'opacity-20 pointer-events-none' : ''}"><i class="fas fa-chevron-up text-[10px]"></i></button>
+            <button type="button" onclick="moveCat(${i}, 1)" class="text-gray-400 hover:text-brand-maroon w-6 h-6 flex items-center justify-center transition ${i === settingsCatOrder.length - 1 ? 'opacity-20 pointer-events-none' : ''}"><i class="fas fa-chevron-down text-[10px]"></i></button>
+        </div>`).join('');
+}
+
+function moveCat(idx, dir) {
+    const ni = idx + dir;
+    if (ni < 0 || ni >= settingsCatOrder.length) return;
+    [settingsCatOrder[idx], settingsCatOrder[ni]] = [settingsCatOrder[ni], settingsCatOrder[idx]];
+    renderCategoryOrder();
+}
+
+async function openSettings() {
+    let saved = [];
+    try {
+        const doc = await db.collection('settings').doc('shop').get();
+        const data = doc.exists ? doc.data() : {};
+        document.getElementById('s-min-order').value = data.minOrderValue || 0;
+        saved = data.categoryOrder || [];
+    } catch (e) {
+        document.getElementById('s-min-order').value = 0;
+    }
+    const allCats = [...new Set(allProductsCache.map(p => p.category).filter(Boolean))];
+    settingsCatOrder = [
+        ...saved.filter(c => allCats.includes(c)),
+        ...allCats.filter(c => !saved.includes(c))
+    ];
+    renderCategoryOrder();
+    document.getElementById('settings-modal').classList.remove('hidden');
+    document.getElementById('settings-overlay').classList.remove('hidden');
+}
+function closeSettings() {
+    document.getElementById('settings-modal').classList.add('hidden');
+    document.getElementById('settings-overlay').classList.add('hidden');
+}
+async function saveSettings() {
+    const spinner = document.getElementById('settings-spinner');
+    const label   = document.getElementById('settings-label');
+    spinner.classList.remove('hidden');
+    label.textContent = 'Saving…';
+    try {
+        const minOrderValue = parseInt(document.getElementById('s-min-order').value) || 0;
+        const categoryOrder = settingsCatOrder;
+        await db.collection('settings').doc('shop').set({ minOrderValue, categoryOrder }, { merge: true });
+        showToast('Settings saved ✓', 'green');
+        closeSettings();
+    } catch (err) {
+        showToast('Error: ' + err.message, 'red');
+    } finally {
+        spinner.classList.add('hidden');
+        label.textContent = 'Save Settings';
+    }
 }
 
 // ── Save Product ──────────────────────────────────────────────────
@@ -599,8 +1008,10 @@ async function saveProduct() {
         name,
         desc:         document.getElementById('f-desc').value.trim(),
         priceDisplay: document.getElementById('f-price').value.trim(),
+        packSizes:    currentPackSizes.filter(ps => ps.size && ps.size.trim()),
         inStock:      document.getElementById('f-instock').value === 'true',
         sortOrder:    parseInt(document.getElementById('f-sort').value) || 0,
+        minQty:       Math.max(1, parseInt(document.getElementById('f-min-qty').value) || 1),
         images:       currentImages,
         slug:         getCleanSlug(name),
         updatedAt:    firebase.firestore.FieldValue.serverTimestamp()
@@ -645,70 +1056,71 @@ async function confirmDelete() {
     }
 }
 
-// ── Import from Google Sheets ─────────────────────────────────────
-async function importFromSheets() {
-    if (!confirm('Import products from Google Sheets?\n\nProducts already in Firestore (matched by slug) will be skipped — only new products are added.')) return;
+// ── Inline price editing ──────────────────────────────────────────
+function startPriceEdit(productId, cell) {
+    if (cell.dataset.editing) return;
+    cell.dataset.editing = '1';
+    const currentPrice = cell.dataset.price || '';
+    cell.innerHTML = `<input type="text" class="w-full border border-brand-maroon px-2 py-1 text-xs focus:outline-none min-w-[90px]" placeholder="Rs. 1,500">`;
+    const input = cell.querySelector('input');
+    input.value = currentPrice;
+    input.focus();
+    input.select();
 
-    const btn = document.getElementById('import-btn');
-    btn.innerHTML = '<i class="fas fa-circle-notch spinner"></i> Importing…';
-    btn.disabled = true;
-
-    try {
-        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1-s7frQnY1Muh4XOizcz2V3KnkkHV8owNWYzyDrYFSic/gviz/tq?tqx=out:csv';
-        const res  = await fetch(SHEET_URL);
-        const text = await res.text();
-        const rows = parseCSV(text);
-
-        // Get existing slugs to avoid duplicates
-        const snap = await db.collection('products').get();
-        const existingSlugs = new Set(snap.docs.map(d => d.data().slug).filter(Boolean));
-
-        let added = 0;
-        for (const p of rows) {
-            const slug = getCleanSlug(p.name);
-            if (!p.name || existingSlugs.has(slug)) continue;
-            await db.collection('products').add({
-                category:     p.category || '',
-                name:         p.name,
-                desc:         p.desc || '',
-                images:       p.images || [],
-                priceDisplay: '',
-                inStock:      true,
-                sortOrder:    0,
-                slug,
-                updatedAt:    firebase.firestore.FieldValue.serverTimestamp()
+    let done = false;
+    async function save() {
+        if (done) return;
+        done = true;
+        delete cell.dataset.editing;
+        const newPrice = input.value.trim();
+        if (newPrice === currentPrice) { restorePriceCell(cell, currentPrice); return; }
+        try {
+            await db.collection('products').doc(productId).update({
+                priceDisplay: newPrice,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             });
-            added++;
+            const p = allProductsCache.find(x => x.id === productId);
+            if (p) p.priceDisplay = newPrice;
+            restorePriceCell(cell, newPrice);
+            showToast('Price updated ✓', 'green');
+        } catch (err) {
+            showToast('Error: ' + err.message, 'red');
+            restorePriceCell(cell, currentPrice);
         }
-        showToast(`Imported ${added} products ✓`, 'green');
-        await loadProducts();
-    } catch (err) {
-        showToast('Import failed: ' + err.message, 'red');
-    } finally {
-        btn.innerHTML = '<i class="fas fa-file-import"></i> Import from Sheets';
-        btn.disabled = false;
     }
+    function cancel() {
+        if (done) return;
+        done = true;
+        delete cell.dataset.editing;
+        restorePriceCell(cell, currentPrice);
+    }
+    input.addEventListener('blur', save);
+    input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+        if (e.key === 'Escape') { input.removeEventListener('blur', save); cancel(); }
+    });
 }
 
-// CSV parser (same logic as index.html)
-function parseCSV(str) {
-    const arr = []; let quote = false, col = 0, c = 0;
-    arr[col] = []; arr[col][c] = "";
-    for (let r = 0; r < str.length; r++) {
-        let cc = str[r], nc = str[r+1];
-        if (!arr[col]) arr[col] = []; if (arr[col][c] === undefined) arr[col][c] = "";
-        if (cc == '"' && quote && nc == '"') { arr[col][c] += cc; ++r; }
-        else if (cc == '"') { quote = !quote; }
-        else if (cc == ',' && !quote) { ++c; arr[col][c] = ""; }
-        else if (cc == '\n' && !quote) { ++col; c = 0; arr[col] = []; arr[col][c] = ""; }
-        else { arr[col][c] += cc; }
+function restorePriceCell(cell, price) {
+    cell.dataset.price = price;
+    cell.innerHTML = `<span class="text-xs text-brand-maroon font-semibold">${esc(price || '—')}</span><i class="fas fa-pen text-[8px] text-gray-300 ml-1"></i>`;
+}
+
+// ── Inline stock toggle ───────────────────────────────────────────
+async function toggleStockRow(productId, currentStock) {
+    const newStock = !currentStock;
+    try {
+        await db.collection('products').doc(productId).update({
+            inStock: newStock,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        const p = allProductsCache.find(x => x.id === productId);
+        if (p) p.inStock = newStock;
+        await loadProducts();
+        showToast(newStock ? 'Marked In Stock ✓' : 'Marked Out of Stock ✓', 'green');
+    } catch (err) {
+        showToast('Error: ' + err.message, 'red');
     }
-    return arr.slice(1).filter(r => r.length > 1).map(r => ({
-        category: (r[0] || '').toLowerCase().trim(),
-        name:     (r[1] || '').trim(),
-        desc:     (r[2] || '').trim(),
-        images:   (r[3] || '').split(',').map(u => u.trim()).filter(u => u.length > 5)
-    }));
 }
 
 // ── Helpers ───────────────────────────────────────────────────────

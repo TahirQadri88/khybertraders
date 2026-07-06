@@ -140,6 +140,11 @@
         .search-highlight { background: #D4AF37; color: #0a0a0a; padding: 0 2px; border-radius: 1px; }
         .product-thumb { cursor: pointer; opacity: 0.5; transition: opacity 0.2s, border-color 0.2s; border: 2px solid transparent; }
         .product-thumb.active, .product-thumb:hover { opacity: 1; border-color: #500000; }
+        #cart-drawer { transition: transform 0.3s ease; transform: translateX(100%); }
+        #cart-drawer.open { transform: translateX(0); }
+        #cart-items-list::-webkit-scrollbar { width: 5px; }
+        #cart-items-list::-webkit-scrollbar-track { background: #f4f4f5; border-radius: 3px; }
+        #cart-items-list::-webkit-scrollbar-thumb { background: #500000; border-radius: 3px; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased selection:bg-brand-maroon selection:text-white">
@@ -172,17 +177,24 @@
                     <span class="text-[10px] uppercase tracking-[0.25em] text-brand-maroon font-bold mt-1">Wholesale Veterinary Pharmacy</span>
                 </div>
             </div>
-            <div class="hidden md:flex gap-10 text-xs font-bold uppercase tracking-widest text-gray-500">
+            <div class="hidden md:flex gap-10 text-xs font-bold uppercase tracking-widest text-gray-700">
                 <a href="#about" class="hover:text-brand-maroon transition duration-300">Profile</a>
                 <a href="#products" class="hover:text-brand-maroon transition duration-300">Products</a>
                 <a href="#contact" class="hover:text-brand-maroon transition duration-300">Contact</a>
             </div>
-            <button id="nav-toggle" class="md:hidden text-brand-maroon text-2xl p-1" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu">
-                <i class="fas fa-bars"></i>
-            </button>
+            <div class="flex items-center gap-3">
+                <button id="cart-btn" onclick="openCart()"
+                    class="relative text-brand-maroon p-1" aria-label="View order list">
+                    <i class="fas fa-shopping-cart text-xl"></i>
+                    <span id="cart-badge" class="hidden absolute -top-1 -right-1 bg-brand-maroon text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none"></span>
+                </button>
+                <button id="nav-toggle" class="md:hidden text-brand-maroon text-2xl p-1" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
         </div>
         <div id="mobile-menu" class="md:hidden border-t border-gray-100 bg-white">
-            <div class="container mx-auto px-6 py-4 flex flex-col gap-5 text-xs font-bold uppercase tracking-widest text-gray-500">
+            <div class="container mx-auto px-6 py-4 flex flex-col gap-5 text-xs font-bold uppercase tracking-widest text-gray-700">
                 <a href="#about" class="hover:text-brand-maroon transition" onclick="closeMobileMenu()">Profile</a>
                 <a href="#products" class="hover:text-brand-maroon transition" onclick="closeMobileMenu()">Products</a>
                 <a href="#contact" class="hover:text-brand-maroon transition" onclick="closeMobileMenu()">Contact</a>
@@ -208,7 +220,7 @@
                 </p>
                 <div class="flex flex-col sm:flex-row gap-5 justify-center">
                     <a href="https://wa.me/923352999006" class="bg-brand-gold text-brand-dark font-bold py-4 px-10 hover:bg-white transition duration-300 shadow-glow">Contact</a>
-                    <a href="#products" class="border border-white/30 text-white font-bold py-4 px-10 hover:bg-white hover:text-brand-dark transition duration-300 backdrop-blur-sm">View Collection</a>
+                    <a href="#products" class="border border-white/30 text-white font-bold py-4 px-10 hover:bg-white hover:text-brand-dark transition duration-300 backdrop-blur-sm">Some Popular Products</a>
                 </div>
             </div>
         </div>
@@ -281,14 +293,43 @@
     </section>
 
     <!-- Catalog Section with Compact Tiles -->
-    <section id="products" class="py-24 bg-brand-light border-y border-gray-200">
-        <div class="container mx-auto px-6 text-center">
-            <div class="mb-16">
-                <span class="text-brand-maroon font-bold uppercase tracking-widest text-xs">Catalog</span>
-                <h2 class="text-4xl font-serif font-bold text-brand-dark mt-3">Product Categories</h2>
-                <div class="h-1 w-20 bg-brand-gold mx-auto mt-6"></div>
+    <section id="products" class="py-6 sm:py-10 bg-brand-light border-y border-gray-200">
+        <div class="container mx-auto px-4 sm:px-6 text-center">
+            <div class="mb-4 flex items-center justify-between max-w-2xl mx-auto text-left">
+                <div>
+                    <span class="text-brand-maroon font-bold uppercase tracking-widest text-[10px]">Catalog</span>
+                    <h2 class="text-xl sm:text-2xl font-serif font-bold text-brand-dark mt-0.5 leading-tight">Product Categories</h2>
+                </div>
+                <div class="h-6 w-1 bg-brand-gold flex-shrink-0 ml-4"></div>
             </div>
-            <div class="mb-8 max-w-xl mx-auto">
+            <!-- How to Order note -->
+            <details class="mb-4 max-w-2xl mx-auto bg-white border border-brand-gold/40 text-left shadow-sm">
+                <summary class="px-4 py-3 text-xs font-bold text-brand-maroon uppercase tracking-widest flex items-center gap-2 cursor-pointer select-none list-none">
+                    <i class="fas fa-info-circle"></i> How to Place an Order
+                    <i class="fas fa-chevron-down ml-auto text-[10px] text-gray-400"></i>
+                </summary>
+                <div class="px-4 pb-3 pt-1 border-t border-brand-gold/20">
+                    <ol class="text-sm text-gray-600 space-y-2">
+                        <li class="flex gap-2.5"><span class="font-bold text-brand-gold w-4 flex-shrink-0">1.</span><span>Browse the categories below and open any product to view details.</span></li>
+                        <li class="flex gap-2.5"><span class="font-bold text-brand-gold w-4 flex-shrink-0">2.</span><span>Tap <strong class="text-brand-dark">Add to Order</strong> on the products you need — you can add as many as you like.</span></li>
+                        <li class="flex gap-2.5"><span class="font-bold text-brand-gold w-4 flex-shrink-0">3.</span><span>Open your <strong class="text-brand-dark">Order List</strong> (cart icon, top right), add your name &amp; address, then tap <strong class="text-brand-dark">Send on WhatsApp</strong>.</span></li>
+                        <li class="flex gap-2.5"><span class="font-bold text-brand-gold w-4 flex-shrink-0">4.</span><span>Our representative will confirm pricing and arrange payment &amp; dispatch for you.</span></li>
+                    </ol>
+                </div>
+            </details>
+
+            <!-- Order & Delivery Terms -->
+            <div class="mb-4 max-w-2xl mx-auto border-l-4 border-brand-maroon bg-white px-4 py-3 text-left shadow-sm">
+                <p class="font-bold text-brand-dark text-[11px] uppercase tracking-widest mb-2">Order &amp; Delivery Terms</p>
+                <ul class="text-xs text-gray-600 space-y-1 leading-relaxed">
+                    <li id="policy-min-order-line" class="hidden">• Minimum order value for delivery: <strong class="text-brand-maroon" id="policy-min-order"></strong></li>
+                    <li>• Delivery charges depend on your area and vehicle — confirmed at time of order</li>
+                    <li>• Orders are dispatched after payment confirmation</li>
+                    <li>• Delivery time will be confirmed by our WhatsApp representative</li>
+                </ul>
+            </div>
+
+            <div class="mb-4 max-w-2xl mx-auto">
                 <div class="relative">
                     <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
                     <input id="product-search" type="text" placeholder="Search products, e.g. Antox, Vaccine, Liver Tonic..."
@@ -299,8 +340,8 @@
                     </button>
                 </div>
             </div>
-            <div id="search-results" class="hidden mb-8 text-left"></div>
-            <div id="tiles-container" class="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-8">
+            <div id="search-results" class="hidden mb-4 text-left"></div>
+            <div id="tiles-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-2xl mx-auto text-left">
                 <div class="col-span-full text-center py-10"><i class="fas fa-circle-notch fa-spin text-brand-gold text-3xl"></i></div>
             </div>
         </div>
@@ -345,6 +386,11 @@
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
+                <!-- Category-specific notices -->
+                <div id="modal-cold-chain-note" class="hidden mb-6 flex items-start gap-3 bg-sky-50 border border-sky-200 text-sky-900 px-4 py-3 text-sm rounded-sm">
+                    <i class="fas fa-snowflake text-sky-400 mt-0.5 flex-shrink-0"></i>
+                    <span>Cold Chain Items — not delivered outside Karachi due to cold storage maintenance requirements.</span>
+                </div>
                 <!-- 2 columns on mobile -->
                 <div id="modal-grid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-8"></div>
             </div>
@@ -365,7 +411,7 @@
                     <i class="fas fa-arrow-left"></i> All Products
                 </button>
                 <span class="text-gray-200">|</span>
-                <span id="pdp-nav-title" class="text-xs text-gray-500 truncate"></span>
+                <span id="pdp-nav-title" class="text-xs text-gray-700 truncate"></span>
             </div>
         </div>
         <div class="container mx-auto px-4 py-8 sm:py-12 max-w-4xl">
@@ -391,6 +437,95 @@
     <!-- Invisible Canvas for Share Proxy -->
     <canvas id="share-canvas"></canvas>
 
+    <!-- Cart added toast -->
+    <div id="cart-toast" class="hidden fixed bottom-28 left-1/2 -translate-x-1/2 z-[300] bg-brand-dark text-white text-xs font-bold px-4 py-2.5 shadow-xl pointer-events-none max-w-xs text-center"></div>
+
+    <!-- Cart overlay -->
+    <div id="cart-overlay" class="hidden fixed inset-0 bg-black/60 z-[250]" onclick="closeCart()"></div>
+
+    <!-- Cart drawer -->
+    <div id="cart-drawer" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white z-[260] shadow-2xl flex flex-col">
+        <div class="flex items-center justify-between px-5 py-4 bg-brand-dark text-white flex-shrink-0">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-shopping-cart text-brand-gold"></i>
+                <span class="font-bold text-sm uppercase tracking-widest">Your Order List</span>
+            </div>
+            <button onclick="closeCart()" class="text-gray-400 hover:text-white text-2xl leading-none">&times;</button>
+        </div>
+        <div id="cart-empty-state" class="flex-1 flex flex-col items-center justify-center text-gray-400 p-8">
+            <i class="fas fa-shopping-cart text-5xl mb-4 text-gray-200"></i>
+            <p class="font-bold text-gray-700 mb-1">Your order list is empty</p>
+            <p class="text-xs text-center">Browse products and tap <strong>Add to Order</strong> to build your order</p>
+        </div>
+        <div id="cart-filled" class="hidden flex-1 flex flex-col overflow-hidden">
+            <div class="relative flex-1 overflow-hidden">
+                <div id="cart-items-list" class="h-full overflow-y-scroll px-4 py-3 space-y-2"></div>
+                <div id="cart-scroll-fade" class="pointer-events-none absolute bottom-0 left-0 right-0 h-10 transition-opacity duration-200" style="background:linear-gradient(to top,#fff 20%,transparent)"></div>
+            </div>
+            <div class="px-4 pb-5 pt-3 flex-shrink-0 bg-white border-t space-y-2">
+                <button onclick="openCheckout()"
+                    class="w-full bg-brand-maroon hover:bg-brand-dark text-white font-bold py-3.5 text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition shadow-md">
+                    Review Order &amp; Checkout <i class="fas fa-arrow-right text-xs"></i>
+                </button>
+                <button onclick="clearCart()"
+                    class="w-full text-[10px] text-gray-500 hover:text-red-500 transition py-1 uppercase tracking-widest">
+                    Clear all items
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout screen -->
+    <div id="checkout-screen" class="hidden fixed inset-0 bg-gray-100 z-[280] flex flex-col">
+        <div class="flex items-center gap-3 px-5 py-4 bg-brand-dark text-white flex-shrink-0">
+            <button onclick="closeCheckout()" class="text-gray-300 hover:text-white p-1" aria-label="Back to order list">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <span class="font-bold text-sm uppercase tracking-widest">Checkout</span>
+            <button onclick="closeCheckout(); closeCart();" class="ml-auto text-gray-400 hover:text-white text-2xl leading-none" aria-label="Close checkout">&times;</button>
+        </div>
+        <div class="flex-1 overflow-y-auto">
+            <div class="max-w-lg mx-auto px-4 py-5 space-y-4">
+                <div class="bg-white border border-gray-200 shadow-sm">
+                    <p class="px-4 pt-3 pb-2 text-[10px] font-bold uppercase tracking-widest text-gray-700 border-b border-gray-100"><i class="fas fa-receipt mr-1 text-brand-gold"></i> Order Preview</p>
+                    <div id="checkout-items"></div>
+                </div>
+                <div class="border-l-4 border-brand-maroon bg-white px-4 py-3 shadow-sm">
+                    <p class="font-bold text-brand-dark text-[11px] uppercase tracking-widest mb-2">Order &amp; Delivery Terms</p>
+                    <ul class="text-xs text-gray-600 space-y-1 leading-relaxed">
+                        <li id="checkout-min-order-line" class="hidden">• Minimum order value for delivery: <strong class="text-brand-maroon" id="checkout-min-order"></strong></li>
+                        <li>• Delivery charges depend on your area and vehicle — confirmed at time of order</li>
+                        <li>• Orders are dispatched after payment confirmation</li>
+                        <li>• Delivery time will be confirmed by our WhatsApp representative</li>
+                    </ul>
+                </div>
+                <div class="bg-white border border-gray-200 shadow-sm px-4 py-4">
+                    <p class="text-[10px] text-gray-700 uppercase tracking-widest mb-3 font-bold">Delivery Details <span class="font-normal normal-case text-brand-maroon">(required)</span></p>
+                    <input id="cart-customer-name" type="text" placeholder="Your name *" required
+                        class="w-full border border-gray-200 px-3 py-2.5 text-sm mb-2 focus:outline-none focus:border-brand-maroon transition bg-white">
+                    <input id="cart-customer-phone" type="tel" placeholder="Contact number *" required
+                        class="w-full border border-gray-200 px-3 py-2.5 text-sm mb-2 focus:outline-none focus:border-brand-maroon transition bg-white">
+                    <input id="cart-customer-city" type="text" placeholder="City / Area *" required
+                        class="w-full border border-gray-200 px-3 py-2.5 text-sm mb-2 focus:outline-none focus:border-brand-maroon transition bg-white">
+                    <input id="cart-customer-address" type="text" placeholder="Delivery address *" required
+                        class="w-full border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-maroon transition bg-white">
+                </div>
+            </div>
+        </div>
+        <div class="flex-shrink-0 bg-white border-t px-4 py-4 shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
+            <div class="max-w-lg mx-auto space-y-2">
+                <div id="cart-min-order-note" class="hidden text-[10px] text-amber-800 bg-amber-50 border border-amber-200 px-3 py-2 text-center leading-relaxed"></div>
+                <button onclick="checkoutViaWhatsApp()"
+                    class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3.5 text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition shadow-md">
+                    <i class="fab fa-whatsapp text-lg"></i> Send Order on WhatsApp
+                </button>
+                <p class="text-[10px] text-gray-600 text-center leading-relaxed">
+                    <i class="fas fa-truck mr-1"></i>Delivery time depends on your area and will be confirmed by our representative on WhatsApp.
+                </p>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ── Firebase config ──────────────────────────────────────────────
         // Fill in apiKey and appId from:
@@ -407,7 +542,247 @@
         const db = firebase.firestore();
 
         const BASE_URL = 'https://animalhealth.pk';
-        let allProducts = [];
+        let allProducts  = [];
+        let shopSettings = { minOrderValue: 0 };
+
+        function parsePrice(str) {
+            if (!str) return null;
+            const m = str.replace(/,/g, '').match(/\d+/);
+            return m ? parseInt(m[0]) : null;
+        }
+        function formatPKR(num) {
+            return 'Rs. ' + num.toLocaleString('en-PK');
+        }
+
+        async function fetchSettings() {
+            try {
+                const doc = await db.collection('settings').doc('shop').get();
+                if (doc.exists) shopSettings = { ...shopSettings, ...doc.data() };
+                const note = document.getElementById('cart-min-order-note');
+                if (note && shopSettings.minOrderValue > 0) {
+                    note.innerHTML = 'Minimum order value for delivery: <strong>' + formatPKR(shopSettings.minOrderValue) + '</strong><br>Delivery Charges Apply according to your area and vehicle';
+                    note.classList.remove('hidden');
+                }
+                const policyLine = document.getElementById('policy-min-order-line');
+                const policyVal  = document.getElementById('policy-min-order');
+                if (policyLine && policyVal && shopSettings.minOrderValue > 0) {
+                    policyVal.textContent = formatPKR(shopSettings.minOrderValue);
+                    policyLine.classList.remove('hidden');
+                }
+                const coLine = document.getElementById('checkout-min-order-line');
+                const coVal  = document.getElementById('checkout-min-order');
+                if (coLine && coVal && shopSettings.minOrderValue > 0) {
+                    coVal.textContent = formatPKR(shopSettings.minOrderValue);
+                    coLine.classList.remove('hidden');
+                }
+                if (allProducts.length) generateTiles();
+            } catch (e) { /* settings not yet configured — silent */ }
+        }
+
+        // ── Cart ─────────────────────────────────────────────────────────
+        let cart = [];
+        let _pdpPackSize = null;
+
+        function openCart() {
+            document.getElementById('cart-overlay').classList.remove('hidden');
+            document.getElementById('cart-drawer').classList.add('open');
+            renderCart();
+            const list = document.getElementById('cart-items-list');
+            if (list && !list._scrollBound) {
+                list.addEventListener('scroll', updateCartScrollFade);
+                list._scrollBound = true;
+            }
+        }
+        function closeCart() {
+            document.getElementById('cart-overlay').classList.add('hidden');
+            document.getElementById('cart-drawer').classList.remove('open');
+        }
+        window.addToCart = function(name, packSize) {
+            const p = allProducts.find(x => x.name === name);
+            if (!p || p.inStock === false) return;
+            if (p.packSizes && p.packSizes.length > 1 && !packSize) {
+                closeCategoryModal();
+                openProductDetailPage(p);
+                return;
+            }
+            const ps  = packSize || (p.packSizes && p.packSizes.length === 1 ? p.packSizes[0] : null);
+            const key = name + (ps ? '‖' + ps.size : '');
+            const minQty = p.minQty || 1;
+            const existing = cart.find(x => x.key === key);
+            if (existing) { existing.qty++; } else {
+                cart.push({ key, name: p.name, category: p.category, packSize: ps, priceDisplay: ps ? ps.price : (p.priceDisplay || ''), image: p.images[0] || '', minQty, qty: minQty });
+            }
+            updateCartBadge();
+            openCart();
+        };
+        window.removeFromCart = function(idx) {
+            cart.splice(idx, 1);
+            updateCartBadge();
+            renderCart();
+        };
+        window.updateCartQty = function(idx, qty) {
+            const item = cart[idx];
+            if (!item) return;
+            const min = item.minQty || 1;
+            if (qty < 1 && min === 1) { window.removeFromCart(idx); return; }
+            if (qty < min) {
+                item.qty = min;
+                showCartToast('Minimum order: ' + min + ' units for this item');
+            } else {
+                item.qty = qty;
+            }
+            updateCartBadge();
+            renderCart();
+        };
+        function showCartToast(text) {
+            const toast = document.getElementById('cart-toast');
+            if (!toast) return;
+            toast.textContent = text;
+            toast.classList.remove('hidden');
+            clearTimeout(toast._t);
+            toast._t = setTimeout(() => toast.classList.add('hidden'), 2200);
+        }
+        function updateCartBadge() {
+            const total = cart.reduce((s, x) => s + x.qty, 0);
+            const badge = document.getElementById('cart-badge');
+            badge.textContent = total > 9 ? '9+' : String(total);
+            total > 0 ? badge.classList.remove('hidden') : badge.classList.add('hidden');
+        }
+        function updateCartScrollFade() {
+            const list = document.getElementById('cart-items-list');
+            const fade = document.getElementById('cart-scroll-fade');
+            if (!list || !fade) return;
+            const canScroll = list.scrollHeight > list.clientHeight + 4;
+            const atBottom  = list.scrollHeight - list.scrollTop <= list.clientHeight + 8;
+            fade.style.opacity = (canScroll && !atBottom) ? '1' : '0';
+        }
+        function renderCart() {
+            const filled = document.getElementById('cart-filled');
+            const empty  = document.getElementById('cart-empty-state');
+            const list   = document.getElementById('cart-items-list');
+            if (cart.length === 0) { filled.classList.add('hidden'); empty.classList.remove('hidden'); return; }
+            empty.classList.add('hidden');
+            filled.classList.remove('hidden');
+            let totalAmt = 0, allPriced = cart.length > 0;
+            list.innerHTML = cart.map((item, idx) => {
+                const unitPrice = parsePrice(item.priceDisplay);
+                if (unitPrice !== null) totalAmt += unitPrice * item.qty;
+                else allPriced = false;
+                return `<div class="flex items-center gap-2 bg-gray-50 border border-gray-100 p-2">
+                    ${item.image ? `<img src="${item.image}" class="w-12 h-12 object-cover flex-shrink-0 border border-gray-200">` : '<div class="w-12 h-12 bg-gray-200 flex-shrink-0 flex items-center justify-center"><i class="fas fa-box-open text-gray-300 text-sm"></i></div>'}
+                    <div class="flex-1 min-w-0">
+                        <div class="font-bold text-brand-dark text-[11px] leading-tight line-clamp-2">${item.name}</div>
+                        ${item.packSize ? '<div class="text-[9px] text-gray-600 font-semibold mt-0.5">' + item.packSize.size + '</div>' : '<div class="text-[9px] text-gray-600 capitalize mt-0.5">' + item.category + '</div>'}
+                        ${item.priceDisplay ? '<div class="text-[10px] font-bold text-brand-maroon">' + item.priceDisplay + (item.qty > 1 ? ' \xD7' + item.qty : '') + '</div>' : ''}
+                        ${(item.minQty || 1) > 1 ? '<div class="text-[8px] text-amber-700 font-bold uppercase tracking-wide mt-0.5">Min ' + item.minQty + ' units</div>' : ''}
+                    </div>
+                    <div class="flex items-center gap-0.5 flex-shrink-0">
+                        <button onclick="window.updateCartQty(${idx},${item.qty-1})" class="w-7 h-7 bg-gray-200 hover:bg-brand-maroon hover:text-white font-bold text-sm flex items-center justify-center transition">−</button>
+                        <span class="w-6 text-center text-xs font-bold">${item.qty}</span>
+                        <button onclick="window.updateCartQty(${idx},${item.qty+1})" class="w-7 h-7 bg-gray-200 hover:bg-brand-maroon hover:text-white font-bold text-sm flex items-center justify-center transition">+</button>
+                        <button onclick="window.removeFromCart(${idx})" class="w-7 h-7 text-gray-300 hover:text-red-500 text-sm flex items-center justify-center transition ml-0.5"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                </div>`;
+            }).join('') + (cart.length > 0 ? `<div class="flex justify-between items-center border-t border-dashed border-gray-300 pt-2 mt-1 px-1">
+                    <span class="text-[10px] font-bold text-gray-700 uppercase tracking-widest">Estimated Total</span>
+                    <span class="text-sm font-bold text-brand-maroon">${totalAmt > 0 ? (allPriced ? formatPKR(totalAmt) : '~ ' + formatPKR(totalAmt) + '+') : '—'}</span>
+                </div>` : '');
+            setTimeout(updateCartScrollFade, 0);
+        }
+        function clearCart() {
+            if (!cart.length) return;
+            cart = [];
+            updateCartBadge();
+            renderCart();
+        }
+        function openCheckout() {
+            if (!cart.length) return;
+            let totalAmt = 0, allPriced = true;
+            const rows = cart.map(item => {
+                const up = parsePrice(item.priceDisplay);
+                if (up !== null) totalAmt += up * item.qty; else allPriced = false;
+                return `<div class="flex justify-between items-start gap-3 px-4 py-2.5 border-b border-gray-50">
+                    <div class="min-w-0">
+                        <div class="text-xs font-semibold text-brand-dark leading-snug">${item.name}${item.packSize ? ' <span class="text-gray-500 font-normal">(' + item.packSize.size + ')</span>' : ''}</div>
+                        <div class="text-[11px] text-gray-600 mt-0.5">${item.qty} × ${item.priceDisplay || 'price on confirmation'}</div>
+                    </div>
+                    <div class="text-xs font-bold text-brand-maroon whitespace-nowrap pt-0.5">${up !== null ? formatPKR(up * item.qty) : '—'}</div>
+                </div>`;
+            }).join('');
+            document.getElementById('checkout-items').innerHTML = rows +
+                `<div class="flex justify-between items-center px-4 py-3 bg-gray-50">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-gray-700">${allPriced ? 'Total' : 'Approx. Total'}</span>
+                    <span class="text-base font-bold text-brand-maroon">${totalAmt > 0 ? formatPKR(totalAmt) + (allPriced ? '' : '+') : '—'}</span>
+                </div>`;
+            document.getElementById('checkout-screen').classList.remove('hidden');
+            if (typeof gtag !== 'undefined') gtag('event', 'begin_checkout', { value: totalAmt, currency: 'PKR' });
+        }
+        function closeCheckout() {
+            document.getElementById('checkout-screen').classList.add('hidden');
+        }
+        function checkoutViaWhatsApp() {
+            if (!cart.length) return;
+            const nameEl = document.getElementById('cart-customer-name');
+            const phoneEl = document.getElementById('cart-customer-phone');
+            const cityEl = document.getElementById('cart-customer-city');
+            const addressEl = document.getElementById('cart-customer-address');
+            const name    = nameEl.value.trim();
+            const phone   = phoneEl.value.trim();
+            const city    = cityEl.value.trim();
+            const address = addressEl.value.trim();
+            const missing = [];
+            if (!name) missing.push(['Name', nameEl]);
+            if (!phone) missing.push(['Contact number', phoneEl]);
+            if (!city) missing.push(['City / Area', cityEl]);
+            if (!address) missing.push(['Delivery address', addressEl]);
+            if (missing.length) {
+                alert('Please fill in: ' + missing.map(m => m[0]).join(', '));
+                missing[0][1].focus();
+                return;
+            }
+            const itemCount = cart.reduce((s, x) => s + x.qty, 0);
+            let totalAmt = 0, allPriced = cart.length > 0;
+            const lines = cart.map((x, i) => {
+                const up = parsePrice(x.priceDisplay);
+                if (up !== null) totalAmt += up * x.qty; else allPriced = false;
+                const packStr = x.packSize ? ' (' + x.packSize.size + ')' : '';
+                let detail = '';
+                if (x.priceDisplay) {
+                    if (x.qty > 1 && up !== null) {
+                        detail = '\n   Qty: ' + x.qty + ' x ' + x.priceDisplay + ' = *' + formatPKR(up * x.qty) + '*';
+                    } else if (x.qty > 1) {
+                        detail = '\n   Qty: ' + x.qty + ' x ' + x.priceDisplay;
+                    } else {
+                        detail = '  — ' + x.priceDisplay;
+                    }
+                } else if (x.qty > 1) {
+                    detail = '\n   Qty: ' + x.qty;
+                }
+                return (i+1) + '. ' + x.name + packStr + detail;
+            }).join('\n');
+            const SEP = '──────────';
+            let msg = '\uD83D\uDED2 *Order Request — Khyber Traders*\n' + SEP + '\n';
+            msg += '\uD83D\uDC64 ' + name + '\n';
+            msg += '\uD83D\uDCDE ' + phone + '\n';
+            msg += '\uD83D\uDCCD ' + city + (address ? ', ' + address : '') + '\n';
+            msg += SEP + '\n';
+            msg += '*Items (' + itemCount + ' unit' + (itemCount !== 1 ? 's' : '') + '):*\n' + lines + '\n' + SEP + '\n';
+            if (totalAmt > 0) msg += '\uD83D\uDCB0 ' + (allPriced ? 'Total' : 'Approx. Total') + ': *' + formatPKR(totalAmt) + (allPriced ? '' : '+') + '*\n' + SEP + '\n';
+            msg += 'Please confirm availability and payment details.';
+            msg += '\n' + SEP + '\n';
+            msg += '\uD83D\uDCCb *Order & Delivery Terms*\n';
+            if (shopSettings.minOrderValue > 0) msg += '\u2022 Minimum order for delivery: *' + formatPKR(shopSettings.minOrderValue) + '*\n';
+            msg += '\u2022 Delivery charges depend on area and vehicle\n';
+            msg += '\u2022 Order will be dispatched after payment confirmation\n';
+            msg += '\u2022 Delivery time will be confirmed by our WhatsApp representative';
+            window.open('https://wa.me/923352999006?text=' + encodeURIComponent(msg), '_blank');
+            if (typeof gtag !== 'undefined') gtag('event', 'generate_lead', { method: 'whatsapp_cart', value: itemCount });
+        }
+        window.inquireProduct = function(name, category, link) {
+            const text = '\uD83D\uDCE6 *Product:* ' + name + '\n\uD83D\uDD17 *Link:* ' + link;
+            window.open('https://wa.me/923352999006?text=' + encodeURIComponent(text), '_blank');
+            if (typeof gtag !== 'undefined') gtag('event', 'generate_lead', { item_name: name, item_category: category });
+        };
 
         async function fetchProducts() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -422,8 +797,11 @@
                         name:         d.name || '',
                         desc:         d.desc || '',
                         images:       d.images || [],
+                        packSizes:    d.packSizes || [],
                         priceDisplay: d.priceDisplay || '',
-                        inStock:      d.inStock !== false
+                        inStock:      d.inStock !== false,
+                        minQty:       Math.max(1, parseInt(d.minQty) || 1),
+                        sortOrder:    parseInt(d.sortOrder) || 0
                     });
                 });
                 allProducts.sort((a, b) => {
@@ -440,7 +818,7 @@
                         <div class="col-span-full text-center py-16 px-6">
                             <i class="fas fa-exclamation-circle text-brand-maroon text-4xl mb-4"></i>
                             <p class="text-brand-dark font-bold text-lg mb-2">Could not load products</p>
-                            <p class="text-gray-500 text-sm mb-6">Please check your connection and try again.</p>
+                            <p class="text-gray-600 text-sm mb-6">Please check your connection and try again.</p>
                             <button onclick="fetchProducts()" class="bg-brand-maroon text-white font-bold py-3 px-8 hover:bg-brand-gold hover:text-brand-dark transition">
                                 <i class="fas fa-redo mr-2"></i> Retry
                             </button>
@@ -455,21 +833,88 @@
             return name.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
         }
 
+        const CAT_COLORS = [
+            { bg:'#eff6ff', bar:'#3b82f6', iconBg:'#dbeafe', iconFg:'#1d4ed8' },
+            { bg:'#f0fdf4', bar:'#16a34a', iconBg:'#dcfce7', iconFg:'#166534' },
+            { bg:'#fffbeb', bar:'#d97706', iconBg:'#fef3c7', iconFg:'#92400e' },
+            { bg:'#f5f3ff', bar:'#7c3aed', iconBg:'#ede9fe', iconFg:'#4c1d95' },
+            { bg:'#fff1f2', bar:'#e11d48', iconBg:'#ffe4e6', iconFg:'#9f1239' },
+            { bg:'#f0fdfa', bar:'#0d9488', iconBg:'#ccfbf1', iconFg:'#134e4a' },
+            { bg:'#fff7ed', bar:'#ea580c', iconBg:'#ffedd5', iconFg:'#7c2d12' },
+            { bg:'#fdf4ff', bar:'#a21caf', iconBg:'#fae8ff', iconFg:'#701a75' },
+            { bg:'#f0f9ff', bar:'#0284c7', iconBg:'#e0f2fe', iconFg:'#0c4a6e' },
+            { bg:'#fafaf9', bar:'#78716c', iconBg:'#f5f5f4', iconFg:'#44403c' },
+        ];
+
+        const CAT_ICONS = [
+            ['shampoo', 'fa-pump-soap'], ['lice', 'fa-pump-soap'],
+            ['milk', 'fa-glass-water'], ['fatten', 'fa-cow'],
+            ['drench', 'fa-bottle-droplet'], ['dewormer', 'fa-bottle-droplet'], ['dewromer', 'fa-bottle-droplet'],
+            ['tag', 'fa-tags'],
+            ['feed', 'fa-wheat-awn'], ['premix', 'fa-wheat-awn'], ['mineral', 'fa-wheat-awn'],
+            ['gripe', 'fa-prescription-bottle-medical'],
+            ['insemination', 'fa-dna'],
+            ['toxin', 'fa-filter'],
+            ['chart', 'fa-calendar-days'], ['schedule', 'fa-calendar-days'],
+            ['vaccine', 'fa-shield-virus'],
+            ['inj', 'fa-syringe'], ['ivomec', 'fa-syringe'],
+            ['liver', 'fa-flask'], ['tonic', 'fa-flask'], ['digestive', 'fa-flask'],
+            ['protocol', 'fa-clipboard-list'],
+        ];
+        function getCategoryIcon(cat) {
+            const c = (cat || '').toLowerCase();
+            for (const [kw, icon] of CAT_ICONS) if (c.includes(kw)) return icon;
+            return 'fa-box-open';
+        }
+        function getCategoryIconHTML(cat, color) {
+            return `<i class="fas ${getCategoryIcon(cat)} text-base" style="color:${color}"></i>`;
+        }
         function generateTiles() {
             const container = document.getElementById('tiles-container');
-            const uniqueCats = [...new Set(allProducts.map(p => p.category))];
-            container.innerHTML = uniqueCats.map(cat => {
+            let uniqueCats = [...new Set(allProducts.map(p => p.category))];
+            if (shopSettings.categoryOrder && shopSettings.categoryOrder.length) {
+                const order = shopSettings.categoryOrder;
+                uniqueCats.sort((a, b) => {
+                    const ia = order.indexOf(a), ib = order.indexOf(b);
+                    if (ia === -1 && ib === -1) return a.localeCompare(b);
+                    if (ia === -1) return 1;
+                    if (ib === -1) return -1;
+                    return ia - ib;
+                });
+            }
+            container.innerHTML = uniqueCats.map((cat, i) => {
+                const c = CAT_COLORS[i % CAT_COLORS.length];
                 const safeCat = cat.replace(/'/g, "\\'");
                 const count = allProducts.filter(p => p.category === cat).length;
                 return `
-                <div class="group bg-white p-4 sm:p-10 shadow-sleek hover:shadow-2xl transition transform hover:-translate-y-2 relative border-b-4 border-transparent hover:border-brand-gold flex flex-col items-center text-center">
-                    <div onclick="openCategoryModal('${safeCat}')" class="cursor-pointer w-full flex flex-col items-center">
-                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gray-50 text-brand-dark flex items-center justify-center text-xl sm:text-3xl mb-4 sm:mb-8 group-hover:bg-brand-maroon group-hover:text-brand-gold transition duration-300"><i class="fas fa-box-open"></i></div>
-                        <h3 class="text-lg sm:text-2xl font-serif font-bold text-brand-dark mb-2 capitalize leading-tight">${cat}</h3>
-                        <p class="text-[10px] sm:text-xs text-gray-400 font-semibold uppercase tracking-widest mb-1">${count} product${count !== 1 ? 's' : ''}</p>
-                        <div class="mt-2 sm:mt-8 flex items-center text-brand-maroon font-bold text-[10px] sm:text-xs uppercase tracking-widest group-hover:text-brand-gold transition">View <i class="fas fa-long-arrow-alt-right ml-2"></i></div>
+                <div class="flex items-center overflow-hidden transition-all duration-200 hover:shadow-md cursor-pointer"
+                     style="background:${c.bg}; border:1px solid ${c.bar}55"
+                     onclick="openCategoryModal('${safeCat}')">
+                    <div class="w-1.5 self-stretch flex-shrink-0" style="background:${c.bar}"></div>
+                    <div class="w-13 h-13 rounded-full flex items-center justify-center mx-3 my-4 flex-shrink-0"
+                         style="background:${c.iconBg}; width:3.25rem; height:3.25rem;">
+                        ${getCategoryIconHTML(cat, c.iconFg)}
                     </div>
-                    <button onclick="shareCategory(event, '${safeCat}')" class="mt-4 text-gray-400 hover:text-brand-gold text-xs uppercase tracking-widest border-t border-gray-100 w-full pt-3"><i class="fas fa-share-alt mr-1"></i> Share</button>
+                    <div class="flex-1 min-w-0 py-4 pr-2">
+                        <h3 class="font-semibold text-base leading-tight capitalize text-gray-800 font-sans">${cat}</h3>
+                        <p class="text-xs mt-1 font-medium" style="color:${c.bar}bb">${count} product${count !== 1 ? 's' : ''}</p>
+                    </div>
+                    <div class="self-stretch flex flex-col flex-shrink-0 border-l" style="border-left-color:${c.bar}44; min-width:3.5rem">
+                        <button onclick="openCategoryModal('${safeCat}')"
+                                class="flex-1 flex flex-col items-center justify-center gap-0.5 px-3 transition hover:opacity-70 border-b"
+                                style="color:${c.bar}; border-bottom-color:${c.bar}33"
+                                title="View products">
+                            <i class="fas fa-eye text-sm"></i>
+                            <span class="text-[9px] font-bold uppercase tracking-wide">View</span>
+                        </button>
+                        <button onclick="shareCategory(event, '${safeCat}')"
+                                class="flex-1 flex flex-col items-center justify-center gap-0.5 px-3 transition hover:opacity-70"
+                                style="color:${c.bar}"
+                                title="Share category">
+                            <i class="fas fa-share-alt text-sm"></i>
+                            <span class="text-[9px] font-bold uppercase tracking-wide">Share</span>
+                        </button>
+                    </div>
                 </div>`
             }).join('');
         }
@@ -477,6 +922,8 @@
         window.openCategoryModal = (category, specificItemName = null) => {
             const grid = document.getElementById('modal-grid');
             document.getElementById('modal-title').innerText = specificItemName ? 'Details' : category;
+            const coldNote = document.getElementById('modal-cold-chain-note');
+            if (coldNote) coldNote.classList.toggle('hidden', category.toLowerCase() !== 'vaccines');
             let filtered = allProducts.filter(p => p.category === category);
             if(specificItemName) {
                 const target = specificItemName.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -485,6 +932,7 @@
             grid.innerHTML = filtered.map((p, index) => {
                 const slug = getCleanSlug(p.name);
                 const redirectLink = `https://animalhealth.pk/s/${slug}.html`;
+                const itemLink = `https://animalhealth.pk/?item=${encodeURIComponent(p.name)}`;
                 const imageLink = p.images[0] || '';
                 const plainDesc = (p.desc || '').replace(/\n+/g, ' ').trim();
                 let slides = p.images.length ? `<div class="slider-wrapper" id="slider-${index}" data-current="0">${p.images.map((img, i) => `<img src="${img}" class="slide ${i===0?'active':''}" id="slide-${index}-${i}" onclick="openLightbox('${img}')"${i===0 ? '' : ' loading="lazy"'}>`).join('')}${p.images.length > 1 ? `<button class="slider-btn left-2" onclick="changeSlide(event,${index},-1,${p.images.length})">←</button><button class="slider-btn right-2" onclick="changeSlide(event,${index},1,${p.images.length})">→</button>` : ''}</div>` : '';
@@ -497,17 +945,19 @@
                         ${!p.inStock ? `<div class="absolute inset-0 bg-black/50 flex items-center justify-center pointer-events-none z-10"><span class="bg-red-600 text-white text-[9px] sm:text-[10px] font-bold uppercase tracking-widest px-3 py-1">Out of Stock</span></div>` : ''}
                     </div>
                     <div class="p-3 sm:p-4 flex flex-col flex-grow">
-                        <a href="${redirectLink}" target="_blank" class="font-bold text-brand-dark mb-0.5 text-[13px] sm:text-base font-serif leading-tight hover:text-brand-maroon transition block">${p.name}</a>
-                        <span class="inline-block bg-brand-maroon/10 text-brand-maroon text-[7px] sm:text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 mb-1 self-start">${p.category}</span>
-                        ${p.priceDisplay ? `<div class="text-[10px] sm:text-xs font-bold text-brand-maroon mb-1">${p.priceDisplay}</div>` : ''}
-                        <p class="text-[10px] sm:text-xs text-gray-500 mb-3 line-clamp-2 leading-relaxed">${plainDesc}</p>
+                        <a href="${itemLink}" target="_blank" class="font-semibold text-brand-dark mb-1 text-sm sm:text-base font-sans leading-snug hover:text-brand-maroon transition block">${p.name}</a>
+                        <span class="inline-block bg-brand-maroon/10 text-brand-maroon text-[9px] sm:text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 mb-1.5 self-start">${p.category}</span>
+                        ${p.packSizes && p.packSizes.length
+                            ? `<div class="flex flex-wrap gap-1 mb-1.5">${p.packSizes.map(ps => `<span class="text-[10px] bg-brand-maroon/10 text-brand-maroon font-bold px-2 py-0.5">${ps.size} — ${ps.price}</span>`).join('')}</div>`
+                            : p.priceDisplay ? `<div class="text-xs font-bold text-brand-maroon mb-1.5">${p.priceDisplay}</div>` : ''}
+                        <p class="text-xs text-gray-700 mb-3 line-clamp-2 leading-relaxed">${plainDesc}</p>
                         <div class="grid grid-cols-2 border border-gray-100 mb-2 mt-auto">
-                            <button onclick="openProductByName('${p.name.replace(/'/g,"\\'")}');" class="py-2 text-[9px] sm:text-[10px] font-bold uppercase text-brand-maroon hover:bg-brand-maroon/5 flex items-center justify-center gap-1 transition border-r border-gray-100"><i class="fas fa-expand-alt text-[9px]"></i> View</button>
-                            <button onclick="shareProductNative(event,'${p.name.replace(/'/g,"\\'")}','${p.category}','${(p.desc||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}','${imageLink}')" class="py-2 text-[9px] sm:text-[10px] font-bold uppercase text-gray-500 hover:bg-gray-50 flex items-center justify-center gap-1 transition"><i class="fas fa-share-alt text-[9px]"></i> Share</button>
+                            <button onclick="openProductByName('${p.name.replace(/'/g,"\\'")}');" class="py-2.5 text-[10px] sm:text-xs font-bold uppercase text-brand-maroon hover:bg-brand-maroon/5 flex items-center justify-center gap-1 transition border-r border-gray-100"><i class="fas fa-expand-alt text-[9px]"></i> View</button>
+                            <button onclick="shareProductNative(event,'${p.name.replace(/'/g,"\\'")}')" class="py-2.5 text-[10px] sm:text-xs font-bold uppercase text-gray-500 hover:bg-gray-50 flex items-center justify-center gap-1 transition"><i class="fas fa-share-alt text-[9px]"></i> Share</button>
                         </div>
                         ${p.inStock
-                            ? `<a href="https://wa.me/923352999006?text=${encodeURIComponent('📦 *Product:* ' + p.name + '\n🔗 *Link:* ' + redirectLink)}" target="_blank" onclick="trackInquiry('${p.name.replace(/'/g,"\\'")}','${p.category}')" class="bg-green-500 hover:bg-green-600 text-white py-2 sm:py-2.5 text-[9px] sm:text-[10px] font-bold uppercase flex items-center justify-center gap-1.5 transition shadow"><i class="fab fa-whatsapp text-sm"></i> Inquire on WhatsApp</a>`
-                            : `<button disabled class="bg-gray-200 text-gray-400 py-2 sm:py-2.5 text-[9px] sm:text-[10px] font-bold uppercase w-full cursor-not-allowed">Out of Stock</button>`}
+                            ? `<button onclick="window.addToCart('${p.name.replace(/'/g,"\\'")}')" class="bg-brand-maroon hover:bg-brand-dark text-white py-2.5 text-[10px] sm:text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition shadow w-full"><i class="fas fa-plus text-sm"></i> Add to Order</button>`
+                            : `<button disabled class="bg-gray-200 text-gray-400 py-2.5 text-[10px] sm:text-xs font-bold uppercase w-full cursor-not-allowed">Out of Stock</button>`}
                     </div>
                 </div>`;
             }).join('');
@@ -524,7 +974,7 @@
             event.stopPropagation();
             if (typeof gtag !== 'undefined') gtag('event', 'share', { method: 'whatsapp', content_type: 'category', content_id: cat });
             const slug = getCleanSlug(cat);
-            const redirectLink = `https://animalhealth.pk/?cat=${slug}`;
+            const redirectLink = `https://animalhealth.pk/c/${slug}.html`;
             const caption = `📂 *Category:* ${cat.toUpperCase()}\nCheck out our collection here:\n🔗 ${redirectLink}`;
             
             try {
@@ -549,26 +999,28 @@
             }
         };
 
-        window.shareProductNative = async (event, name, cat, desc, imgUrl) => {
+        window.shareProductNative = async (event, name) => {
+            const p = allProducts.find(x => x.name === name);
+            if (!p) return;
+            const slug = getCleanSlug(name);
+            const shareLink = `https://animalhealth.pk/s/${slug}.html`;
+            const imgUrl = p.images[0] || '';
+            const cleanDesc = (p.desc || '').replace(/<[^>]*>?/gm, '');
             if (typeof gtag !== 'undefined') gtag('event', 'share', { method: 'whatsapp', content_type: 'product', content_id: name });
             const btn = event.currentTarget;
-            const slug = getCleanSlug(name);
-            const redirectLink = `https://animalhealth.pk/s/${slug}.html`;
-            const cleanDesc = desc.replace(/<[^>]*>?/gm, ''); 
-            const caption = `📦 *Product:* ${name}\n📂 *Category:* ${cat.toUpperCase()}\n📝 *Details:* ${cleanDesc}\n━━━━━━━━━━━━━━━━━━\n🔗 *Link:* ${redirectLink}`;
-            const fallbackCaption = `📦 *Product:* ${name}\n📂 *Category:* ${cat.toUpperCase()}\n📝 *Details:* ${cleanDesc}\n━━━━━━━━━━━━━━━━━━\n🖼 *Image:* ${imgUrl}\n🔗 *Link:* ${redirectLink}`;
+            const caption = `\uD83D\uDCE6 *Product:* ${name}\n\uD83D\uDCC2 *Category:* ${p.category.toUpperCase()}\n\uD83D\uDCDD *Details:* ${cleanDesc}\n──────────\n\uD83D\uDD17 *Link:* ${shareLink}`;
 
             btn.classList.add('btn-loading');
             try {
                 if (imgUrl && navigator.canShare && navigator.share) {
-                    const tempImg = new Image(); 
-                    tempImg.crossOrigin = "anonymous"; 
-                    tempImg.src = imgUrl + (imgUrl.includes('?') ? '&' : '?') + 't=' + new Date().getTime(); 
-                    
-                    await new Promise((res, rej) => { 
-                        tempImg.onload = res; 
-                        tempImg.onerror = rej; 
-                        setTimeout(rej, 4500); 
+                    const tempImg = new Image();
+                    tempImg.crossOrigin = "anonymous";
+                    tempImg.src = imgUrl + (imgUrl.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
+
+                    await new Promise((res, rej) => {
+                        tempImg.onload = res;
+                        tempImg.onerror = rej;
+                        setTimeout(rej, 4500);
                     });
 
                     const canvas = document.getElementById('share-canvas');
@@ -586,9 +1038,12 @@
                         return;
                     }
                 }
-                if (navigator.share) await navigator.share({ text: fallbackCaption });
-                else { await navigator.clipboard.writeText(fallbackCaption); alert("Details copied!"); }
-            } catch (e) { window.open(`https://wa.me/?text=${encodeURIComponent(fallbackCaption)}`, '_blank'); }
+                if (navigator.share) await navigator.share({ text: caption });
+                else { await navigator.clipboard.writeText(caption); alert("Details copied!"); }
+            } catch (e) {
+                if (e && e.name === 'AbortError') { btn.classList.remove('btn-loading'); return; }
+                window.open(`https://wa.me/?text=${encodeURIComponent(caption)}`, '_blank');
+            }
             btn.classList.remove('btn-loading');
         };
 
@@ -614,8 +1069,11 @@
 
         // Product detail page
         window.openProductDetailPage = function(product) {
+            window._currentPdpProduct = product;
+            _pdpPackSize = (product.packSizes && product.packSizes.length) ? product.packSizes[0] : null;
             const slug = getCleanSlug(product.name);
             const redirectLink = `https://animalhealth.pk/s/${slug}.html`;
+            const itemLink = `https://animalhealth.pk/?item=${encodeURIComponent(product.name)}`;
             document.title = product.name + ' | AnimalHealth.pk';
             document.getElementById('pdp-nav-title').textContent = product.name;
 
@@ -635,31 +1093,41 @@
                 : `<div class="w-full aspect-square bg-gray-100 flex items-center justify-center border"><i class="fas fa-box-open text-gray-300 text-5xl"></i></div>`;
 
             const formattedDesc = (product.desc || '').replace(/\n/g, '<br>');
-            const shareParams = `event,'${product.name.replace(/'/g,"\\'")}','${product.category}','${(product.desc||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}','${firstImg}'`;
-            const waText = encodeURIComponent('📦 *Product:* ' + product.name + '\n🔗 *Link:* ' + redirectLink);
 
             document.getElementById('pdp-content').innerHTML = `
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
                     <div>${galleryHtml}</div>
                     <div class="flex flex-col">
                         <span class="inline-block bg-brand-maroon/10 text-brand-maroon text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 mb-3 self-start">${product.category}</span>
-                        <h1 class="text-2xl sm:text-3xl font-serif font-bold text-brand-dark mb-4 leading-tight">${product.name}</h1>
-                        <div class="h-0.5 w-12 bg-brand-gold mb-5"></div>
+                        <h1 class="text-2xl sm:text-3xl font-sans font-bold text-brand-dark mb-4 leading-tight">${product.name}</h1>
+                        <div class="h-0.5 w-12 bg-brand-gold mb-3"></div>
+                        ${product.packSizes && product.packSizes.length
+                            ? `<div class="mb-4">
+                                <p class="text-[10px] font-bold uppercase tracking-widest text-gray-600 mb-2">Select Pack Size</p>
+                                <div class="flex flex-wrap gap-2">
+                                    ${product.packSizes.map((ps, i) => `<button class="pdp-ps-btn px-3 py-2 border-2 text-xs font-bold transition ${i===0 ? 'border-brand-maroon bg-brand-maroon/5 text-brand-maroon' : 'border-gray-200 text-gray-600 hover:border-brand-gold'}" onclick="window.selectPdpPackSize(${i})"><div>${ps.size}</div><div class="text-brand-maroon">${ps.price}</div></button>`).join('')}
+                                </div>
+                               </div>`
+                            : product.priceDisplay ? `<div class="text-base font-bold text-brand-maroon mb-4">${product.priceDisplay}</div>` : ''}
                         ${formattedDesc
                             ? `<div class="text-sm text-gray-600 leading-relaxed formatted-text mb-8">${formattedDesc}</div>`
-                            : `<p class="text-gray-400 text-sm mb-8 italic">No description available.</p>`}
+                            : `<p class="text-gray-600 text-sm mb-8 italic">No description available.</p>`}
                         <div class="space-y-3">
-                            <a href="https://wa.me/923352999006?text=${waText}" target="_blank"
-                               onclick="trackInquiry('${product.name.replace(/'/g,"\\'")}','${product.category}')"
-                               class="w-full bg-green-500 hover:bg-green-600 text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
+                            ${(product.minQty || 1) > 1 ? `<p class="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200 px-3 py-2 text-center"><i class="fas fa-layer-group mr-1"></i>Minimum order: ${product.minQty} units</p>` : ''}
+                            <button onclick="window.addToCart('${product.name.replace(/'/g,"\\'")}', _pdpPackSize);"
+                                class="w-full bg-brand-maroon hover:bg-brand-dark text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
+                                <i class="fas fa-plus text-lg"></i> Add to Order
+                            </button>
+                            <button onclick="window.inquireProduct('${product.name.replace(/'/g,"\\'")}','${product.category}','${redirectLink}')"
+                                class="w-full bg-green-500 hover:bg-green-600 text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
                                 <i class="fab fa-whatsapp text-lg"></i> Inquire on WhatsApp
-                            </a>
-                            <button onclick="shareProductNative(${shareParams})"
+                            </button>
+                            <button onclick="shareProductNative(event,'${product.name.replace(/'/g,"\\'")}')"
                                     class="w-full bg-brand-gold hover:bg-brand-maroon hover:text-white text-brand-dark py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
                                 <i class="fas fa-share-alt"></i> Share Product
                             </button>
                             <button onclick="closeProductDetailPage()"
-                                    class="w-full border border-gray-200 text-gray-500 py-2.5 text-xs font-bold uppercase tracking-widest hover:border-brand-maroon hover:text-brand-maroon transition">
+                                    class="w-full border border-gray-200 text-gray-700 py-2.5 text-xs font-bold uppercase tracking-widest hover:border-brand-maroon hover:text-brand-maroon transition">
                                 <i class="fas fa-th-large mr-1"></i> Browse All Products
                             </button>
                         </div>
@@ -675,6 +1143,20 @@
             document.title = 'Khyber Traders | Wholesale Veterinary Pharmacy';
             history.replaceState(null, '', '/');
             document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+        };
+
+        window.selectPdpPackSize = function(idx) {
+            if (!window._currentPdpProduct) return;
+            _pdpPackSize = window._currentPdpProduct.packSizes[idx];
+            document.querySelectorAll('.pdp-ps-btn').forEach((btn, i) => {
+                if (i === idx) {
+                    btn.classList.add('border-brand-maroon', 'bg-brand-maroon/5', 'text-brand-maroon');
+                    btn.classList.remove('border-gray-200', 'text-gray-600');
+                } else {
+                    btn.classList.remove('border-brand-maroon', 'bg-brand-maroon/5', 'text-brand-maroon');
+                    btn.classList.add('border-gray-200', 'text-gray-600');
+                }
+            });
         };
 
         window.pdpSetImage = function(src, thumbEl) {
@@ -723,7 +1205,7 @@
                 .filter(p => p.score > 0)
                 .sort((a, b) => b.score - a.score);
             if (!matched.length) {
-                results.innerHTML = `<div class="text-center py-10 text-gray-500"><i class="fas fa-search text-3xl mb-3 block text-gray-300"></i>No products found for "<strong>${query}</strong>"</div>`;
+                results.innerHTML = `<div class="text-center py-10 text-gray-600"><i class="fas fa-search text-3xl mb-3 block text-gray-400"></i>No products found for "<strong>${query}</strong>"</div>`;
                 return;
             }
             const snippet = (s, q) => {
@@ -733,7 +1215,7 @@
                 return (start > 0 ? '…' : '') + plain.substring(start, start + 120) + (plain.length > start + 120 ? '…' : '');
             };
             results.innerHTML = `
-                <p class="text-xs text-gray-400 uppercase tracking-widest mb-4">${matched.length} result${matched.length !== 1 ? 's' : ''} for "<strong class="text-brand-maroon">${query}</strong>"</p>
+                <p class="text-xs text-gray-600 uppercase tracking-widest mb-4">${matched.length} result${matched.length !== 1 ? 's' : ''} for "<strong class="text-brand-maroon">${query}</strong>"</p>
                 <div class="flex flex-col gap-3">
                     ${matched.map(p => {
                         const thumb = p.images[0] || '';
@@ -742,10 +1224,10 @@
                             ${thumb ? `<img src="${thumb}" class="w-14 h-14 sm:w-16 sm:h-16 object-cover flex-shrink-0 bg-gray-50 border" loading="lazy">` : `<div class="w-14 h-14 bg-gray-100 flex items-center justify-center flex-shrink-0 border"><i class="fas fa-box-open text-gray-300"></i></div>`}
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-start gap-2 flex-wrap mb-1">
-                                    <span class="font-bold text-brand-dark text-sm font-serif leading-tight">${highlight(p.name, query)}</span>
+                                    <span class="font-semibold text-brand-dark text-sm font-sans leading-tight">${highlight(p.name, query)}</span>
                                     <span class="bg-brand-maroon/10 text-brand-maroon text-[8px] font-bold uppercase tracking-widest px-1.5 py-0.5 flex-shrink-0">${highlight(p.category, query)}</span>
                                 </div>
-                                <p class="text-xs text-gray-500 leading-relaxed line-clamp-2">${highlight(snippet(p.desc, q), query)}</p>
+                                <p class="text-xs text-gray-700 leading-relaxed line-clamp-2">${highlight(snippet(p.desc, q), query)}</p>
                             </div>
                             <i class="fas fa-chevron-right text-gray-300 self-center flex-shrink-0 text-xs"></i>
                         </div>`;
@@ -789,8 +1271,12 @@
             if (e.key !== 'Escape') return;
             if (document.getElementById('lightbox').style.display === 'flex') {
                 closeLightbox();
+            } else if (!document.getElementById('checkout-screen').classList.contains('hidden')) {
+                closeCheckout();
             } else if (!document.getElementById('product-detail-page').classList.contains('hidden')) {
                 closeProductDetailPage();
+            } else if (document.getElementById('cart-drawer').classList.contains('open')) {
+                closeCart();
             } else if (!document.getElementById('category-modal').classList.contains('hidden')) {
                 closeCategoryModal();
             } else {
@@ -820,6 +1306,7 @@
         window.closeLightbox = () => document.getElementById('lightbox').style.display = 'none';
 
         fetchProducts();
+        fetchSettings();
     </script>
 </body>
 </html>
