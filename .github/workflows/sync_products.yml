@@ -22,7 +22,7 @@ jobs:
           python-version: '3.x'
 
       - name: Install Dependencies
-        run: pip install firebase-admin
+        run: pip install firebase-admin pillow
 
       - name: Generate Redirect Files
         shell: python
@@ -150,11 +150,140 @@ jobs:
 
           print(f"Generated {len(products_data)} redirect files and products.json.")
 
+          # ── Generate category share cards (/c/{slug}.html + images/og/{slug}.png) ──
+          # Icon rules must mirror CAT_ICONS in index.html — keep both in sync when adding keywords.
+          from PIL import Image, ImageDraw, ImageFont
+
+          FONT_DIR = "assets/fonts"
+          ICON_CODEPOINTS = {
+              "pump-soap": "e06b", "cow": "f6c8", "bottle-droplet": "e4c4", "tags": "f02c",
+              "wheat-awn": "e2cd", "prescription-bottle-medical": "f486", "dna": "f471",
+              "filter": "f0b0", "calendar-days": "f073", "shield-virus": "e06c", "syringe": "f48e",
+              "flask": "f0c3", "clipboard-list": "f46d", "box-open": "f49e", "glass-water": "e4f4",
+          }
+          ICON_RULES = [
+              ("shampoo", "pump-soap"), ("lice", "pump-soap"),
+              ("milk", "glass-water"), ("fatten", "cow"),
+              ("drench", "bottle-droplet"), ("dewormer", "bottle-droplet"), ("dewromer", "bottle-droplet"),
+              ("tag", "tags"),
+              ("feed", "wheat-awn"), ("premix", "wheat-awn"), ("mineral", "wheat-awn"),
+              ("gripe", "prescription-bottle-medical"),
+              ("insemination", "dna"),
+              ("toxin", "filter"),
+              ("chart", "calendar-days"), ("schedule", "calendar-days"),
+              ("vaccine", "shield-virus"),
+              ("inj", "syringe"), ("ivomec", "syringe"),
+              ("liver", "flask"), ("tonic", "flask"), ("digestive", "flask"),
+              ("protocol", "clipboard-list"),
+          ]
+
+          def icon_for(cat):
+              c = cat.lower()
+              for kw, ic in ICON_RULES:
+                  if kw in c: return ic
+              return "box-open"
+
+          MAROON, GOLD, WHITE, SOFT = (80,0,0), (212,175,55), (255,255,255), (240,225,190)
+          CARD_W, CARD_H = 1200, 630
+
+          def load_font(name, size, weight=None):
+              f = ImageFont.truetype(f"{FONT_DIR}/{name}", size)
+              if weight:
+                  try: f.set_variation_by_axes([weight])
+                  except Exception: pass
+              return f
+
+          def center_text(draw, y, text, font, fill, tracking=0):
+              if tracking:
+                  widths = [draw.textlength(ch, font=font) + tracking for ch in text]
+                  total = sum(widths) - tracking
+                  x = (CARD_W - total) / 2
+                  for ch, w in zip(text, widths):
+                      draw.text((x, y), ch, font=font, fill=fill); x += w
+              else:
+                  tw = draw.textlength(text, font=font)
+                  draw.text(((CARD_W - tw) / 2, y), text, font=font, fill=fill)
+
+          def wrap_text(draw, text, font, max_w):
+              words, lines, cur = text.split(), [], ""
+              for w in words:
+                  t = (cur + " " + w).strip()
+                  if draw.textlength(t, font=font) <= max_w: cur = t
+                  else: lines.append(cur); cur = w
+              if cur: lines.append(cur)
+              return lines
+
+          def make_category_card(cat, slug):
+              img = Image.new("RGB", (CARD_W, CARD_H), MAROON)
+              dr = ImageDraw.Draw(img)
+              dr.rectangle([0, CARD_H - 96, CARD_W, CARD_H], fill=(64, 0, 0))
+              dr.rectangle([22, 22, CARD_W - 23, CARD_H - 23], outline=GOLD, width=3)
+              cy = 160
+              dr.ellipse([CARD_W/2 - 64, cy - 64, CARD_W/2 + 64, cy + 64], fill=GOLD)
+              glyph = chr(int(ICON_CODEPOINTS[icon_for(cat)], 16))
+              gf = ImageFont.truetype(f"{FONT_DIR}/FontAwesomeSolid.ttf", 64)
+              bb = dr.textbbox((0, 0), glyph, font=gf)
+              dr.text((CARD_W/2 - (bb[0]+bb[2])/2, cy - (bb[1]+bb[3])/2), glyph, font=gf, fill=MAROON)
+
+              name = cat.title().replace("And", "and").replace("For", "for").replace(" Of ", " of ")
+              tf = load_font("PlayfairDisplay.ttf", 64, 700)
+              lines = wrap_text(dr, name, tf, 1020)
+              if len(lines) > 2:
+                  tf = load_font("PlayfairDisplay.ttf", 52, 700)
+                  lines = wrap_text(dr, name, tf, 1020)
+              y = 268 if len(lines) > 1 else 296
+              for ln in lines:
+                  center_text(dr, y, ln, tf, WHITE)
+                  y += tf.size + 14
+              dy = y + 18
+              dr.rectangle([CARD_W/2 - 60, dy, CARD_W/2 + 60, dy + 4], fill=GOLD)
+              center_text(dr, dy + 30, "KHYBER TRADERS  ·  WHOLESALE VETERINARY PHARMACY",
+                          load_font("Manrope.ttf", 24, 500), SOFT, tracking=2)
+              center_text(dr, CARD_H - 72, "animalhealth.pk", load_font("Manrope.ttf", 34, 700), GOLD)
+
+              os.makedirs("images/og", exist_ok=True)
+              img.save(f"images/og/{slug}.png", optimize=True)
+
+              target = f"{BASE_URL}/?cat={slug}"
+              html = f"""<!DOCTYPE html><html><head><meta charset="UTF-8">
+              <title>{name} | Khyber Traders</title>
+              <meta property="og:title" content="{name} — Khyber Traders">
+              <meta property="og:description" content="Browse {name} products, prices and pack sizes. Wholesale veterinary supplies for the dairy & cattle industry.">
+              <meta property="og:image" content="{BASE_URL}/images/og/{slug}.png">
+              <meta property="og:image:width" content="1200">
+              <meta property="og:image:height" content="630">
+              <meta property="og:url" content="{target}">
+              <meta property="og:type" content="website">
+              <meta http-equiv="refresh" content="0;url={target}" />
+              </head><body style="font-family:sans-serif;text-align:center;padding-top:50px;">
+              <p>Opening <strong>{name}</strong>...</p>
+              <script>window.location.href="{target}";<\/script>
+              </body></html>"""
+              os.makedirs("c", exist_ok=True)
+              with open(f"c/{slug}.html", "w", encoding="utf-8") as fh:
+                  fh.write(html)
+
+          live_categories = sorted({p["category"] for p in rows if p["category"]})
+          live_slugs = set()
+          for cat in live_categories:
+              slug = get_clean_slug(cat)
+              live_slugs.add(slug)
+              make_category_card(cat, slug)
+
+          # Remove cards for categories that no longer exist (renamed/deleted)
+          for folder, ext in (("c", ".html"), ("images/og", ".png")):
+              if not os.path.exists(folder): continue
+              for fn in os.listdir(folder):
+                  if fn.endswith(ext) and fn[:-len(ext)] not in live_slugs:
+                      os.remove(os.path.join(folder, fn))
+
+          print(f"Generated {len(live_slugs)} category cards.")
+
       - name: Commit and Push Changes
         run: |
           git config --global user.name "Product-Bot"
           git config --global user.email "bot@animalhealth.pk"
-          git add s/ products.json
+          git add s/ c/ images/og/ products.json
           if git diff --staged --quiet; then
             echo "No changes to sync."
           else
