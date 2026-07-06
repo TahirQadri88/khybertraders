@@ -127,6 +127,10 @@
             class="text-xs border border-gray-300 text-gray-500 hover:border-brand-maroon hover:text-brand-maroon px-4 py-2.5 transition flex items-center gap-2" title="Arrange product order within a category">
             <i class="fas fa-arrows-up-down"></i> Reorder
         </button>
+        <button onclick="openRenameCategory()"
+            class="text-xs border border-gray-300 text-gray-500 hover:border-brand-maroon hover:text-brand-maroon px-4 py-2.5 transition flex items-center gap-2" title="Rename a category across all its products">
+            <i class="fas fa-i-cursor"></i> Rename Category
+        </button>
         <button onclick="openSettings()"
             class="text-xs border border-gray-300 text-gray-500 hover:border-brand-maroon hover:text-brand-maroon px-4 py-2.5 transition flex items-center gap-2" title="Shop settings">
             <i class="fas fa-cog"></i> Settings
@@ -190,6 +194,36 @@
                 <span id="reorder-label">Save Order</span>
             </button>
             <button onclick="closeReorder()" class="border border-gray-200 text-gray-500 px-4 py-2.5 text-xs hover:border-brand-maroon hover:text-brand-maroon transition">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Rename Category Modal -->
+    <div id="rename-cat-overlay" class="hidden fixed inset-0 bg-black/60 z-[400]" onclick="closeRenameCategory()"></div>
+    <div id="rename-cat-modal" class="hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-xl z-[410] w-full max-w-md p-6">
+        <div class="flex items-center justify-between mb-5">
+            <h3 class="font-bold text-sm uppercase tracking-widest text-brand-dark">Rename Category</h3>
+            <button onclick="closeRenameCategory()" class="text-gray-400 hover:text-gray-700 text-xl leading-none">&times;</button>
+        </div>
+        <div class="space-y-4">
+            <div>
+                <label class="label">Current Category</label>
+                <select id="rc-old-select" class="field">
+                    <option value="">Select a category…</option>
+                </select>
+                <p id="rc-count-hint" class="text-[10px] text-gray-400 mt-1"></p>
+            </div>
+            <div>
+                <label class="label">New Name</label>
+                <input id="rc-new-name" type="text" class="field" placeholder="e.g. Vaccines &amp; Boosters">
+                <p class="text-[10px] text-gray-400 mt-1">Updates the category on every product currently in the selected category.</p>
+            </div>
+        </div>
+        <div class="flex gap-3 mt-6">
+            <button onclick="saveRenameCategory()" class="flex-1 bg-brand-maroon text-white font-bold py-2.5 text-xs uppercase tracking-widest hover:bg-brand-gold hover:text-brand-dark transition flex items-center justify-center gap-2">
+                <i id="rename-cat-spinner" class="fas fa-circle-notch spinner hidden"></i>
+                <span id="rename-cat-label">Rename</span>
+            </button>
+            <button onclick="closeRenameCategory()" class="border border-gray-200 text-gray-500 px-4 py-2.5 text-xs hover:border-brand-maroon hover:text-brand-maroon transition">Cancel</button>
         </div>
     </div>
 
@@ -508,6 +542,74 @@ async function saveReorder() {
     } finally {
         spinner.classList.add('hidden');
         label.textContent = 'Save Order';
+    }
+}
+
+// ── Rename Category ──────────────────────────────────────────────────
+function openRenameCategory() {
+    const cats = [...new Set(allProductsCache.map(p => p.category).filter(Boolean))].sort();
+    const sel = document.getElementById('rc-old-select');
+    sel.innerHTML = '<option value="">Select a category…</option>' +
+        cats.map(c => `<option value="${c.replace(/"/g,'&quot;')}">${c}</option>`).join('');
+    sel.onchange = () => {
+        const n = allProductsCache.filter(p => p.category === sel.value).length;
+        document.getElementById('rc-count-hint').textContent = sel.value ? `${n} product${n !== 1 ? 's' : ''} will be updated` : '';
+    };
+    document.getElementById('rc-new-name').value = '';
+    document.getElementById('rc-count-hint').textContent = '';
+    document.getElementById('rename-cat-modal').classList.remove('hidden');
+    document.getElementById('rename-cat-overlay').classList.remove('hidden');
+}
+
+function closeRenameCategory() {
+    document.getElementById('rename-cat-modal').classList.add('hidden');
+    document.getElementById('rename-cat-overlay').classList.add('hidden');
+}
+
+async function saveRenameCategory() {
+    const oldCat = document.getElementById('rc-old-select').value;
+    const newCat = document.getElementById('rc-new-name').value.trim().toLowerCase();
+    if (!oldCat) { showToast('Choose a category to rename', 'red'); return; }
+    if (!newCat) { showToast('Enter the new category name', 'red'); return; }
+    if (newCat === oldCat) { showToast('New name is the same as the current one', 'red'); return; }
+
+    const affected = allProductsCache.filter(p => p.category === oldCat);
+    if (!confirm(`Rename "${oldCat}" to "${newCat}" for ${affected.length} product${affected.length !== 1 ? 's' : ''}?`)) return;
+
+    const spinner = document.getElementById('rename-cat-spinner');
+    const label   = document.getElementById('rename-cat-label');
+    spinner.classList.remove('hidden');
+    label.textContent = 'Renaming…';
+    try {
+        const batches = [];
+        for (let i = 0; i < affected.length; i += 450) {
+            const batch = db.batch();
+            affected.slice(i, i + 450).forEach(p => {
+                batch.update(db.collection('products').doc(p.id), { category: newCat });
+            });
+            batches.push(batch.commit());
+        }
+        await Promise.all(batches);
+
+        // Keep saved category display order pointing at the new name
+        try {
+            const doc = await db.collection('settings').doc('shop').get();
+            const order = doc.exists ? (doc.data().categoryOrder || []) : [];
+            const idx = order.indexOf(oldCat);
+            if (idx !== -1) {
+                order[idx] = newCat;
+                await db.collection('settings').doc('shop').set({ categoryOrder: order }, { merge: true });
+            }
+        } catch (e) { /* settings not critical to the rename itself */ }
+
+        showToast(`Renamed ${affected.length} product${affected.length !== 1 ? 's' : ''} ✓`, 'green');
+        closeRenameCategory();
+        await loadProducts();
+    } catch (err) {
+        showToast('Error: ' + err.message, 'red');
+    } finally {
+        spinner.classList.add('hidden');
+        label.textContent = 'Rename';
     }
 }
 
