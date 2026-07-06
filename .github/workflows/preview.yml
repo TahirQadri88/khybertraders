@@ -22,6 +22,16 @@ jobs:
           id=$(echo "$raw" | tr '[:upper:]/' '[:lower:]-' | tr -cd 'a-z0-9-' | cut -c1-30)
           echo "id=preview-$id" >> "$GITHUB_OUTPUT"
 
+      - name: Check secret presence (value itself is never printed)
+        env:
+          SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -n "$SA" ]; then
+            echo "FIREBASE_SERVICE_ACCOUNT is present, length: ${#SA}"
+          else
+            echo "FIREBASE_SERVICE_ACCOUNT is EMPTY or not accessible from this branch/job"
+          fi
+
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
