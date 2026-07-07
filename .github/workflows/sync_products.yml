@@ -41,67 +41,53 @@ jobs:
               name = re.sub(r'[^a-z0-9-]', '', name)
               return name
 
-          # --- Check if Firebase service account is available ---
+          # --- Firebase service account is required. The old Google Sheets ---
+          # --- fallback was removed: it silently overwrote correct Firestore-
+          # --- sourced content with years-stale data whenever this secret was
+          # --- missing, with no visible error. Fail loudly instead. ---
           sa_json = os.environ.get('FIREBASE_SERVICE_ACCOUNT', '')
 
-          if sa_json and sa_json.strip() != '':
-              # ── Read from Firestore (primary source after Firebase migration) ──
-              import firebase_admin
-              from firebase_admin import credentials, firestore
+          if not sa_json or not sa_json.strip():
+              print("FATAL: FIREBASE_SERVICE_ACCOUNT secret is empty or not set.")
+              print("Set it in: repo Settings -> Secrets and variables -> Actions -> Repository secrets.")
+              print("Refusing to fall back to stale data; no files were changed.")
+              exit(1)
 
-              with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
-                  f.write(sa_json)
-                  sa_path = f.name
+          import firebase_admin
+          from firebase_admin import credentials, firestore
 
-              cred = credentials.Certificate(sa_path)
-              firebase_admin.initialize_app(cred)
-              db = firestore.client()
+          with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+              f.write(sa_json)
+              sa_path = f.name
 
-              try:
-                  docs = db.collection('products').order_by('category').order_by('sortOrder').stream()
-                  rows = []
-                  for doc in docs:
-                      d = doc.to_dict()
-                      name = (d.get('name') or '').strip()
-                      if not name: continue
-                      rows.append({
-                          'name':         name,
-                          'category':     (d.get('category') or '').strip(),
-                          'desc':         (d.get('desc') or '').strip(),
-                          'images':       d.get('images') or [],
-                          'priceDisplay': (d.get('priceDisplay') or '').strip(),
-                          'inStock':      d.get('inStock', True),
-                      })
-                  print(f"Loaded {len(rows)} products from Firestore.")
-              except Exception as e:
-                  print(f"Firestore error: {e}")
-                  exit(1)
+          cred = credentials.Certificate(sa_path)
+          firebase_admin.initialize_app(cred)
+          db = firestore.client()
 
-          else:
-              # ── Fallback: read from Google Sheets (pre-migration) ──
-              import csv, requests
-              SHEET_URL = "https://docs.google.com/spreadsheets/d/1-s7frQnY1Muh4XOizcz2V3KnkkHV8owNWYzyDrYFSic/gviz/tq?tqx=out:csv"
-              try:
-                  response = requests.get(SHEET_URL)
-                  response.raise_for_status()
-                  decoded_content = response.content.decode('utf-8')
-                  cr = csv.reader(decoded_content.splitlines(), delimiter=',')
-                  sheet_rows = list(cr)
-                  rows = []
-                  for row in sheet_rows[1:]:
-                      if len(row) < 2 or not row[1].strip(): continue
-                      rows.append({
-                          'name':         row[1].strip(),
-                          'category':     row[0].strip() if len(row) > 0 else '',
-                          'desc':         row[2].strip() if len(row) > 2 else '',
-                          'images':       [u.strip() for u in (row[3].split(',') if len(row) > 3 else []) if len(u.strip()) > 5],
-                          'priceDisplay': '',
-                          'inStock':      True,
-                      })
-                  print(f"Loaded {len(rows)} products from Google Sheets (fallback).")
-              except Exception as e:
-                  print(f"Google Sheets error: {e}")
-                  exit(1)
+          try:
+              # No server-side order_by: a compound sort on two fields needs a
+              # Firestore composite index. Sort client-side instead, same as
+              # index.html's fetchProducts() does.
+              docs = db.collection('products').stream()
+              rows = []
+              for doc in docs:
+                  d = doc.to_dict()
+                  name = (d.get('name') or '').strip()
+                  if not name: continue
+                  rows.append({
+                      'name':         name,
+                      'category':     (d.get('category') or '').strip(),
+                      'desc':         (d.get('desc') or '').strip(),
+                      'images':       d.get('images') or [],
+                      'priceDisplay': (d.get('priceDisplay') or '').strip(),
+                      'inStock':      d.get('inStock', True),
+                      'sortOrder':    d.get('sortOrder', 0) or 0,
+                  })
+              rows.sort(key=lambda p: (p['category'], p['sortOrder']))
+              print(f"Loaded {len(rows)} products from Firestore.")
+          except Exception as e:
+              print(f"Firestore error: {e}")
+              exit(1)
 
           # ── Generate /s/ redirect files and products.json ──
           if not os.path.exists('s'):
