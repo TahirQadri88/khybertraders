@@ -65,7 +65,10 @@ jobs:
           db = firestore.client()
 
           try:
-              docs = db.collection('products').order_by('category').order_by('sortOrder').stream()
+              # No server-side order_by: a compound sort on two fields needs a
+              # Firestore composite index. Sort client-side instead, same as
+              # index.html's fetchProducts() does.
+              docs = db.collection('products').stream()
               rows = []
               for doc in docs:
                   d = doc.to_dict()
@@ -78,7 +81,9 @@ jobs:
                       'images':       d.get('images') or [],
                       'priceDisplay': (d.get('priceDisplay') or '').strip(),
                       'inStock':      d.get('inStock', True),
+                      'sortOrder':    d.get('sortOrder', 0) or 0,
                   })
+              rows.sort(key=lambda p: (p['category'], p['sortOrder']))
               print(f"Loaded {len(rows)} products from Firestore.")
           except Exception as e:
               print(f"Firestore error: {e}")
