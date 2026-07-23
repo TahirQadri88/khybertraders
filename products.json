@@ -105,6 +105,13 @@
     "priceDisplay": "2000"
   },
   {
+    "category": "drench guns and drencher syringes",
+    "name": "Drench Guns and Drencher Syringes (Export Quality)",
+    "slug": "drench-guns-and-drencher-syringes-export-quality",
+    "inStock": true,
+    "priceDisplay": ""
+  },
+  {
     "category": "ear tags for cattle & goats",
     "name": "Ear Tags for Cows Buffalos Sheep & Goats",
     "slug": "ear-tags-for-cows-buffalos-sheep-and-goats",
@@ -201,6 +208,13 @@
     "slug": "royal-caina--original-steel-needles-17g-and-16g-and-18g-34-im",
     "inStock": true,
     "priceDisplay": "3800"
+  },
+  {
+    "category": "steel needles and reusable injectors for vet use",
+    "name": "Durable Reusable Injectors 3ml, 5ml, 10ml, 20ml, 30ml, 50ml",
+    "slug": "durable-reusable-injectors-3ml-5ml-10ml-20ml-30ml-50ml",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "toxin binders",
