@@ -196,6 +196,13 @@
     "priceDisplay": "Free to Download"
   },
   {
+    "category": "steel needles and reusable injectors for vet use",
+    "name": "Royal CAINA ®️ Original Steel Needles 17G and 16G and 18G 3/4\" (I.M)",
+    "slug": "royal-caina--original-steel-needles-17g-and-16g-and-18g-34-im",
+    "inStock": true,
+    "priceDisplay": "3800"
+  },
+  {
     "category": "toxin binders",
     "name": "NOVASIL PLUS (BASF) USA 25kg",
     "slug": "novasil-plus-basf-usa-25kg",
@@ -234,7 +241,7 @@
     "category": "vaccines",
     "name": "PPR Vaccine Russian 50 dose vial",
     "slug": "ppr-vaccine-russian-50-dose-vial",
-    "inStock": true,
+    "inStock": false,
     "priceDisplay": "Rs 2500"
   },
   {
