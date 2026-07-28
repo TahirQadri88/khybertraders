@@ -117,7 +117,8 @@ jobs:
           .stock-out { display: inline-block; background: #fee2e2; color: #991b1b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 4px 10px; margin-bottom: 16px; }
           .product-img { width: 100%; max-width: 380px; display: block; background: #fff; border: 1px solid #e5e7eb; margin-bottom: 10px; }
           .thumbs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-          .thumbs img { width: 64px; height: 64px; object-fit: cover; background: #fff; border: 1px solid #e5e7eb; }
+          .thumbs img { width: 64px; height: 64px; object-fit: cover; background: #fff; border: 2px solid #e5e7eb; cursor: pointer; transition: border-color 0.15s; }
+          .thumbs img:hover { border-color: #D4AF37; }
           .packs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
           .packs span { background: #500000; color: #fff; font-size: 12px; font-weight: 700; padding: 6px 14px; }
           .desc { color: #374151; font-size: 15px; margin-bottom: 26px; white-space: pre-line; }
@@ -242,7 +243,8 @@ jobs:
               thumbs_html = ''
               if len(imgs) > 1:
                   thumbs_html = '<div class="thumbs">' + ''.join(
-                      f'<img src="{im}" alt="{name_e}" loading="lazy">' for im in imgs[1:]
+                      f'<img src="{im}" alt="{name_e}" loading="lazy" onclick="document.getElementById(\'main-img\').src=this.src">'
+                      for im in imgs
                   ) + '</div>'
 
               file_content = f"""<!DOCTYPE html>
@@ -266,7 +268,7 @@ jobs:
               {header_html()}
               <div class="wrap">
               <div class="crumb"><a href="{BASE_URL}/">Home</a> &rsaquo; <a href="{cat_link}">{cat_e}</a> &rsaquo; {name_e}</div>
-              <img class="product-img" src="{img}" alt="{name_e}" loading="lazy">
+              <img class="product-img" id="main-img" src="{img}" alt="{name_e}" loading="lazy">
               {thumbs_html}
               <h1>{name_e}</h1>
               {price_html}
