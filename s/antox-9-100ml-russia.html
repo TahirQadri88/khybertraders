@@ -30,7 +30,8 @@ h1 { font-family: 'Playfair Display', serif; font-size: 28px; color: #500000; ma
 .stock-out { display: inline-block; background: #fee2e2; color: #991b1b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 4px 10px; margin-bottom: 16px; }
 .product-img { width: 100%; max-width: 380px; display: block; background: #fff; border: 1px solid #e5e7eb; margin-bottom: 10px; }
 .thumbs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-.thumbs img { width: 64px; height: 64px; object-fit: cover; background: #fff; border: 1px solid #e5e7eb; }
+.thumbs img { width: 64px; height: 64px; object-fit: cover; background: #fff; border: 2px solid #e5e7eb; cursor: pointer; transition: border-color 0.15s; }
+.thumbs img:hover { border-color: #D4AF37; }
 .packs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
 .packs span { background: #500000; color: #fff; font-size: 12px; font-weight: 700; padding: 6px 14px; }
 .desc { color: #374151; font-size: 15px; margin-bottom: 26px; white-space: pre-line; }
@@ -63,8 +64,8 @@ h2.smcat a { font-family:'Playfair Display',serif; font-size: 20px; color: #5000
 </div>
     <div class="wrap">
     <div class="crumb"><a href="https://animalhealth.pk/">Home</a> &rsaquo; <a href="https://animalhealth.pk/c/vaccines.html">Vaccines</a> &rsaquo; ANTOX 9 100ml (Russia)</div>
-    <img class="product-img" src="https://animalhealth.pk/images/ANTOX9ii.jpeg" alt="ANTOX 9 100ml (Russia)" loading="lazy">
-    <div class="thumbs"><img src="https://animalhealth.pk/images/ANTOX9i.jpeg" alt="ANTOX 9 100ml (Russia)" loading="lazy"></div>
+    <img class="product-img" id="main-img" src="https://animalhealth.pk/images/ANTOX9ii.jpeg" alt="ANTOX 9 100ml (Russia)" loading="lazy">
+    <div class="thumbs"><img src="https://animalhealth.pk/images/ANTOX9ii.jpeg" alt="ANTOX 9 100ml (Russia)" loading="lazy" onclick="document.getElementById('main-img').src=this.src"><img src="https://animalhealth.pk/images/ANTOX9i.jpeg" alt="ANTOX 9 100ml (Russia)" loading="lazy" onclick="document.getElementById('main-img').src=this.src"></div>
     <h1>ANTOX 9 100ml (Russia)</h1>
     
     <span class="stock-out">Out of Stock</span>
