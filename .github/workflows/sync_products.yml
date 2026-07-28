@@ -89,6 +89,7 @@ jobs:
                       'desc':         (d.get('desc') or '').strip(),
                       'images':       d.get('images') or [],
                       'priceDisplay': (d.get('priceDisplay') or '').strip(),
+                      'packSizes':    [ps for ps in (d.get('packSizes') or []) if ps.get('size')],
                       'inStock':      d.get('inStock', True),
                       'sortOrder':    d.get('sortOrder', 0) or 0,
                   })
@@ -114,7 +115,11 @@ jobs:
           .price { font-size: 20px; font-weight: 700; color: #500000; margin-bottom: 14px; }
           .stock-in { display: inline-block; background: #dcfce7; color: #166534; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 4px 10px; margin-bottom: 16px; }
           .stock-out { display: inline-block; background: #fee2e2; color: #991b1b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 4px 10px; margin-bottom: 16px; }
-          .product-img { width: 100%; max-width: 380px; display: block; background: #fff; border: 1px solid #e5e7eb; margin-bottom: 20px; }
+          .product-img { width: 100%; max-width: 380px; display: block; background: #fff; border: 1px solid #e5e7eb; margin-bottom: 10px; }
+          .thumbs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+          .thumbs img { width: 64px; height: 64px; object-fit: cover; background: #fff; border: 1px solid #e5e7eb; }
+          .packs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+          .packs span { background: #500000; color: #fff; font-size: 12px; font-weight: 700; padding: 6px 14px; }
           .desc { color: #374151; font-size: 15px; margin-bottom: 26px; white-space: pre-line; }
           .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 40px; }
           .btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 22px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
@@ -179,7 +184,9 @@ jobs:
               name_e = H.escape(name)
               cat_e = H.escape(cat_title(p['category']))
               short_desc = H.escape((desc.split(chr(10))[0] if desc else f"{name} — wholesale veterinary supply from Khyber Traders, Karachi.")[:160])
+              pack_sizes = p.get('packSizes') or []
               price_num = parse_price_num(p['priceDisplay'])
+              availability = "https://schema.org/InStock" if p['inStock'] else "https://schema.org/OutOfStock"
               wa_text = urllib.parse.quote(f"\U0001F4E6 *Product:* {name}\n\U0001F517 *Link:* {page_url}")
               wa_link = f"https://wa.me/923352999006?text={wa_text}"
 
@@ -193,22 +200,50 @@ jobs:
                   "category": cat_title(p['category']),
                   "brand": {"@type": "Brand", "name": "Khyber Traders"},
               }
-              if price_num:
+              if pack_sizes:
+                  offers = []
+                  for ps in pack_sizes:
+                      pn = parse_price_num(ps.get('price', ''))
+                      if not pn: continue
+                      offers.append({
+                          "@type": "Offer",
+                          "name": ps.get('size', ''),
+                          "url": page_url,
+                          "priceCurrency": "PKR",
+                          "price": pn.replace(',', ''),
+                          "availability": availability,
+                          "seller": {"@type": "Organization", "name": "Khyber Traders"}
+                      })
+                  if offers:
+                      ld["offers"] = offers
+              elif price_num:
                   ld["offers"] = {
                       "@type": "Offer",
                       "url": page_url,
                       "priceCurrency": "PKR",
                       "price": price_num.replace(',', ''),
-                      "availability": "https://schema.org/InStock" if p['inStock'] else "https://schema.org/OutOfStock",
+                      "availability": availability,
                       "seller": {"@type": "Organization", "name": "Khyber Traders"}
                   }
               # Escape any literal "</" in the JSON payload (e.g. a product name/desc
               # containing "</script") so it can never prematurely close this tag.
               ld_json = json.dumps(ld, ensure_ascii=False).replace('</', '<\\/')
 
-              price_html = f'<div class="price">{H.escape(p["priceDisplay"])}</div>' if p['priceDisplay'] else ''
+              if pack_sizes:
+                  price_html = '<div class="packs">' + ''.join(
+                      f'<span>{H.escape(ps.get("size",""))} — {H.escape(ps.get("price",""))}</span>' for ps in pack_sizes
+                  ) + '</div>'
+              elif p['priceDisplay']:
+                  price_html = f'<div class="price">{H.escape(p["priceDisplay"])}</div>'
+              else:
+                  price_html = ''
               stock_html = '<span class="stock-in">In Stock</span>' if p['inStock'] else '<span class="stock-out">Out of Stock</span>'
               desc_html = H.escape(desc) if desc else 'Contact us on WhatsApp for full product details.'
+              thumbs_html = ''
+              if len(imgs) > 1:
+                  thumbs_html = '<div class="thumbs">' + ''.join(
+                      f'<img src="{im}" alt="{name_e}" loading="lazy">' for im in imgs[1:]
+                  ) + '</div>'
 
               file_content = f"""<!DOCTYPE html>
               <html lang="en">
@@ -232,6 +267,7 @@ jobs:
               <div class="wrap">
               <div class="crumb"><a href="{BASE_URL}/">Home</a> &rsaquo; <a href="{cat_link}">{cat_e}</a> &rsaquo; {name_e}</div>
               <img class="product-img" src="{img}" alt="{name_e}" loading="lazy">
+              {thumbs_html}
               <h1>{name_e}</h1>
               {price_html}
               {stock_html}
@@ -255,8 +291,11 @@ jobs:
                   "inStock":      p['inStock'],
                   "priceDisplay": p['priceDisplay'],
                   "images":       imgs,
+                  "packSizes":    pack_sizes,
               }
-              products_data.append({k: v for k, v in entry.items() if k != "images"})
+              # products.json keeps its original schema -- only images/packSizes are
+              # used locally to build the /s/ and /c/ page HTML, not written out.
+              products_data.append({k: v for k, v in entry.items() if k not in ("images", "packSizes")})
               by_category.setdefault(p['category'], []).append(entry)
 
           with open("products.json", "w", encoding="utf-8") as jf:
@@ -382,7 +421,14 @@ jobs:
               cards = []
               for p in products:
                   pimg = p['images'][0] if p['images'] else f"{BASE_URL}/images/website%20banner.jpg"
-                  price_tag = f'<div class="cprice">{H.escape(p["priceDisplay"])}</div>' if p['priceDisplay'] else ''
+                  p_packs = p.get('packSizes') or []
+                  if p_packs:
+                      lowest = p_packs[0]
+                      price_tag = f'<div class="cprice">{H.escape(lowest.get("size",""))} {H.escape(lowest.get("price",""))}{" +" if len(p_packs) > 1 else ""}</div>'
+                  elif p['priceDisplay']:
+                      price_tag = f'<div class="cprice">{H.escape(p["priceDisplay"])}</div>'
+                  else:
+                      price_tag = ''
                   cards.append(f'''<a class="card" href="{BASE_URL}/s/{p['slug']}.html">
               <img src="{pimg}" alt="{H.escape(p['name'])}" loading="lazy">
               <h3>{H.escape(p['name'])}</h3>
