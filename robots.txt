@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://animalhealth.pk/sitemap.xml

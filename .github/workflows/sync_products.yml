@@ -25,12 +25,12 @@ jobs:
       - name: Install Dependencies
         run: pip install firebase-admin pillow
 
-      - name: Generate Redirect Files
+      - name: Generate Product & Category Pages
         shell: python
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
-          import os, re, json, urllib.parse, tempfile
+          import os, re, json, urllib.parse, tempfile, html as H
 
           BASE_URL = "https://animalhealth.pk"
 
@@ -41,6 +41,14 @@ jobs:
               name = re.sub(r'\s+', '-', name)
               name = re.sub(r'[^a-z0-9-]', '', name)
               return name
+
+          def parse_price_num(s):
+              if not s: return None
+              m = re.search(r'\d[\d,]*', s.replace(',', ''))
+              return m.group(0) if m else None
+
+          def cat_title(cat):
+              return cat.title().replace('And', 'and').replace('For', 'for').replace(' Of ', ' of ')
 
           # --- Firebase service account is required. The old Google Sheets ---
           # --- fallback was removed: it silently overwrote correct Firestore-
@@ -90,7 +98,64 @@ jobs:
               print(f"Firestore error: {e}")
               exit(1)
 
-          # ── Generate /s/ redirect files and products.json ──
+          # ── Shared page chrome (brand header/footer, no Tailwind dependency) ──
+          PAGE_CSS = """
+          * { box-sizing: border-box; margin: 0; padding: 0; }
+          body { font-family: 'Manrope', sans-serif; color: #1a1a1a; background: #f4f4f5; line-height: 1.6; }
+          a { color: inherit; text-decoration: none; }
+          .header { background: #0a0a0a; padding: 18px 20px; display: flex; align-items: center; gap: 12px; }
+          .header img { width: 36px; height: 36px; object-fit: cover; }
+          .header .brand { font-family: 'Playfair Display', serif; font-weight: 700; color: #fff; font-size: 18px; }
+          .header .tag { color: #D4AF37; font-size: 9px; text-transform: uppercase; letter-spacing: 2px; display: block; }
+          .wrap { max-width: 760px; margin: 0 auto; padding: 24px 20px 60px; }
+          .crumb { font-size: 12px; color: #6b7280; margin-bottom: 18px; }
+          .crumb a:hover { color: #500000; text-decoration: underline; }
+          h1 { font-family: 'Playfair Display', serif; font-size: 28px; color: #500000; margin-bottom: 10px; line-height: 1.25; }
+          .price { font-size: 20px; font-weight: 700; color: #500000; margin-bottom: 14px; }
+          .stock-in { display: inline-block; background: #dcfce7; color: #166534; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 4px 10px; margin-bottom: 16px; }
+          .stock-out { display: inline-block; background: #fee2e2; color: #991b1b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 4px 10px; margin-bottom: 16px; }
+          .product-img { width: 100%; max-width: 380px; display: block; background: #fff; border: 1px solid #e5e7eb; margin-bottom: 20px; }
+          .desc { color: #374151; font-size: 15px; margin-bottom: 26px; white-space: pre-line; }
+          .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 40px; }
+          .btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 22px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+          .btn-primary { background: #500000; color: #fff; }
+          .btn-primary:hover { background: #0a0a0a; }
+          .btn-wa { background: #25D366; color: #fff; }
+          .btn-wa:hover { background: #128C4A; }
+          .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin: 24px 0 32px; }
+          .card { background: #fff; border: 1px solid #e5e7eb; padding: 14px; display: block; }
+          .card:hover { border-color: #D4AF37; }
+          .card img { width: 100%; aspect-ratio: 1; object-fit: cover; margin-bottom: 10px; background: #f4f4f5; }
+          .card h3 { font-size: 14px; color: #1a1a1a; margin-bottom: 4px; line-height: 1.3; }
+          .card .cprice { font-size: 12px; font-weight: 700; color: #500000; }
+          .footer { text-align: center; padding: 30px 20px; color: #9ca3af; font-size: 11px; }
+          .footer a { color: #500000; }
+          ul.smlist { list-style: none; margin: 8px 0 26px; }
+          ul.smlist li { padding: 6px 0; border-bottom: 1px solid #e5e7eb; font-size: 14px; }
+          ul.smlist li a:hover { color: #500000; }
+          h2.smcat a { font-family:'Playfair Display',serif; font-size: 20px; color: #500000; }
+          """
+
+          def page_head_common():
+              return ('<link rel="preconnect" href="https://fonts.googleapis.com">'
+                      '<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">'
+                      f'<style>{PAGE_CSS}</style>')
+
+          def header_html():
+              return f'''<div class="header">
+          <a href="{BASE_URL}/" style="display:flex;align-items:center;gap:12px">
+          <img src="{BASE_URL}/images/KT_Logo.JPG" alt="Khyber Traders logo">
+          <span><span class="brand">Khyber Traders</span><span class="tag">Wholesale Veterinary Pharmacy &middot; Karachi</span></span>
+          </a>
+          </div>'''
+
+          def footer_html():
+              return f'''<div class="footer">
+          <p>Khyber Traders &middot; Katchi Gali, Karachi &middot; <a href="tel:+923352999006">0335-2999006</a></p>
+          <p style="margin-top:6px"><a href="{BASE_URL}/">Home</a> &middot; <a href="{BASE_URL}/sitemap.html">Full Catalog</a></p>
+          </div>'''
+
+          # ── Generate /s/ product pages and products.json ──
           if not os.path.exists('s'):
               os.makedirs('s')
 
@@ -99,43 +164,103 @@ jobs:
                   os.remove(os.path.join('s', f))
 
           products_data = []
+          by_category = {}
 
           for p in rows:
               name  = p['name']
               desc  = p['desc']
               imgs  = p['images']
               slug  = get_clean_slug(name)
+              cat_slug = get_clean_slug(p['category'])
               img   = imgs[0] if imgs else "https://tahirqadri88.github.io/khybertraders/images/website%20banner.jpg"
-              target = f"{BASE_URL}/?item={urllib.parse.quote(name)}"
+              interactive_link = f"{BASE_URL}/?item={urllib.parse.quote(name)}"
+              page_url = f"{BASE_URL}/s/{slug}.html"
+              cat_link = f"{BASE_URL}/c/{cat_slug}.html"
+              name_e = H.escape(name)
+              cat_e = H.escape(cat_title(p['category']))
+              short_desc = H.escape((desc.split(chr(10))[0] if desc else f"{name} — wholesale veterinary supply from Khyber Traders, Karachi.")[:160])
+              price_num = parse_price_num(p['priceDisplay'])
+              wa_text = urllib.parse.quote(f"\U0001F4E6 *Product:* {name}\n\U0001F517 *Link:* {page_url}")
+              wa_link = f"https://wa.me/923352999006?text={wa_text}"
 
-              file_content = f"""<!DOCTYPE html><html><head><meta charset="UTF-8">
-              <title>{name} | AnimalHealth.pk</title>
-              <meta property="og:title" content="{name}">
-              <meta property="og:description" content="{desc[:150]}">
+              ld = {
+                  "@context": "https://schema.org",
+                  "@type": "Product",
+                  "name": name,
+                  "image": imgs if imgs else [img],
+                  "description": (desc or short_desc)[:500],
+                  "sku": slug,
+                  "category": cat_title(p['category']),
+                  "brand": {"@type": "Brand", "name": "Khyber Traders"},
+              }
+              if price_num:
+                  ld["offers"] = {
+                      "@type": "Offer",
+                      "url": page_url,
+                      "priceCurrency": "PKR",
+                      "price": price_num.replace(',', ''),
+                      "availability": "https://schema.org/InStock" if p['inStock'] else "https://schema.org/OutOfStock",
+                      "seller": {"@type": "Organization", "name": "Khyber Traders"}
+                  }
+              ld_json = json.dumps(ld, ensure_ascii=False)
+
+              price_html = f'<div class="price">{H.escape(p["priceDisplay"])}</div>' if p['priceDisplay'] else ''
+              stock_html = '<span class="stock-in">In Stock</span>' if p['inStock'] else '<span class="stock-out">Out of Stock</span>'
+              desc_html = H.escape(desc) if desc else 'Contact us on WhatsApp for full product details.'
+
+              file_content = f"""<!DOCTYPE html>
+              <html lang="en">
+              <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>{name_e} | Khyber Traders — Wholesale Veterinary Pharmacy Karachi</title>
+              <meta name="description" content="{short_desc}">
+              <link rel="canonical" href="{page_url}">
+              <meta property="og:title" content="{name_e}">
+              <meta property="og:description" content="{short_desc}">
               <meta property="og:image" content="{img}">
-              <meta property="og:url" content="{target}">
-              <meta property="og:type" content="website">
-              <meta http-equiv="refresh" content="0;url={target}" />
-              </head><body style="font-family:sans-serif;text-align:center;padding-top:50px;">
-              <p>Redirecting to <strong>{name}</strong>...</p>
-              <script>window.location.href="{target}";<\/script>
-              </body></html>"""
+              <meta property="og:url" content="{page_url}">
+              <meta property="og:type" content="product">
+              <link rel="icon" href="{BASE_URL}/images/KT_Logo.JPG">
+              <script type="application/ld+json">{ld_json}<\/script>
+              {page_head_common()}
+              </head>
+              <body>
+              {header_html()}
+              <div class="wrap">
+              <div class="crumb"><a href="{BASE_URL}/">Home</a> &rsaquo; <a href="{cat_link}">{cat_e}</a> &rsaquo; {name_e}</div>
+              <img class="product-img" src="{img}" alt="{name_e}" loading="lazy">
+              <h1>{name_e}</h1>
+              {price_html}
+              {stock_html}
+              <p class="desc">{desc_html}</p>
+              <div class="cta">
+              <a class="btn btn-primary" href="{interactive_link}">View &amp; Add to Order</a>
+              <a class="btn btn-wa" href="{wa_link}">Order via WhatsApp</a>
+              </div>
+              </div>
+              {footer_html()}
+              </body>
+              </html>"""
 
               with open(f"s/{slug}.html", "w", encoding="utf-8") as fh:
                   fh.write(file_content)
 
-              products_data.append({
+              entry = {
                   "category":     p['category'],
                   "name":         name,
                   "slug":         slug,
                   "inStock":      p['inStock'],
                   "priceDisplay": p['priceDisplay'],
-              })
+                  "images":       imgs,
+              }
+              products_data.append({k: v for k, v in entry.items() if k != "images"})
+              by_category.setdefault(p['category'], []).append(entry)
 
           with open("products.json", "w", encoding="utf-8") as jf:
               json.dump(products_data, jf, ensure_ascii=False, indent=2)
 
-          print(f"Generated {len(products_data)} redirect files and products.json.")
+          print(f"Generated {len(products_data)} product pages and products.json.")
 
           # ── Generate category share cards (/c/{slug}.html + images/og/{slug}.png) ──
           # Icon rules must mirror CAT_ICONS in index.html — keep both in sync when adding keywords.
@@ -200,7 +325,7 @@ jobs:
               if cur: lines.append(cur)
               return lines
 
-          def make_category_card(cat, slug):
+          def make_category_og_image(cat, slug):
               img = Image.new("RGB", (CARD_W, CARD_H), MAROON)
               dr = ImageDraw.Draw(img)
               dr.rectangle([0, CARD_H - 96, CARD_W, CARD_H], fill=(64, 0, 0))
@@ -212,7 +337,7 @@ jobs:
               bb = dr.textbbox((0, 0), glyph, font=gf)
               dr.text((CARD_W/2 - (bb[0]+bb[2])/2, cy - (bb[1]+bb[3])/2), glyph, font=gf, fill=MAROON)
 
-              name = cat.title().replace("And", "and").replace("For", "for").replace(" Of ", " of ")
+              name = cat_title(cat)
               tf = load_font("PlayfairDisplay.ttf", 64, 700)
               lines = wrap_text(dr, name, tf, 1020)
               if len(lines) > 2:
@@ -231,31 +356,79 @@ jobs:
               os.makedirs("images/og", exist_ok=True)
               img.save(f"images/og/{slug}.png", optimize=True)
 
-              target = f"{BASE_URL}/?cat={slug}"
-              html = f"""<!DOCTYPE html><html><head><meta charset="UTF-8">
-              <title>{name} | Khyber Traders</title>
-              <meta property="og:title" content="{name} — Khyber Traders">
-              <meta property="og:description" content="Browse {name} products, prices and pack sizes. Wholesale veterinary supplies for the dairy & cattle industry.">
-              <meta property="og:image" content="{BASE_URL}/images/og/{slug}.png">
+          def make_category_page(cat, slug, products):
+              cat_e = H.escape(cat_title(cat))
+              page_url = f"{BASE_URL}/c/{slug}.html"
+              interactive_link = f"{BASE_URL}/?cat={slug}"
+              og_image = f"{BASE_URL}/images/og/{slug}.png"
+              short_desc = H.escape(f"Browse {cat_title(cat)} — {len(products)} wholesale veterinary product{'s' if len(products) != 1 else ''} from Khyber Traders, Karachi.")
+
+              ld = {
+                  "@context": "https://schema.org",
+                  "@type": "CollectionPage",
+                  "name": cat_title(cat),
+                  "url": page_url,
+                  "hasPart": [
+                      {"@type": "Product", "name": p['name'], "url": f"{BASE_URL}/s/{p['slug']}.html"}
+                      for p in products
+                  ]
+              }
+              ld_json = json.dumps(ld, ensure_ascii=False)
+
+              cards = []
+              for p in products:
+                  pimg = p['images'][0] if p['images'] else f"{BASE_URL}/images/website%20banner.jpg"
+                  price_tag = f'<div class="cprice">{H.escape(p["priceDisplay"])}</div>' if p['priceDisplay'] else ''
+                  cards.append(f'''<a class="card" href="{BASE_URL}/s/{p['slug']}.html">
+              <img src="{pimg}" alt="{H.escape(p['name'])}" loading="lazy">
+              <h3>{H.escape(p['name'])}</h3>
+              {price_tag}
+              </a>''')
+
+              html_out = f"""<!DOCTYPE html>
+              <html lang="en">
+              <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>{cat_e} | Khyber Traders — Wholesale Veterinary Pharmacy Karachi</title>
+              <meta name="description" content="{short_desc}">
+              <link rel="canonical" href="{page_url}">
+              <meta property="og:title" content="{cat_e} — Khyber Traders">
+              <meta property="og:description" content="{short_desc}">
+              <meta property="og:image" content="{og_image}">
               <meta property="og:image:width" content="1200">
               <meta property="og:image:height" content="630">
-              <meta property="og:url" content="{target}">
+              <meta property="og:url" content="{page_url}">
               <meta property="og:type" content="website">
-              <meta http-equiv="refresh" content="0;url={target}" />
-              </head><body style="font-family:sans-serif;text-align:center;padding-top:50px;">
-              <p>Opening <strong>{name}</strong>...</p>
-              <script>window.location.href="{target}";<\/script>
-              </body></html>"""
+              <link rel="icon" href="{BASE_URL}/images/KT_Logo.JPG">
+              <script type="application/ld+json">{ld_json}<\/script>
+              {page_head_common()}
+              </head>
+              <body>
+              {header_html()}
+              <div class="wrap">
+              <div class="crumb"><a href="{BASE_URL}/">Home</a> &rsaquo; {cat_e}</div>
+              <h1>{cat_e}</h1>
+              <p class="desc" style="margin-bottom:6px">{len(products)} product{'s' if len(products) != 1 else ''} available for wholesale order.</p>
+              <div class="cta"><a class="btn btn-primary" href="{interactive_link}">View Interactive Catalog</a></div>
+              <div class="grid">
+              {''.join(cards)}
+              </div>
+              </div>
+              {footer_html()}
+              </body>
+              </html>"""
               os.makedirs("c", exist_ok=True)
               with open(f"c/{slug}.html", "w", encoding="utf-8") as fh:
-                  fh.write(html)
+                  fh.write(html_out)
 
           live_categories = sorted({p["category"] for p in rows if p["category"]})
           live_slugs = set()
           for cat in live_categories:
               slug = get_clean_slug(cat)
               live_slugs.add(slug)
-              make_category_card(cat, slug)
+              make_category_og_image(cat, slug)
+              make_category_page(cat, slug, by_category.get(cat, []))
 
           # Remove cards for categories that no longer exist (renamed/deleted)
           for folder, ext in (("c", ".html"), ("images/og", ".png")):
@@ -264,13 +437,54 @@ jobs:
                   if fn.endswith(ext) and fn[:-len(ext)] not in live_slugs:
                       os.remove(os.path.join(folder, fn))
 
-          print(f"Generated {len(live_slugs)} category cards.")
+          print(f"Generated {len(live_slugs)} category pages.")
+
+          # ── Generate sitemap.xml and sitemap.html ──
+          sm_urls = [f"{BASE_URL}/"]
+          sm_urls += [f"{BASE_URL}/c/{get_clean_slug(c)}.html" for c in live_categories]
+          sm_urls += [f"{BASE_URL}/s/{get_clean_slug(p['name'])}.html" for p in rows]
+          sm_items = ''.join(f'<url><loc>{u}</loc></url>\n' for u in sm_urls)
+          with open("sitemap.xml", "w", encoding="utf-8") as fh:
+              fh.write(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{sm_items}</urlset>\n')
+
+          sm_sections = []
+          for cat in live_categories:
+              cat_e = H.escape(cat_title(cat))
+              cslug = get_clean_slug(cat)
+              items = ''.join(f'<li><a href="{BASE_URL}/s/{p["slug"]}.html">{H.escape(p["name"])}</a></li>' for p in by_category.get(cat, []))
+              sm_sections.append(f'<h2 class="smcat"><a href="{BASE_URL}/c/{cslug}.html">{cat_e}</a></h2><ul class="smlist">{items}</ul>')
+          sm_body = ''.join(sm_sections)
+          sitemap_html = f"""<!DOCTYPE html>
+          <html lang="en">
+          <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Full Product Catalog | Khyber Traders</title>
+          <meta name="description" content="Complete list of wholesale veterinary products from Khyber Traders, Karachi — organized by category.">
+          <link rel="canonical" href="{BASE_URL}/sitemap.html">
+          <link rel="icon" href="{BASE_URL}/images/KT_Logo.JPG">
+          {page_head_common()}
+          </head>
+          <body>
+          {header_html()}
+          <div class="wrap">
+          <div class="crumb"><a href="{BASE_URL}/">Home</a> &rsaquo; Full Catalog</div>
+          <h1>Full Product Catalog</h1>
+          {sm_body}
+          </div>
+          {footer_html()}
+          </body>
+          </html>"""
+          with open("sitemap.html", "w", encoding="utf-8") as fh:
+              fh.write(sitemap_html)
+
+          print(f"Generated sitemap.xml ({len(sm_urls)} urls) and sitemap.html.")
 
       - name: Commit and Push Changes
         run: |
           git config --global user.name "Product-Bot"
           git config --global user.email "bot@animalhealth.pk"
-          git add s/ c/ images/og/ products.json
+          git add s/ c/ images/og/ products.json sitemap.xml sitemap.html
           if git diff --staged --quiet; then
             echo "No changes to sync."
           else
