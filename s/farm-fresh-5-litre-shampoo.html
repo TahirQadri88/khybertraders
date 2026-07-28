@@ -54,24 +54,50 @@ ul.smlist li { padding: 6px 0; border-bottom: 1px solid #e5e7eb; font-size: 14px
 ul.smlist li a:hover { color: #500000; }
 h2.smcat a { font-family:'Playfair Display',serif; font-size: 20px; color: #500000; }
 </style>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+    theme: { extend: {
+        fontFamily: { sans: ['"Manrope"', 'sans-serif'], serif: ['"Playfair Display"', 'serif'] },
+        colors: { brand: { maroon: '#500000', gold: '#D4AF37', dark: '#0a0a0a', light: '#f4f4f5' } }
+    } }
+};
+</script>
+<style>
+#cart-drawer { transition: transform 0.3s ease; transform: translateX(100%); }
+#cart-drawer.open { transform: translateX(0); }
+#cart-items-list::-webkit-scrollbar { width: 5px; }
+#cart-items-list::-webkit-scrollbar-track { background: #f4f4f5; border-radius: 3px; }
+#cart-items-list::-webkit-scrollbar-thumb { background: #500000; border-radius: 3px; }
+.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: normal; }
+.pack-btn { background: #fff; border: 2px solid #e5e7eb; color: #500000; font-size: 12px; font-weight: 700; padding: 8px 16px; cursor: pointer; font-family: 'Manrope', sans-serif; }
+.pack-btn.active { border-color: #500000; background: #500000; color: #fff; }
+</style>
     </head>
     <body>
-    <div class="header">
+    <div class="header" style="justify-content:space-between">
 <a href="https://animalhealth.pk/" style="display:flex;align-items:center;gap:12px">
 <img src="https://animalhealth.pk/images/KT_Logo.JPG" alt="Khyber Traders logo">
 <span><span class="brand">Khyber Traders</span><span class="tag">Wholesale Veterinary Pharmacy &middot; Karachi</span></span>
 </a>
+<button id="cart-btn" onclick="openCart()" aria-label="View order list" style="position:relative;background:none;border:none;color:#D4AF37;font-size:20px;cursor:pointer;padding:6px">
+<i class="fas fa-shopping-cart"></i>
+<span id="cart-badge" class="hidden" style="position:absolute;top:-2px;right:-2px;background:#D4AF37;color:#0a0a0a;font-size:9px;font-weight:700;border-radius:9999px;width:16px;height:16px;display:flex;align-items:center;justify-content:center;line-height:1"></span>
+</button>
 </div>
     <div class="wrap">
     <div class="crumb"><a href="https://animalhealth.pk/">Home</a> &rsaquo; <a href="https://animalhealth.pk/c/anti-lice-shampoo-for-cattle.html">Anti-Lice Shampoo for Cattle</a> &rsaquo; Farm Fresh 5 Litre Shampoo</div>
     <img class="product-img" id="main-img" src="https://res.cloudinary.com/dkay9chpe/image/upload/v1783175334/khybertraders/products/rq7hf8fkytwj0otmjvqr.jpg" alt="Farm Fresh 5 Litre Shampoo" loading="lazy">
     <div class="thumbs"><img src="https://res.cloudinary.com/dkay9chpe/image/upload/v1783175334/khybertraders/products/rq7hf8fkytwj0otmjvqr.jpg" alt="Farm Fresh 5 Litre Shampoo" loading="lazy" onclick="document.getElementById('main-img').src=this.src"><img src="https://animalhealth.pk/images/farmfresh1.jpeg" alt="Farm Fresh 5 Litre Shampoo" loading="lazy" onclick="document.getElementById('main-img').src=this.src"><img src="https://res.cloudinary.com/dkay9chpe/image/upload/v1783094544/khybertraders/products/gwnkoso9b82ihsymom8y.jpg" alt="Farm Fresh 5 Litre Shampoo" loading="lazy" onclick="document.getElementById('main-img').src=this.src"></div>
     <h1>Farm Fresh 5 Litre Shampoo</h1>
-    <div class="packs"><span>Blue 5 Litre — Rs 2500</span><span>Green 5 Litre — Rs 3000</span></div>
+    <div class="packs" id="pack-selector"><button type="button" class="pack-btn active" data-idx="0" onclick="selectOrderPack(0)">Blue 5 Litre — Rs 2500</button><button type="button" class="pack-btn" data-idx="1" onclick="selectOrderPack(1)">Green 5 Litre — Rs 3000</button></div>
     <span class="stock-in">In Stock</span>
     <p class="desc">Contact us on WhatsApp for full product details.</p>
     <div class="cta">
-    <a class="btn btn-primary" href="https://animalhealth.pk/?item=Farm%20Fresh%205%20Litre%20Shampoo">View &amp; Add to Order</a>
+    <button type="button" class="btn btn-primary" onclick="window.addToCart(&quot;Farm Fresh 5 Litre Shampoo&quot;, window.__SELECTED_PACK__)">Add to Order</button>
     <a class="btn btn-wa" href="https://wa.me/923352999006?text=%F0%9F%93%A6%20%2AProduct%3A%2A%20Farm%20Fresh%205%20Litre%20Shampoo%0A%F0%9F%94%97%20%2ALink%3A%2A%20https%3A//animalhealth.pk/s/farm-fresh-5-litre-shampoo.html">Order via WhatsApp</a>
     </div>
     </div>
@@ -79,5 +105,98 @@ h2.smcat a { font-family:'Playfair Display',serif; font-size: 20px; color: #5000
 <p>Khyber Traders &middot; Katchi Gali, Karachi &middot; <a href="tel:+923352999006">0335-2999006</a></p>
 <p style="margin-top:6px"><a href="https://animalhealth.pk/">Home</a> &middot; <a href="https://animalhealth.pk/sitemap.html">Full Catalog</a></p>
 </div>
+    <div id="cart-toast" class="hidden fixed bottom-28 left-1/2 -translate-x-1/2 z-[300] bg-brand-dark text-white text-xs font-bold px-4 py-2.5 shadow-xl pointer-events-none max-w-xs text-center"></div>
+<div id="cart-overlay" class="hidden fixed inset-0 bg-black/60 z-[250]" onclick="closeCart()"></div>
+<div id="cart-drawer" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white z-[260] shadow-2xl flex flex-col">
+    <div class="flex items-center justify-between px-5 py-4 bg-brand-dark text-white flex-shrink-0">
+        <div class="flex items-center gap-2">
+            <i class="fas fa-shopping-cart text-brand-gold"></i>
+            <span class="font-bold text-sm uppercase tracking-widest">Your Order List</span>
+        </div>
+        <button onclick="closeCart()" class="text-gray-400 hover:text-white text-2xl leading-none">&times;</button>
+    </div>
+    <div id="cart-empty-state" class="flex-1 flex flex-col items-center justify-center text-gray-400 p-8">
+        <i class="fas fa-shopping-cart text-5xl mb-4 text-gray-200"></i>
+        <p class="font-bold text-gray-700 mb-1">Your order list is empty</p>
+        <p class="text-xs text-center">Browse products and tap <strong>Add to Order</strong> to build your order</p>
+    </div>
+    <div id="cart-filled" class="hidden flex-1 flex flex-col overflow-hidden">
+        <div class="relative flex-1 overflow-hidden">
+            <div id="cart-items-list" class="h-full overflow-y-scroll px-4 py-3 space-y-2"></div>
+            <div id="cart-scroll-fade" class="pointer-events-none absolute bottom-0 left-0 right-0 h-10 transition-opacity duration-200" style="background:linear-gradient(to top,#fff 20%,transparent)"></div>
+        </div>
+        <div class="px-4 pb-5 pt-3 flex-shrink-0 bg-white border-t space-y-2">
+            <button onclick="openCheckout()"
+                class="w-full bg-brand-maroon hover:bg-brand-dark text-white font-bold py-3.5 text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition shadow-md">
+                Review Order &amp; Checkout <i class="fas fa-arrow-right text-xs"></i>
+            </button>
+            <button onclick="clearCart()"
+                class="w-full text-[10px] text-gray-500 hover:text-red-500 transition py-1 uppercase tracking-widest">
+                Clear all items
+            </button>
+        </div>
+    </div>
+</div>
+<div id="checkout-screen" class="hidden fixed inset-0 bg-gray-100 z-[280] flex flex-col">
+    <div class="flex items-center gap-3 px-5 py-4 bg-brand-dark text-white flex-shrink-0">
+        <button onclick="closeCheckout()" class="text-gray-300 hover:text-white p-1" aria-label="Back to order list">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <span class="font-bold text-sm uppercase tracking-widest">Checkout</span>
+        <button onclick="closeCheckout(); closeCart();" class="ml-auto text-gray-400 hover:text-white text-2xl leading-none" aria-label="Close checkout">&times;</button>
+    </div>
+    <div class="flex-1 overflow-y-auto">
+        <div class="max-w-lg mx-auto px-4 py-5 space-y-4">
+            <div class="bg-white border border-gray-200 shadow-sm">
+                <p class="px-4 pt-3 pb-2 text-[10px] font-bold uppercase tracking-widest text-gray-700 border-b border-gray-100"><i class="fas fa-receipt mr-1 text-brand-gold"></i> Order Preview</p>
+                <div id="checkout-items"></div>
+            </div>
+            <div class="border-l-4 border-brand-maroon bg-white px-4 py-3 shadow-sm">
+                <p class="font-bold text-brand-dark text-[11px] uppercase tracking-widest mb-2">Order &amp; Delivery Terms</p>
+                <ul class="text-xs text-gray-600 space-y-1 leading-relaxed">
+                    <li id="checkout-min-order-line" class="hidden">• Minimum order value for delivery: <strong class="text-brand-maroon" id="checkout-min-order"></strong></li>
+                    <li>• Delivery charges depend on your area and vehicle — confirmed at time of order</li>
+                    <li>• Orders are dispatched after payment confirmation</li>
+                    <li>• Delivery time will be confirmed by our WhatsApp representative</li>
+                </ul>
+            </div>
+            <div class="bg-white border border-gray-200 shadow-sm px-4 py-4">
+                <p class="text-[10px] text-gray-700 uppercase tracking-widest mb-3 font-bold">Delivery Details <span class="font-normal normal-case text-brand-maroon">(required)</span></p>
+                <input id="cart-customer-name" type="text" placeholder="Your name *" required
+                    class="w-full border border-gray-200 px-3 py-2.5 text-sm mb-2 focus:outline-none focus:border-brand-maroon transition bg-white">
+                <input id="cart-customer-phone" type="tel" placeholder="Contact number *" required
+                    class="w-full border border-gray-200 px-3 py-2.5 text-sm mb-2 focus:outline-none focus:border-brand-maroon transition bg-white">
+                <input id="cart-customer-city" type="text" placeholder="City / Area *" required
+                    class="w-full border border-gray-200 px-3 py-2.5 text-sm mb-2 focus:outline-none focus:border-brand-maroon transition bg-white">
+                <input id="cart-customer-address" type="text" placeholder="Delivery address *" required
+                    class="w-full border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-maroon transition bg-white">
+            </div>
+        </div>
+    </div>
+    <div class="flex-shrink-0 bg-white border-t px-4 py-4 shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
+        <div class="max-w-lg mx-auto space-y-2">
+            <div id="cart-min-order-note" class="hidden text-[10px] text-amber-800 bg-amber-50 border border-amber-200 px-3 py-2 text-center leading-relaxed"></div>
+            <button onclick="checkoutViaWhatsApp()"
+                class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3.5 text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition shadow-md">
+                <i class="fab fa-whatsapp text-lg"></i> Send Order on WhatsApp
+            </button>
+            <p class="text-[10px] text-gray-600 text-center leading-relaxed">
+                <i class="fas fa-truck mr-1"></i>Delivery time depends on your area and will be confirmed by our representative on WhatsApp.
+            </p>
+        </div>
+    </div>
+</div>
+    <script src="https://animalhealth.pk/assets/cart.js"></script>
+    <script>
+    window.__PRODUCT__ = {"name": "Farm Fresh 5 Litre Shampoo", "category": "anti-lice shampoo for cattle", "packSizes": [{"size": "Blue 5 Litre", "price": "Rs 2500"}, {"size": "Green 5 Litre", "price": "Rs 3000"}], "priceDisplay": "", "images": ["https://res.cloudinary.com/dkay9chpe/image/upload/v1783175334/khybertraders/products/rq7hf8fkytwj0otmjvqr.jpg", "https://animalhealth.pk/images/farmfresh1.jpeg", "https://res.cloudinary.com/dkay9chpe/image/upload/v1783094544/khybertraders/products/gwnkoso9b82ihsymom8y.jpg"], "inStock": true, "minQty": 3};
+    window.__SELECTED_PACK__ = (window.__PRODUCT__.packSizes && window.__PRODUCT__.packSizes.length) ? window.__PRODUCT__.packSizes[0] : null;
+    function selectOrderPack(idx) {
+        window.__SELECTED_PACK__ = window.__PRODUCT__.packSizes[idx];
+        document.querySelectorAll('.pack-btn').forEach(function(btn, i) {
+            btn.classList.toggle('active', i === idx);
+        });
+    }
+    fetchSettings();
+    </script>
     </body>
     </html>
