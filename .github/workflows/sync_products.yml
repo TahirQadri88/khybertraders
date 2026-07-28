@@ -202,7 +202,9 @@ jobs:
                       "availability": "https://schema.org/InStock" if p['inStock'] else "https://schema.org/OutOfStock",
                       "seller": {"@type": "Organization", "name": "Khyber Traders"}
                   }
-              ld_json = json.dumps(ld, ensure_ascii=False)
+              # Escape any literal "</" in the JSON payload (e.g. a product name/desc
+              # containing "</script") so it can never prematurely close this tag.
+              ld_json = json.dumps(ld, ensure_ascii=False).replace('</', '<\\/')
 
               price_html = f'<div class="price">{H.escape(p["priceDisplay"])}</div>' if p['priceDisplay'] else ''
               stock_html = '<span class="stock-in">In Stock</span>' if p['inStock'] else '<span class="stock-out">Out of Stock</span>'
@@ -222,7 +224,7 @@ jobs:
               <meta property="og:url" content="{page_url}">
               <meta property="og:type" content="product">
               <link rel="icon" href="{BASE_URL}/images/KT_Logo.JPG">
-              <script type="application/ld+json">{ld_json}<\/script>
+              <script type="application/ld+json">{ld_json}</script>
               {page_head_common()}
               </head>
               <body>
@@ -373,7 +375,9 @@ jobs:
                       for p in products
                   ]
               }
-              ld_json = json.dumps(ld, ensure_ascii=False)
+              # Escape any literal "</" in the JSON payload (e.g. a product name/desc
+              # containing "</script") so it can never prematurely close this tag.
+              ld_json = json.dumps(ld, ensure_ascii=False).replace('</', '<\\/')
 
               cards = []
               for p in products:
@@ -401,7 +405,7 @@ jobs:
               <meta property="og:url" content="{page_url}">
               <meta property="og:type" content="website">
               <link rel="icon" href="{BASE_URL}/images/KT_Logo.JPG">
-              <script type="application/ld+json">{ld_json}<\/script>
+              <script type="application/ld+json">{ld_json}</script>
               {page_head_common()}
               </head>
               <body>
