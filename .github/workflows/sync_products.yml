@@ -750,6 +750,33 @@ jobs:
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
+      # ── Mirror the generated artifacts onto main as well, so main does not ──
+      # ── fall behind on product content between manual source merges.      ──
+      # ── Only the bot-generated paths are copied; source files on main are ──
+      # ── never touched, so this can never carry unreviewed source changes  ──
+      # ── across. Runs unconditionally (not gated on `changed`) so that if  ──
+      # ── main ever drifts out of sync it self-heals on the next run.       ──
+      - name: Mirror generated files to main
+        run: |
+          set -euo pipefail
+          SRC="$(git rev-parse HEAD)"
+          git fetch origin main
+          git checkout -B __sync_main origin/main
+
+          # Clear first so products deleted upstream also disappear from main,
+          # rather than lingering as orphaned pages.
+          rm -rf s c images/og
+          git checkout "$SRC" -- s c images/og products.json sitemap.xml sitemap.html
+          git add -A s c images/og products.json sitemap.xml sitemap.html
+
+          if git diff --staged --quiet; then
+            echo "main already has the current generated content; nothing to mirror."
+          else
+            git commit -m "Auto-sync products (mirror to main): $(date)"
+            git push origin __sync_main:main
+            echo "Mirrored generated content to main."
+          fi
+
       - name: Trigger Deploy
         if: steps.commit.outputs.changed == 'true'
         env:
