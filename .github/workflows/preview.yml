@@ -1,0 +1,41 @@
+name: Preview Deploy (claude branches)
+
+on:
+  push:
+    branches:
+      - 'claude/**'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compute channel id
+        id: channel
+        run: |
+          raw="${{ github.ref_name }}"
+          id=$(echo "$raw" | tr '[:upper:]/' '[:lower:]-' | tr -cd 'a-z0-9-' | cut -c1-30)
+          echo "id=preview-$id" >> "$GITHUB_OUTPUT"
+
+      - name: Check secret presence (value itself is never printed)
+        env:
+          SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -n "$SA" ]; then
+            echo "FIREBASE_SERVICE_ACCOUNT is present, length: ${#SA}"
+          else
+            echo "FIREBASE_SERVICE_ACCOUNT is EMPTY or not accessible from this branch/job"
+          fi
+
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          projectId: khyber-traders
+          channelId: '${{ steps.channel.outputs.id }}'
+          expires: 7d
