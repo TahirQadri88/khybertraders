@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin — Khyber Traders</title>
-    <link rel="icon" type="image/jpeg" href="images/KT_Logo.JPG">
+    <link rel="icon" type="image/png" href="images/KT_Logo_Icon.png">
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-            theme: { extend: { colors: { brand: { maroon: '#500000', gold: '#D4AF37', dark: '#0a0a0a' } } } }
+            theme: { extend: { colors: { brand: { maroon: '#131313', gold: '#FFF200', goldBright: '#FFF200', dark: '#000000' } } } }
         }
     </script>
 
@@ -21,7 +21,7 @@
 
     <style>
         body { font-family: 'Manrope', sans-serif; }
-        .drag-over { border-color: #500000 !important; background: #fff5f5; }
+        .drag-over { border-color: #FFF200 !important; background: #fffef0; }
         .thumb-preview { position: relative; display: inline-block; }
         .thumb-preview img { width: 80px; height: 80px; object-fit: cover; border: 2px solid #e5e7eb; }
         .thumb-preview .remove-img {
@@ -31,7 +31,7 @@
             line-height: 1;
         }
         .thumb-preview .main-badge {
-            position: absolute; top: 2px; left: 2px; background: #D4AF37; color: #500000;
+            position: absolute; top: 2px; left: 2px; background: #FFF200; color: #131313;
             font-size: 8px; font-weight: 800; padding: 1px 4px; letter-spacing: 0.5px;
         }
         .thumb-preview .img-move {
@@ -41,7 +41,7 @@
             flex: 1; background: #f3f4f6; border: 1px solid #e5e7eb; color: #6b7280;
             font-size: 9px; padding: 2px 0; cursor: pointer;
         }
-        .thumb-preview .img-move button:hover:not(:disabled) { background: #500000; color: white; }
+        .thumb-preview .img-move button:hover:not(:disabled) { background: #FFF200; color: #131313; }
         .thumb-preview .img-move button:disabled { opacity: 0.3; cursor: default; }
         #drawer { transition: transform 0.3s ease; transform: translateX(100%); }
         #drawer.open { transform: translateX(0); }
@@ -60,7 +60,7 @@
 <div id="login-screen" class="min-h-screen flex items-center justify-center bg-gray-50">
     <div class="bg-white shadow-lg border border-gray-100 p-10 w-full max-w-sm">
         <div class="flex items-center gap-3 mb-8">
-            <img src="images/KT_Logo.JPG" alt="KT" class="w-12 h-12 object-cover">
+            <img src="images/KT_Logo_Icon.png" alt="KT" class="w-12 h-12 object-contain">
             <div>
                 <div class="font-bold text-brand-dark text-lg leading-none">Khyber Traders</div>
                 <div class="text-xs text-brand-maroon uppercase tracking-widest font-bold">Admin Panel</div>
@@ -92,15 +92,15 @@
     <!-- Header -->
     <header class="bg-brand-dark text-white px-6 py-4 flex items-center justify-between sticky top-0 z-40 shadow">
         <div class="flex items-center gap-3">
-            <img src="images/KT_Logo.JPG" class="w-9 h-9 object-cover">
-            <span class="font-bold text-sm">Khyber Traders <span class="text-brand-gold">Admin</span></span>
+            <img src="images/KT_Logo_Icon.png" class="w-9 h-9 object-contain">
+            <span class="font-bold text-sm">Khyber Traders <span class="text-brand-goldBright">Admin</span></span>
         </div>
         <div class="flex items-center gap-3">
             <span id="admin-email" class="text-xs text-gray-400 hidden sm:block"></span>
-            <a href="/" target="_blank" class="text-xs text-gray-400 hover:text-brand-gold transition">
+            <a href="/" target="_blank" class="text-xs text-gray-400 hover:text-brand-goldBright transition">
                 <i class="fas fa-external-link-alt mr-1"></i>View Site
             </a>
-            <button onclick="doLogout()" class="text-xs border border-gray-600 text-gray-300 hover:border-brand-gold hover:text-brand-gold px-3 py-1.5 transition">
+            <button onclick="doLogout()" class="text-xs border border-gray-600 text-gray-300 hover:border-brand-goldBright hover:text-brand-goldBright px-3 py-1.5 transition">
                 Sign Out
             </button>
         </div>
@@ -395,7 +395,7 @@
 <style>
     .label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #6b7280; margin-bottom: 4px; }
     .field { display: block; width: 100%; border: 1px solid #e5e7eb; padding: 8px 12px; font-size: 13px; outline: none; transition: border-color 0.2s; font-family: inherit; }
-    .field:focus { border-color: #500000; }
+    .field:focus { border-color: #FFF200; }
 </style>
 
 <script>
@@ -901,7 +901,7 @@ function renderImagePreviews() {
     const el = document.getElementById('image-previews');
     el.innerHTML = currentImages.map((url, i) =>
         `<div class="thumb-preview">
-            <img src="${url}" alt="img ${i+1}" style="${i === 0 ? 'border-color:#D4AF37' : ''}">
+            <img src="${url}" alt="img ${i+1}" style="${i === 0 ? 'border-color:#FFF200' : ''}">
             ${i === 0 ? '<span class="main-badge">MAIN</span>' : ''}
             <span class="remove-img" onclick="removeImage(${i})"><i class="fas fa-times"></i></span>
             <div class="img-move">

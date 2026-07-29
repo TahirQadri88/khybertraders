@@ -19,10 +19,15 @@
     <meta property="og:url" content="https://animalhealth.pk">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Khyber Traders">
-    
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Khyber Traders | Wholesale Veterinary Pharmacy">
+    <meta name="twitter:description" content="Authentic Medicines for the Modern Dairy Industry. Serving the industry for 3 decades. Open to view trending products!">
+    <meta name="twitter:image" content="https://tahirqadri88.github.io/khybertraders/images/website%20banner.jpg">
+
     <meta name="description" content="Khyber Traders - Wholesale Veterinary Pharmacy. Specialized in Dairy and Cattle Industry solutions.">
-    <link rel="icon" type="image/jpeg" href="images/KT_Logo.JPG">
-    <link rel="apple-touch-icon" href="images/KT_Logo.JPG">
+    <link rel="icon" type="image/png" href="images/KT_Logo_Icon.png">
+    <link rel="apple-touch-icon" href="images/KT_Logo_Icon.png">
 
     <script type="application/ld+json">
     {
@@ -34,7 +39,7 @@
       "url": "https://animalhealth.pk",
       "telephone": "+923352999006",
       "image": "https://tahirqadri88.github.io/khybertraders/images/website%20banner.jpg",
-      "logo": "https://animalhealth.pk/images/KT_Logo.JPG",
+      "logo": "https://animalhealth.pk/images/KT_Logo_Full.png",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "Shop A2, Noori Center, Katchi Gali No 2, Near Denso Hall",
@@ -77,7 +82,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
     <!-- 5. STYLING & FONTS -->
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Manrope:wght@300;400;500;700&family=Roboto+Mono:wght@500;600;700&family=Source+Serif+4:wght@400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -87,22 +92,21 @@
                 extend: {
                     fontFamily: {
                         sans: ['"Manrope"', 'sans-serif'],
-                        serif: ['"Playfair Display"', 'serif'],
+                        serif: ['"Archivo"', 'sans-serif'],
+                        mono: ['"Roboto Mono"', 'monospace'],
                     },
                     colors: {
                         brand: {
-                            maroon: '#500000', 
-                            gold: '#D4AF37',   
-                            dark: '#0a0a0a',   
-                            light: '#f4f4f5',
+                            maroon: '#131313',
+                            gold: '#FFF200',
+                            goldBright: '#FFF200',
+                            dark: '#000000',
+                            light: '#F6F6F6',
                         }
                     },
-                    backgroundImage: {
-                        'hero-gradient': "linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80')",
-                    },
                     boxShadow: {
-                        'sleek': '0 4px 20px -2px rgba(0, 0, 0, 0.1)',
-                        'glow': '0 0 15px rgba(212, 175, 55, 0.3)',
+                        'sleek': 'none',
+                        'glow': 'none',
                     }
                 }
             }
@@ -113,7 +117,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #500000; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #131313; border-radius: 4px; }
         .slider-wrapper { position: relative; width: 100%; height: 100%; overflow: hidden; background: #fff; cursor: zoom-in; }
         .slide { display: none; width: 100%; height: 100%; object-fit: contain; }
         .slide.active { display: block; animation: fadeEffect 0.5s; }
@@ -125,44 +129,44 @@
             cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center;
             transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-        .slider-btn:hover { background: #D4AF37; color: white; }
+        .slider-btn:hover { background: #FFF200; color: #131313; }
         #lightbox { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); justify-content: center; align-items: center; }
-        #lightbox img { max-width: 90%; max-height: 90%; object-fit: contain; border: 2px solid #D4AF37; }
+        #lightbox img { max-width: 90%; max-height: 90%; object-fit: contain; border: 2px solid #FFF200; }
         #lightbox-close { position: absolute; top: 20px; right: 20px; color: white; font-size: 30px; cursor: pointer; z-index: 10001; background: rgba(0,0,0,0.5); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
         #link-loader { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index: 9000; justify-content: center; align-items: center; flex-direction: column; }
-        .formatted-text { white-space: pre-wrap; word-wrap: break-word; }
-        .formatted-text strong { color: #500000; font-weight: 700; }
+        .formatted-text { white-space: pre-wrap; word-wrap: break-word; font-family: 'Source Serif 4', serif; }
+        .formatted-text strong { color: #131313; font-weight: 700; }
         .btn-loading { opacity: 0.6; pointer-events: none; }
         #share-canvas { display: none; }
         #mobile-menu { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
         #mobile-menu.open { max-height: 200px; }
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: normal; }
-        .search-highlight { background: #D4AF37; color: #0a0a0a; padding: 0 2px; border-radius: 1px; }
+        .search-highlight { background: #FFF200; color: #131313; padding: 0 2px; border-radius: 1px; }
         .product-thumb { cursor: pointer; opacity: 0.5; transition: opacity 0.2s, border-color 0.2s; border: 2px solid transparent; }
-        .product-thumb.active, .product-thumb:hover { opacity: 1; border-color: #500000; }
+        .product-thumb.active, .product-thumb:hover { opacity: 1; border-color: #131313; }
         #cart-drawer { transition: transform 0.3s ease; transform: translateX(100%); }
         #cart-drawer.open { transform: translateX(0); }
         #cart-items-list::-webkit-scrollbar { width: 5px; }
         #cart-items-list::-webkit-scrollbar-track { background: #f4f4f5; border-radius: 3px; }
-        #cart-items-list::-webkit-scrollbar-thumb { background: #500000; border-radius: 3px; }
+        #cart-items-list::-webkit-scrollbar-thumb { background: #131313; border-radius: 3px; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased selection:bg-brand-maroon selection:text-white">
 
     <div id="link-loader">
-        <i class="fas fa-circle-notch fa-spin text-brand-gold text-5xl mb-4"></i>
+        <i class="fas fa-circle-notch fa-spin text-brand-maroon text-5xl mb-4"></i>
         <p class="text-brand-dark font-serif font-bold text-xl">Searching Inventory...</p>
     </div>
 
     <!-- Restored Top Bar -->
-    <div class="bg-brand-dark text-gray-400 text-[11px] uppercase tracking-widest py-3 border-b border-gray-900">
+    <div class="bg-brand-dark text-gray-300 text-[11px] uppercase tracking-widest py-3 border-b border-gray-900 font-mono">
         <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-2">
             <div class="flex gap-6">
-                <span><i class="fas fa-phone-alt text-brand-gold mr-2"></i> +92 335 2999006</span>
-                <span class="hidden md:inline"><i class="fas fa-map-marker-alt text-brand-gold mr-2"></i> Medicine Market, Karachi</span>
+                <span><i class="fas fa-phone-alt text-brand-goldBright mr-2"></i> +92 335 2999006</span>
+                <span class="hidden md:inline"><i class="fas fa-map-marker-alt text-brand-goldBright mr-2"></i> Medicine Market, Karachi</span>
             </div>
             <div class="flex gap-6 font-semibold">
-                <a href="https://animalhealth.pk" class="text-brand-gold hover:text-white transition duration-300">animalhealth.pk</a>
+                <a href="https://animalhealth.pk" class="text-brand-goldBright hover:text-white transition duration-300">animalhealth.pk</a>
             </div>
         </div>
     </div>
@@ -171,15 +175,15 @@
     <nav class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center gap-4">
-                <img src="images/KT_Logo.JPG" alt="Khyber Traders" class="w-12 h-12 object-cover shadow-lg">
+                <img src="images/KT_Logo_Icon.png" alt="Khyber Traders" class="w-12 h-12 object-contain">
                 <div class="flex flex-col">
                     <span class="text-xl font-serif font-bold text-brand-dark leading-none tracking-tight">Khyber Traders</span>
-                    <span class="text-[10px] uppercase tracking-[0.25em] text-brand-maroon font-bold mt-1">Wholesale Veterinary Pharmacy</span>
+                    <span class="text-[10px] uppercase tracking-[0.25em] text-brand-maroon font-bold mt-1 font-mono">Wholesale Veterinary Pharmacy</span>
                 </div>
             </div>
-            <div class="hidden md:flex gap-10 text-xs font-bold uppercase tracking-widest text-gray-700">
-                <a href="#about" class="hover:text-brand-maroon transition duration-300">Profile</a>
+            <div class="hidden md:flex gap-10 text-xs font-bold uppercase tracking-widest text-gray-700 font-mono">
                 <a href="#products" class="hover:text-brand-maroon transition duration-300">Products</a>
+                <a href="#about" class="hover:text-brand-maroon transition duration-300">Profile</a>
                 <a href="#contact" class="hover:text-brand-maroon transition duration-300">Contact</a>
             </div>
             <div class="flex items-center gap-3">
@@ -194,110 +198,46 @@
             </div>
         </div>
         <div id="mobile-menu" class="md:hidden border-t border-gray-100 bg-white">
-            <div class="container mx-auto px-6 py-4 flex flex-col gap-5 text-xs font-bold uppercase tracking-widest text-gray-700">
-                <a href="#about" class="hover:text-brand-maroon transition" onclick="closeMobileMenu()">Profile</a>
+            <div class="container mx-auto px-6 py-4 flex flex-col gap-5 text-xs font-bold uppercase tracking-widest text-gray-700 font-mono">
                 <a href="#products" class="hover:text-brand-maroon transition" onclick="closeMobileMenu()">Products</a>
+                <a href="#about" class="hover:text-brand-maroon transition" onclick="closeMobileMenu()">Profile</a>
                 <a href="#contact" class="hover:text-brand-maroon transition" onclick="closeMobileMenu()">Contact</a>
                 <a href="https://wa.me/923352999006" class="text-green-600 font-bold flex items-center gap-2"><i class="fab fa-whatsapp text-lg"></i> WhatsApp Us</a>
             </div>
         </div>
     </nav>
 
-    <!-- Restored Hero Section -->
-    <header class="relative bg-hero-gradient bg-cover bg-center h-[700px] flex items-center justify-center text-center">
-        <div class="container mx-auto px-6 relative z-10">
-            <div class="max-w-4xl mx-auto fade-in">
-                <div class="inline-block border border-brand-gold/50 px-6 py-2 mb-8 backdrop-blur-sm bg-black/30">
-                    <span class="text-brand-gold text-xs font-bold uppercase tracking-[0.2em]">A Legacy of Three Generations</span>
+    <!-- Hero Section (compact, products-focused CTA) -->
+    <header class="relative h-[420px] sm:h-[480px] lg:h-[520px] flex items-center overflow-hidden bg-brand-dark">
+        <img src="images/hero_bg.jpg" alt="Cattle at a dairy farm served by Khyber Traders, Karachi"
+             class="absolute inset-0 w-full h-full object-cover object-[50%_40%]">
+        <div class="absolute inset-0 bg-black/65"></div>
+        <div class="relative z-10 container mx-auto px-6 text-center lg:text-left">
+            <div class="max-w-xl mx-auto lg:mx-0 fade-in">
+                <div class="inline-block bg-brand-gold px-5 py-1.5 sm:px-6 sm:py-2 mb-4 sm:mb-6">
+                    <span class="text-brand-dark text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em]">A Legacy of Three Generations</span>
                 </div>
-                <h1 class="text-5xl md:text-7xl font-serif font-bold text-white mb-8 leading-tight drop-shadow-lg">
+                <h1 class="text-3xl sm:text-4xl md:text-5xl xl:text-6xl font-serif font-bold text-white mb-3 sm:mb-5 leading-tight">
                     The Gold Standard in <br>
                     <span class="italic text-brand-gold">Veterinary Health</span>
                 </h1>
-                <p class="text-gray-200 text-lg font-light leading-relaxed mb-12 max-w-2xl mx-auto">
-                    Specialized wholesale solutions for the Dairy and Cattle Industry. 
-                    Authenticity, Reliability, and History located in the heart of Karachi.
+                <p class="text-white text-sm sm:text-lg font-light leading-relaxed mb-5 sm:mb-8 max-w-2xl mx-auto lg:mx-0">
+                    Specialized wholesale solutions for the Dairy and Cattle Industry, Karachi.
                 </p>
-                <div class="flex flex-col sm:flex-row gap-5 justify-center">
-                    <a href="https://wa.me/923352999006" class="bg-brand-gold text-brand-dark font-bold py-4 px-10 hover:bg-white transition duration-300 shadow-glow">Contact</a>
-                    <a href="#products" class="border border-white/30 text-white font-bold py-4 px-10 hover:bg-white hover:text-brand-dark transition duration-300 backdrop-blur-sm">Some Popular Products</a>
+                <div class="flex flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
+                    <a href="#products" class="bg-brand-gold text-brand-dark font-bold text-sm sm:text-base py-3 sm:py-4 px-6 sm:px-10 hover:bg-white transition duration-300">Browse Products</a>
+                    <a href="https://wa.me/923352999006" class="border border-white text-white font-bold text-sm sm:text-base py-3 sm:py-4 px-6 sm:px-10 hover:bg-white hover:text-brand-dark transition duration-300">Contact Us</a>
                 </div>
             </div>
         </div>
     </header>
-
-    <!-- About Section with Compact Mobile Cards -->
-    <section id="about" class="py-24 bg-white relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-1/3 h-full bg-gray-50 -skew-x-12 opacity-50 z-0 pointer-events-none"></div>
-        <div class="container mx-auto px-6 relative z-10">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
-                <div>
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="h-1 w-12 bg-brand-maroon"></div>
-                        <span class="text-brand-maroon font-bold uppercase tracking-widest text-sm">About Us</span>
-                    </div>
-                    <h2 class="text-4xl font-serif font-bold text-brand-dark mb-8 leading-tight">Authentic Medicines for the <br>Modern Dairy Industry</h2>
-                    <p class="text-gray-600 mb-6 leading-relaxed text-lg font-light">
-                         We are a dedicated <strong>"Wholesale Veterinary Pharmacy"</strong> situated at Medicine Market's famous <strong>"Katchi Gali"</strong> Near the historical Denso Hall Building Karachi. 
-                    </p>
-                    <p class="text-gray-600 mb-8 leading-relaxed">
-                        Serving the Dairy and Cattle industry with authentic medicines and vaccines for more than 3 decades! We bridge the gap between top manufacturers and farms.
-                    </p>
-                    <p class="text-brand-maroon font-serif font-bold text-lg mt-10 mb-4 border-l-4 border-brand-gold pl-4">
-                        Khyber Traders AnimalHealth.Pk specifically deals in the medicine and some instruments for :
-                    </p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div class="p-6 border border-gray-100 hover:border-brand-gold transition duration-300 shadow-sm bg-gray-50/50">
-                            <h4 class="font-bold text-sm uppercase text-brand-dark mb-3 border-b border-brand-gold/30 pb-2">Large Ruminants</h4>
-                            <ul class="text-xs text-gray-600 space-y-2 font-medium">
-                                <li><i class="fas fa-check text-brand-gold mr-2"></i>Cows &amp; Buffaloes</li>
-                                <li><i class="fas fa-check text-brand-gold mr-2"></i>Calves &amp; Bulls</li>
-                                <li><i class="fas fa-check text-brand-gold mr-2"></i>Dairy &amp; Beef Cattle</li>
-                            </ul>
-                        </div>
-                        <div class="p-6 border border-gray-100 hover:border-brand-gold transition duration-300 shadow-sm bg-gray-50/50">
-                             <h4 class="font-bold text-sm uppercase text-brand-dark mb-3 border-b border-brand-gold/30 pb-2">Small Ruminants</h4>
-                             <ul class="text-xs text-gray-600 space-y-2 font-medium">
-                                <li><i class="fas fa-check text-brand-gold mr-2"></i>Sheep &amp; Goats</li>
-                                <li><i class="fas fa-check text-brand-gold mr-2"></i>Lambs &amp; Kids</li>
-                                <li><i class="fas fa-check text-brand-gold mr-2"></i>Fattening Herds</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <!-- Compact Mobile Cards (h-32) -->
-                <div class="grid grid-cols-2 gap-3 sm:gap-6 text-center">
-                    <div class="space-y-3 sm:space-y-6">
-                        <div class="bg-brand-dark text-white p-4 sm:p-8 h-32 sm:h-48 flex flex-col justify-center items-center shadow-2xl">
-                            <i class="fas fa-map-marked-alt text-2xl sm:text-4xl text-brand-gold mb-2"></i>
-                            <h3 class="font-bold text-[10px] sm:text-sm tracking-widest uppercase">KATCHI GALI</h3>
-                        </div>
-                        <div class="bg-brand-maroon p-4 sm:p-8 h-32 sm:h-48 flex flex-col justify-center items-center text-white shadow-lg">
-                            <i class="fas fa-shield-alt text-2xl sm:text-4xl text-brand-gold mb-2"></i>
-                            <h3 class="font-bold text-[10px] sm:text-sm tracking-widest uppercase">AUTHENTIC</h3>
-                        </div>
-                    </div>
-                    <div class="space-y-3 sm:space-y-6">
-                         <div class="bg-brand-gold p-4 sm:p-8 h-32 sm:h-48 flex flex-col justify-center items-center shadow-lg">
-                            <i class="fas fa-boxes text-2xl sm:text-4xl text-brand-maroon mb-2"></i>
-                            <h3 class="font-bold text-[10px] sm:text-sm tracking-widest text-brand-dark uppercase">WHOLESALE</h3>
-                        </div>
-                        <div class="bg-gray-800 text-white p-4 sm:p-8 h-32 sm:h-48 flex flex-col justify-center items-center shadow-2xl">
-                            <i class="fas fa-history text-2xl sm:text-4xl text-gray-400 mb-2"></i>
-                            <h3 class="font-bold text-[10px] sm:text-sm tracking-widest uppercase">LEGACY</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- Catalog Section with Compact Tiles -->
     <section id="products" class="py-6 sm:py-10 bg-brand-light border-y border-gray-200">
         <div class="container mx-auto px-4 sm:px-6 text-center">
             <div class="mb-4 flex items-center justify-between max-w-2xl mx-auto text-left">
                 <div>
-                    <span class="text-brand-maroon font-bold uppercase tracking-widest text-[10px]">Catalog</span>
+                    <span class="text-brand-maroon font-bold uppercase tracking-widest text-[10px] font-mono">Catalog</span>
                     <h2 class="text-xl sm:text-2xl font-serif font-bold text-brand-dark mt-0.5 leading-tight">Product Categories</h2>
                 </div>
                 <div class="h-6 w-1 bg-brand-gold flex-shrink-0 ml-4"></div>
@@ -309,11 +249,11 @@
                     <i class="fas fa-chevron-down ml-auto text-[10px] text-gray-400"></i>
                 </summary>
                 <div class="px-4 pb-3 pt-1 border-t border-brand-gold/20">
-                    <ol class="text-sm text-gray-600 space-y-2">
-                        <li class="flex gap-2.5"><span class="font-bold text-brand-gold w-4 flex-shrink-0">1.</span><span>Browse the categories below and open any product to view details.</span></li>
-                        <li class="flex gap-2.5"><span class="font-bold text-brand-gold w-4 flex-shrink-0">2.</span><span>Tap <strong class="text-brand-dark">Add to Order</strong> on the products you need — you can add as many as you like.</span></li>
-                        <li class="flex gap-2.5"><span class="font-bold text-brand-gold w-4 flex-shrink-0">3.</span><span>Open your <strong class="text-brand-dark">Order List</strong> (cart icon, top right), add your name &amp; address, then tap <strong class="text-brand-dark">Send on WhatsApp</strong>.</span></li>
-                        <li class="flex gap-2.5"><span class="font-bold text-brand-gold w-4 flex-shrink-0">4.</span><span>Our representative will confirm pricing and arrange payment &amp; dispatch for you.</span></li>
+                    <ol class="text-sm text-gray-800 space-y-2">
+                        <li class="flex gap-2.5"><span class="font-bold text-brand-maroon w-4 flex-shrink-0">1.</span><span>Browse the categories below and open any product to view details.</span></li>
+                        <li class="flex gap-2.5"><span class="font-bold text-brand-maroon w-4 flex-shrink-0">2.</span><span>Tap <strong class="text-brand-dark">Add to Order</strong> on the products you need — you can add as many as you like.</span></li>
+                        <li class="flex gap-2.5"><span class="font-bold text-brand-maroon w-4 flex-shrink-0">3.</span><span>Open your <strong class="text-brand-dark">Order List</strong> (cart icon, top right), add your name &amp; address, then tap <strong class="text-brand-dark">Send on WhatsApp</strong>.</span></li>
+                        <li class="flex gap-2.5"><span class="font-bold text-brand-maroon w-4 flex-shrink-0">4.</span><span>Our representative will confirm pricing and arrange payment &amp; dispatch for you.</span></li>
                     </ol>
                 </div>
             </details>
@@ -321,7 +261,7 @@
             <!-- Order & Delivery Terms -->
             <div class="mb-4 max-w-2xl mx-auto border-l-4 border-brand-maroon bg-white px-4 py-3 text-left shadow-sm">
                 <p class="font-bold text-brand-dark text-[11px] uppercase tracking-widest mb-2">Order &amp; Delivery Terms</p>
-                <ul class="text-xs text-gray-600 space-y-1 leading-relaxed">
+                <ul class="text-xs text-gray-800 space-y-1 leading-relaxed">
                     <li id="policy-min-order-line" class="hidden">• Minimum order value for delivery: <strong class="text-brand-maroon" id="policy-min-order"></strong></li>
                     <li>• Delivery charges depend on your area and vehicle — confirmed at time of order</li>
                     <li>• Orders are dispatched after payment confirmation</li>
@@ -341,8 +281,44 @@
                 </div>
             </div>
             <div id="search-results" class="hidden mb-4 text-left"></div>
-            <div id="tiles-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-2xl mx-auto text-left">
-                <div class="col-span-full text-center py-10"><i class="fas fa-circle-notch fa-spin text-brand-gold text-3xl"></i></div>
+            <div id="tiles-container" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 max-w-5xl mx-auto text-left">
+                <div class="col-span-full text-center py-10"><i class="fas fa-circle-notch fa-spin text-brand-maroon text-3xl"></i></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section (compact -- secondary to Products) -->
+    <section id="about" class="py-14 bg-white border-b border-gray-100">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+                <div class="lg:max-w-md text-center lg:text-left">
+                    <div class="flex items-center gap-3 mb-3 justify-center lg:justify-start">
+                        <div class="h-1 w-10 bg-brand-maroon"></div>
+                        <span class="text-brand-maroon font-bold uppercase tracking-widest text-xs font-mono">About Us</span>
+                    </div>
+                    <h2 class="text-2xl font-serif font-bold text-brand-dark mb-3 leading-tight">Authentic Medicines for the Modern Dairy Industry</h2>
+                    <p class="text-gray-800 text-sm leading-relaxed">
+                        A dedicated Wholesale Veterinary Pharmacy at Katchi Gali, Karachi — serving the dairy and cattle industry with authentic medicines and vaccines for more than 3 decades.
+                    </p>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 flex-1 w-full">
+                    <div class="bg-brand-dark text-white p-4 h-24 sm:h-28 flex flex-col justify-center items-center shadow-lg">
+                        <i class="fas fa-map-marked-alt text-xl sm:text-2xl text-brand-goldBright mb-2"></i>
+                        <h3 class="font-bold text-[9px] sm:text-[10px] tracking-widest uppercase text-center">Katchi Gali</h3>
+                    </div>
+                    <div class="bg-brand-maroon p-4 h-24 sm:h-28 flex flex-col justify-center items-center text-white shadow-lg">
+                        <i class="fas fa-shield-alt text-xl sm:text-2xl text-white mb-2"></i>
+                        <h3 class="font-bold text-[9px] sm:text-[10px] tracking-widest uppercase text-center">Authentic</h3>
+                    </div>
+                    <div class="bg-brand-gold p-4 h-24 sm:h-28 flex flex-col justify-center items-center">
+                        <i class="fas fa-boxes text-xl sm:text-2xl text-brand-dark mb-2"></i>
+                        <h3 class="font-bold text-[9px] sm:text-[10px] tracking-widest text-brand-dark uppercase text-center">Wholesale</h3>
+                    </div>
+                    <div class="bg-gray-800 text-white p-4 h-24 sm:h-28 flex flex-col justify-center items-center shadow-lg">
+                        <i class="fas fa-history text-xl sm:text-2xl text-gray-400 mb-2"></i>
+                        <h3 class="font-bold text-[9px] sm:text-[10px] tracking-widest uppercase text-center">Legacy</h3>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -353,24 +329,26 @@
             <div class="flex flex-col items-center gap-10">
                 <div class="w-full max-w-3xl text-center md:text-left md:flex md:justify-between md:items-start md:gap-16">
                     <div>
-                        <div class="text-3xl font-serif font-bold mb-8 text-white">Khyber Traders</div>
-                        <div class="space-y-6 text-gray-400 text-sm font-light">
-                            <p class="flex gap-4 items-start justify-center md:justify-start"><i class="fas fa-map-pin text-brand-gold mt-1"></i> <span>Shop A2, Noori Center, Katchi Gali No 2,<br>Near Denso Hall, Karachi.</span></p>
-                            <p class="flex gap-4 items-center justify-center md:justify-start"><i class="fas fa-phone text-brand-gold"></i> <span>+92 335 2999006</span></p>
-                            <p class="flex gap-4 items-center justify-center md:justify-start"><i class="fas fa-clock text-brand-gold"></i> <span>12:30 PM – 8:00 PM (Mon-Sat)</span></p>
+                        <div class="inline-block bg-white p-4 mb-8 shadow-lg">
+                            <img src="images/KT_Logo_Full.png" alt="Khyber Traders — Wholesale Veterinary Pharmacy" class="w-full max-w-[220px]">
+                        </div>
+                        <div class="space-y-6 text-gray-300 text-sm font-light">
+                            <p class="flex gap-4 items-start justify-center md:justify-start"><i class="fas fa-map-pin text-brand-goldBright mt-1"></i> <span>Shop A2, Noori Center, Katchi Gali No 2,<br>Near Denso Hall, Karachi.</span></p>
+                            <p class="flex gap-4 items-center justify-center md:justify-start"><i class="fas fa-phone text-brand-goldBright"></i> <span>+92 335 2999006</span></p>
+                            <p class="flex gap-4 items-center justify-center md:justify-start"><i class="fas fa-clock text-brand-goldBright"></i> <span>12:30 PM – 8:00 PM (Mon-Sat)</span></p>
                         </div>
                     </div>
                     <div class="flex gap-4 justify-center md:justify-start mt-2">
                         <a href="https://www.facebook.com/khybertraderskhi/" class="w-12 h-12 bg-gray-800 flex items-center justify-center hover:bg-brand-maroon transition duration-300 text-white"><i class="fab fa-facebook-f"></i></a>
                         <a href="https://www.instagram.com/animalhealthpk/" class="w-12 h-12 bg-gray-800 flex items-center justify-center hover:bg-brand-maroon transition duration-300 text-white"><i class="fab fa-instagram"></i></a>
                         <a href="https://wa.me/923352999006" class="w-12 h-12 bg-gray-800 flex items-center justify-center hover:bg-brand-maroon transition duration-300 text-white"><i class="fab fa-whatsapp"></i></a>
-                        <a href="https://maps.app.goo.gl/Bno7agdf2HcHZjKS9" target="_blank" class="w-12 h-12 bg-brand-gold flex items-center justify-center hover:bg-white transition text-brand-dark shadow-glow"><i class="fas fa-location-arrow"></i></a>
+                        <a href="https://maps.app.goo.gl/Bno7agdf2HcHZjKS9" target="_blank" class="w-12 h-12 bg-brand-maroon flex items-center justify-center hover:bg-white transition text-white hover:text-brand-dark"><i class="fas fa-location-arrow"></i></a>
                     </div>
                 </div>
             </div>
-            <div class="border-t border-gray-800 mt-16 pt-8 flex flex-col sm:flex-row justify-between items-center gap-3 text-[10px] uppercase tracking-widest text-gray-600">
+            <div class="border-t border-gray-800 mt-16 pt-8 flex flex-col sm:flex-row justify-between items-center gap-3 text-[10px] uppercase tracking-widest text-gray-500 font-mono">
                 <p>&copy; <span id="copyright-year">2024</span> Khyber Traders. All rights reserved.</p>
-                <a href="/sitemap.html" class="hover:text-brand-gold transition">Full Product Catalog</a>
+                <a href="/sitemap.html" class="hover:text-brand-goldBright transition">Full Product Catalog</a>
             </div>
         </div>
     </footer>
@@ -431,7 +409,7 @@
     <button id="back-to-top"
        aria-label="Back to top"
        onclick="window.scrollTo({top:0,behavior:'smooth'})"
-       class="fixed bottom-24 right-6 z-[200] w-12 h-12 bg-brand-maroon text-brand-gold rounded-full flex items-center justify-center shadow-xl transition-all duration-300 opacity-0 pointer-events-none hover:bg-brand-gold hover:text-brand-dark">
+       class="fixed bottom-24 right-6 z-[200] w-12 h-12 bg-brand-maroon text-white rounded-full flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none hover:bg-brand-gold hover:text-brand-dark">
         <i class="fas fa-chevron-up text-lg"></i>
     </button>
 
@@ -448,7 +426,7 @@
     <div id="cart-drawer" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white z-[260] shadow-2xl flex flex-col">
         <div class="flex items-center justify-between px-5 py-4 bg-brand-dark text-white flex-shrink-0">
             <div class="flex items-center gap-2">
-                <i class="fas fa-shopping-cart text-brand-gold"></i>
+                <i class="fas fa-shopping-cart text-brand-goldBright"></i>
                 <span class="font-bold text-sm uppercase tracking-widest">Your Order List</span>
             </div>
             <button onclick="closeCart()" class="text-gray-400 hover:text-white text-2xl leading-none">&times;</button>
@@ -488,12 +466,12 @@
         <div class="flex-1 overflow-y-auto">
             <div class="max-w-lg mx-auto px-4 py-5 space-y-4">
                 <div class="bg-white border border-gray-200 shadow-sm">
-                    <p class="px-4 pt-3 pb-2 text-[10px] font-bold uppercase tracking-widest text-gray-700 border-b border-gray-100"><i class="fas fa-receipt mr-1 text-brand-gold"></i> Order Preview</p>
+                    <p class="px-4 pt-3 pb-2 text-[10px] font-bold uppercase tracking-widest text-gray-700 border-b border-gray-100"><i class="fas fa-receipt mr-1 text-brand-maroon"></i> Order Preview</p>
                     <div id="checkout-items"></div>
                 </div>
                 <div class="border-l-4 border-brand-maroon bg-white px-4 py-3 shadow-sm">
                     <p class="font-bold text-brand-dark text-[11px] uppercase tracking-widest mb-2">Order &amp; Delivery Terms</p>
-                    <ul class="text-xs text-gray-600 space-y-1 leading-relaxed">
+                    <ul class="text-xs text-gray-800 space-y-1 leading-relaxed">
                         <li id="checkout-min-order-line" class="hidden">• Minimum order value for delivery: <strong class="text-brand-maroon" id="checkout-min-order"></strong></li>
                         <li>• Delivery charges depend on your area and vehicle — confirmed at time of order</li>
                         <li>• Orders are dispatched after payment confirmation</li>
@@ -634,32 +612,27 @@
                 const safeCat = cat.replace(/'/g, "\\'");
                 const count = allProducts.filter(p => p.category === cat).length;
                 return `
-                <div class="flex items-center overflow-hidden transition-all duration-200 hover:shadow-md cursor-pointer"
-                     style="background:${c.bg}; border:1px solid ${c.bar}55"
+                <div class="group flex flex-col overflow-hidden bg-white border border-gray-100 hover:border-transparent rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer"
                      onclick="openCategoryModal('${safeCat}')">
-                    <div class="w-1.5 self-stretch flex-shrink-0" style="background:${c.bar}"></div>
-                    <div class="w-13 h-13 rounded-full flex items-center justify-center mx-3 my-4 flex-shrink-0"
-                         style="background:${c.iconBg}; width:3.25rem; height:3.25rem;">
-                        ${getCategoryIconHTML(cat, c.iconFg)}
+                    <div class="h-1.5 w-full flex-shrink-0" style="background:${c.bar}"></div>
+                    <div class="flex flex-col items-center text-center p-5 sm:p-6 flex-1">
+                        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mb-3 transition-transform duration-300 group-hover:scale-110"
+                             style="background:${c.iconBg}">
+                            <i class="fas ${getCategoryIcon(cat)} text-xl sm:text-2xl" style="color:${c.iconFg}"></i>
+                        </div>
+                        <h3 class="font-semibold text-sm sm:text-base leading-tight capitalize text-gray-800 font-sans mb-1">${cat}</h3>
+                        <p class="text-[11px] sm:text-xs font-medium" style="color:${c.bar}">${count} product${count !== 1 ? 's' : ''}</p>
                     </div>
-                    <div class="flex-1 min-w-0 py-4 pr-2">
-                        <h3 class="font-semibold text-base leading-tight capitalize text-gray-800 font-sans">${cat}</h3>
-                        <p class="text-xs mt-1 font-medium" style="color:${c.bar}bb">${count} product${count !== 1 ? 's' : ''}</p>
-                    </div>
-                    <div class="self-stretch flex flex-col flex-shrink-0 border-l" style="border-left-color:${c.bar}44; min-width:3.5rem">
+                    <div class="flex border-t border-gray-100 flex-shrink-0">
                         <button onclick="openCategoryModal('${safeCat}')"
-                                class="flex-1 flex flex-col items-center justify-center gap-0.5 px-3 transition hover:opacity-70 border-b"
-                                style="color:${c.bar}; border-bottom-color:${c.bar}33"
+                                class="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[10px] sm:text-xs font-bold uppercase tracking-wide text-gray-600 hover:bg-gray-50 transition border-r border-gray-100"
                                 title="View products">
-                            <i class="fas fa-eye text-sm"></i>
-                            <span class="text-[9px] font-bold uppercase tracking-wide">View</span>
+                            <i class="fas fa-eye"></i> View
                         </button>
                         <button onclick="shareCategory(event, '${safeCat}')"
-                                class="flex-1 flex flex-col items-center justify-center gap-0.5 px-3 transition hover:opacity-70"
-                                style="color:${c.bar}"
+                                class="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[10px] sm:text-xs font-bold uppercase tracking-wide text-gray-600 hover:bg-gray-50 transition"
                                 title="Share category">
-                            <i class="fas fa-share-alt text-sm"></i>
-                            <span class="text-[9px] font-bold uppercase tracking-wide">Share</span>
+                            <i class="fas fa-share-alt"></i> Share
                         </button>
                     </div>
                 </div>`
@@ -691,8 +664,8 @@
                         ${!p.inStock ? `<div class="absolute inset-0 bg-black/50 flex items-center justify-center pointer-events-none z-10"><span class="bg-red-600 text-white text-[9px] sm:text-[10px] font-bold uppercase tracking-widest px-3 py-1">Out of Stock</span></div>` : ''}
                     </div>
                     <div class="p-3 sm:p-4 flex flex-col flex-grow">
-                        <a href="${redirectLink}" target="_blank" class="font-semibold text-brand-dark mb-1 text-sm sm:text-base font-sans leading-snug hover:text-brand-maroon transition block">${p.name}</a>
-                        <span class="inline-block bg-brand-maroon/10 text-brand-maroon text-[9px] sm:text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 mb-1.5 self-start">${p.category}</span>
+                        <a href="${redirectLink}" target="_blank" class="font-bold text-brand-dark mb-1 text-sm sm:text-base font-serif leading-snug hover:text-brand-maroon transition block">${p.name}</a>
+                        <span class="inline-block bg-brand-maroon/10 text-brand-maroon text-[9px] sm:text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 mb-1.5 self-start font-mono">${p.category}</span>
                         ${p.packSizes && p.packSizes.length
                             ? `<div class="flex flex-wrap gap-1 mb-1.5">${p.packSizes.map(ps => `<span class="text-[10px] bg-brand-maroon/10 text-brand-maroon font-bold px-2 py-0.5">${ps.size} — ${ps.price}</span>`).join('')}</div>`
                             : p.priceDisplay ? `<div class="text-xs font-bold text-brand-maroon mb-1.5">${p.priceDisplay}</div>` : ''}
@@ -844,8 +817,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
                     <div>${galleryHtml}</div>
                     <div class="flex flex-col">
-                        <span class="inline-block bg-brand-maroon/10 text-brand-maroon text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 mb-3 self-start">${product.category}</span>
-                        <h1 class="text-2xl sm:text-3xl font-sans font-bold text-brand-dark mb-4 leading-tight">${product.name}</h1>
+                        <span class="inline-block bg-brand-maroon/10 text-brand-maroon text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 mb-3 self-start font-mono">${product.category}</span>
+                        <h1 class="text-2xl sm:text-3xl font-serif font-bold text-brand-dark mb-4 leading-tight">${product.name}</h1>
                         <div class="h-0.5 w-12 bg-brand-gold mb-3"></div>
                         ${product.packSizes && product.packSizes.length
                             ? `<div class="mb-4">
@@ -856,7 +829,7 @@
                                </div>`
                             : product.priceDisplay ? `<div class="text-base font-bold text-brand-maroon mb-4">${product.priceDisplay}</div>` : ''}
                         ${formattedDesc
-                            ? `<div class="text-sm text-gray-600 leading-relaxed formatted-text mb-8">${formattedDesc}</div>`
+                            ? `<div class="text-sm text-gray-800 leading-relaxed formatted-text mb-8">${formattedDesc}</div>`
                             : `<p class="text-gray-600 text-sm mb-8 italic">No description available.</p>`}
                         <div class="space-y-3">
                             ${(product.minQty || 1) > 1 ? `<p class="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200 px-3 py-2 text-center"><i class="fas fa-layer-group mr-1"></i>Minimum order: ${product.minQty} units</p>` : ''}
@@ -869,7 +842,7 @@
                                 <i class="fab fa-whatsapp text-lg"></i> Inquire on WhatsApp
                             </button>
                             <button onclick="shareProductNative(event,'${product.name.replace(/'/g,"\\'")}')"
-                                    class="w-full bg-brand-gold hover:bg-brand-maroon hover:text-white text-brand-dark py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
+                                    class="w-full bg-brand-gold hover:bg-brand-maroon text-brand-dark hover:text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition">
                                 <i class="fas fa-share-alt"></i> Share Product
                             </button>
                             <button onclick="closeProductDetailPage()"
@@ -970,8 +943,8 @@
                             ${thumb ? `<img src="${thumb}" class="w-14 h-14 sm:w-16 sm:h-16 object-cover flex-shrink-0 bg-gray-50 border" loading="lazy">` : `<div class="w-14 h-14 bg-gray-100 flex items-center justify-center flex-shrink-0 border"><i class="fas fa-box-open text-gray-300"></i></div>`}
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-start gap-2 flex-wrap mb-1">
-                                    <span class="font-semibold text-brand-dark text-sm font-sans leading-tight">${highlight(p.name, query)}</span>
-                                    <span class="bg-brand-maroon/10 text-brand-maroon text-[8px] font-bold uppercase tracking-widest px-1.5 py-0.5 flex-shrink-0">${highlight(p.category, query)}</span>
+                                    <span class="font-bold text-brand-dark text-sm font-serif leading-tight">${highlight(p.name, query)}</span>
+                                    <span class="bg-brand-maroon/10 text-brand-maroon text-[8px] font-bold uppercase tracking-widest px-1.5 py-0.5 flex-shrink-0 font-mono">${highlight(p.category, query)}</span>
                                 </div>
                                 <p class="text-xs text-gray-700 leading-relaxed line-clamp-2">${highlight(snippet(p.desc, q), query)}</p>
                             </div>

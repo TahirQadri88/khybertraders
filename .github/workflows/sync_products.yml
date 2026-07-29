@@ -32,8 +32,10 @@ jobs:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
           import os, re, json, urllib.parse, tempfile, html as H
+          from datetime import datetime, timezone
 
           BASE_URL = "https://animalhealth.pk"
+          TODAY = datetime.now(timezone.utc).strftime('%Y-%m-%d')
 
           def get_clean_slug(name):
               if not name: return ""
@@ -106,53 +108,53 @@ jobs:
           * { box-sizing: border-box; margin: 0; padding: 0; }
           body { font-family: 'Manrope', sans-serif; color: #1a1a1a; background: #f4f4f5; line-height: 1.6; }
           a { color: inherit; text-decoration: none; }
-          .header { background: #0a0a0a; padding: 18px 20px; display: flex; align-items: center; gap: 12px; }
-          .header img { width: 36px; height: 36px; object-fit: cover; }
-          .header .brand { font-family: 'Playfair Display', serif; font-weight: 700; color: #fff; font-size: 18px; }
-          .header .tag { color: #D4AF37; font-size: 9px; text-transform: uppercase; letter-spacing: 2px; display: block; }
+          .header { background: #000000; padding: 18px 20px; display: flex; align-items: center; gap: 12px; }
+          .header img { width: 36px; height: 36px; object-fit: contain; }
+          .header .brand { font-family: 'Archivo', sans-serif; font-weight: 700; color: #fff; font-size: 18px; }
+          .header .tag { color: #FFF200; font-size: 9px; text-transform: uppercase; letter-spacing: 2px; display: block; }
           .wrap { max-width: 760px; margin: 0 auto; padding: 24px 20px 60px; }
           .crumb { font-size: 12px; color: #6b7280; margin-bottom: 18px; }
-          .crumb a:hover { color: #500000; text-decoration: underline; }
-          h1 { font-family: 'Playfair Display', serif; font-size: 28px; color: #500000; margin-bottom: 10px; line-height: 1.25; }
-          .price { font-size: 20px; font-weight: 700; color: #500000; margin-bottom: 14px; }
+          .crumb a:hover { color: #131313; text-decoration: underline; }
+          h1 { font-family: 'Archivo', sans-serif; font-size: 28px; color: #131313; margin-bottom: 10px; line-height: 1.25; }
+          .price { font-size: 20px; font-weight: 700; color: #131313; margin-bottom: 14px; }
           .stock-in { display: inline-block; background: #dcfce7; color: #166534; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 4px 10px; margin-bottom: 16px; }
           .stock-out { display: inline-block; background: #fee2e2; color: #991b1b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 4px 10px; margin-bottom: 16px; }
           .product-img { width: 100%; max-width: 380px; display: block; background: #fff; border: 1px solid #e5e7eb; margin-bottom: 10px; }
           .thumbs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
           .thumbs img { width: 64px; height: 64px; object-fit: cover; background: #fff; border: 2px solid #e5e7eb; cursor: pointer; transition: border-color 0.15s; }
-          .thumbs img:hover { border-color: #D4AF37; }
+          .thumbs img:hover { border-color: #FFF200; }
           .packs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-          .packs span { background: #500000; color: #fff; font-size: 12px; font-weight: 700; padding: 6px 14px; }
-          .desc { color: #374151; font-size: 15px; margin-bottom: 26px; white-space: pre-line; }
+          .packs span { background: #131313; color: #fff; font-size: 12px; font-weight: 700; padding: 6px 14px; }
+          .desc { color: #374151; font-size: 15px; margin-bottom: 26px; white-space: pre-line; font-family: 'Source Serif 4', serif; }
           .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 40px; }
           .btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 22px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-          .btn-primary { background: #500000; color: #fff; }
-          .btn-primary:hover { background: #0a0a0a; }
+          .btn-primary { background: #131313; color: #fff; }
+          .btn-primary:hover { background: #000000; }
           .btn-wa { background: #25D366; color: #fff; }
           .btn-wa:hover { background: #128C4A; }
           .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin: 24px 0 32px; }
           .card { background: #fff; border: 1px solid #e5e7eb; padding: 14px; display: block; }
-          .card:hover { border-color: #D4AF37; }
+          .card:hover { border-color: #FFF200; }
           .card img { width: 100%; aspect-ratio: 1; object-fit: cover; margin-bottom: 10px; background: #f4f4f5; }
-          .card h3 { font-size: 14px; color: #1a1a1a; margin-bottom: 4px; line-height: 1.3; }
-          .card .cprice { font-size: 12px; font-weight: 700; color: #500000; }
+          .card h3 { font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 14px; color: #1a1a1a; margin-bottom: 4px; line-height: 1.3; }
+          .card .cprice { font-size: 12px; font-weight: 700; color: #131313; }
           .footer { text-align: center; padding: 30px 20px; color: #9ca3af; font-size: 11px; }
-          .footer a { color: #500000; }
+          .footer a { color: #131313; }
           ul.smlist { list-style: none; margin: 8px 0 26px; }
           ul.smlist li { padding: 6px 0; border-bottom: 1px solid #e5e7eb; font-size: 14px; }
-          ul.smlist li a:hover { color: #500000; }
-          h2.smcat a { font-family:'Playfair Display',serif; font-size: 20px; color: #500000; }
+          ul.smlist li a:hover { color: #131313; }
+          h2.smcat a { font-family:'Archivo',sans-serif; font-size: 20px; color: #131313; }
           """
 
           def page_head_common():
               return ('<link rel="preconnect" href="https://fonts.googleapis.com">'
-                      '<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">'
+                      '<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Manrope:wght@400;500;700&family=Roboto+Mono:wght@500;600;700&family=Source+Serif+4:wght@400&display=swap" rel="stylesheet">'
                       f'<style>{PAGE_CSS}</style>')
 
           def header_html():
               return f'''<div class="header">
           <a href="{BASE_URL}/" style="display:flex;align-items:center;gap:12px">
-          <img src="{BASE_URL}/images/KT_Logo.JPG" alt="Khyber Traders logo">
+          <img src="{BASE_URL}/images/KT_Logo_Icon.png" alt="Khyber Traders logo">
           <span><span class="brand">Khyber Traders</span><span class="tag">Wholesale Veterinary Pharmacy &middot; Karachi</span></span>
           </a>
           </div>'''
@@ -174,8 +176,8 @@ jobs:
           <script>
           tailwind.config = {
               theme: { extend: {
-                  fontFamily: { sans: ['"Manrope"', 'sans-serif'], serif: ['"Playfair Display"', 'serif'] },
-                  colors: { brand: { maroon: '#500000', gold: '#D4AF37', dark: '#0a0a0a', light: '#f4f4f5' } }
+                  fontFamily: { sans: ['"Manrope"', 'sans-serif'], serif: ['"Archivo"', 'sans-serif'], mono: ['"Roboto Mono"', 'monospace'] },
+                  colors: { brand: { maroon: '#131313', gold: '#FFF200', goldBright: '#FFF200', dark: '#000000', light: '#F6F6F6' } }
               } }
           };
           </script>
@@ -184,21 +186,21 @@ jobs:
           #cart-drawer.open { transform: translateX(0); }
           #cart-items-list::-webkit-scrollbar { width: 5px; }
           #cart-items-list::-webkit-scrollbar-track { background: #f4f4f5; border-radius: 3px; }
-          #cart-items-list::-webkit-scrollbar-thumb { background: #500000; border-radius: 3px; }
+          #cart-items-list::-webkit-scrollbar-thumb { background: #131313; border-radius: 3px; }
           .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: normal; }
-          .pack-btn { background: #fff; border: 2px solid #e5e7eb; color: #500000; font-size: 12px; font-weight: 700; padding: 8px 16px; cursor: pointer; font-family: 'Manrope', sans-serif; }
-          .pack-btn.active { border-color: #500000; background: #500000; color: #fff; }
+          .pack-btn { background: #fff; border: 2px solid #e5e7eb; color: #131313; font-size: 12px; font-weight: 700; padding: 8px 16px; cursor: pointer; font-family: 'Manrope', sans-serif; }
+          .pack-btn.active { border-color: #131313; background: #131313; color: #fff; }
           </style>'''
 
           def header_html_with_cart():
               return f'''<div class="header" style="justify-content:space-between">
           <a href="{BASE_URL}/" style="display:flex;align-items:center;gap:12px">
-          <img src="{BASE_URL}/images/KT_Logo.JPG" alt="Khyber Traders logo">
+          <img src="{BASE_URL}/images/KT_Logo_Icon.png" alt="Khyber Traders logo">
           <span><span class="brand">Khyber Traders</span><span class="tag">Wholesale Veterinary Pharmacy &middot; Karachi</span></span>
           </a>
-          <button id="cart-btn" onclick="openCart()" aria-label="View order list" style="position:relative;background:none;border:none;color:#D4AF37;font-size:20px;cursor:pointer;padding:6px">
+          <button id="cart-btn" onclick="openCart()" aria-label="View order list" style="position:relative;background:none;border:none;color:#FFF200;font-size:20px;cursor:pointer;padding:6px">
           <i class="fas fa-shopping-cart"></i>
-          <span id="cart-badge" class="hidden" style="position:absolute;top:-2px;right:-2px;background:#D4AF37;color:#0a0a0a;font-size:9px;font-weight:700;border-radius:9999px;width:16px;height:16px;display:flex;align-items:center;justify-content:center;line-height:1"></span>
+          <span id="cart-badge" class="hidden" style="position:absolute;top:-2px;right:-2px;background:#FFF200;color:#131313;font-size:9px;font-weight:700;border-radius:9999px;width:16px;height:16px;display:flex;align-items:center;justify-content:center;line-height:1"></span>
           </button>
           </div>'''
 
@@ -246,7 +248,7 @@ jobs:
               <div class="flex-1 overflow-y-auto">
                   <div class="max-w-lg mx-auto px-4 py-5 space-y-4">
                       <div class="bg-white border border-gray-200 shadow-sm">
-                          <p class="px-4 pt-3 pb-2 text-[10px] font-bold uppercase tracking-widest text-gray-700 border-b border-gray-100"><i class="fas fa-receipt mr-1 text-brand-gold"></i> Order Preview</p>
+                          <p class="px-4 pt-3 pb-2 text-[10px] font-bold uppercase tracking-widest text-gray-700 border-b border-gray-100"><i class="fas fa-receipt mr-1 text-brand-maroon"></i> Order Preview</p>
                           <div id="checkout-items"></div>
                       </div>
                       <div class="border-l-4 border-brand-maroon bg-white px-4 py-3 shadow-sm">
@@ -353,6 +355,17 @@ jobs:
               # containing "</script") so it can never prematurely close this tag.
               ld_json = json.dumps(ld, ensure_ascii=False).replace('</', '<\\/')
 
+              breadcrumb_ld = {
+                  "@context": "https://schema.org",
+                  "@type": "BreadcrumbList",
+                  "itemListElement": [
+                      {"@type": "ListItem", "position": 1, "name": "Home", "item": f"{BASE_URL}/"},
+                      {"@type": "ListItem", "position": 2, "name": cat_title(p['category']), "item": cat_link},
+                      {"@type": "ListItem", "position": 3, "name": name, "item": page_url},
+                  ]
+              }
+              breadcrumb_ld_json = json.dumps(breadcrumb_ld, ensure_ascii=False).replace('</', '<\\/')
+
               if len(pack_sizes) > 1:
                   price_html = '<div class="packs" id="pack-selector">' + ''.join(
                       f'<button type="button" class="pack-btn{" active" if i == 0 else ""}" data-idx="{i}" onclick="selectOrderPack({i})">{H.escape(ps.get("size",""))} — {H.escape(ps.get("price",""))}</button>'
@@ -368,10 +381,11 @@ jobs:
                   price_html = ''
               stock_html = '<span class="stock-in">In Stock</span>' if p['inStock'] else '<span class="stock-out">Out of Stock</span>'
               desc_html = H.escape(desc) if desc else 'Contact us on WhatsApp for full product details.'
+              alt_e = f"{name_e} — {cat_e} | Khyber Traders"
               thumbs_html = ''
               if len(imgs) > 1:
                   thumbs_html = '<div class="thumbs">' + ''.join(
-                      f'<img src="{im}" alt="{name_e}" loading="lazy" onclick="document.getElementById(\'main-img\').src=this.src">'
+                      f'<img src="{im}" alt="{alt_e}" loading="lazy" onclick="document.getElementById(\'main-img\').src=this.src">'
                       for im in imgs
                   ) + '</div>'
 
@@ -423,8 +437,13 @@ jobs:
               <meta property="og:image" content="{img}">
               <meta property="og:url" content="{page_url}">
               <meta property="og:type" content="product">
-              <link rel="icon" href="{BASE_URL}/images/KT_Logo.JPG">
+              <meta name="twitter:card" content="summary_large_image">
+              <meta name="twitter:title" content="{name_e}">
+              <meta name="twitter:description" content="{short_desc}">
+              <meta name="twitter:image" content="{img}">
+              <link rel="icon" href="{BASE_URL}/images/KT_Logo_Icon.png">
               <script type="application/ld+json">{ld_json}</script>
+              <script type="application/ld+json">{breadcrumb_ld_json}</script>
               {page_head_common()}
               {product_page_extra_head()}
               </head>
@@ -432,7 +451,7 @@ jobs:
               {header_html_with_cart()}
               <div class="wrap">
               <div class="crumb"><a href="{BASE_URL}/">Home</a> &rsaquo; <a href="{cat_link}">{cat_e}</a> &rsaquo; {name_e}</div>
-              <img class="product-img" id="main-img" src="{img}" alt="{name_e}" loading="lazy">
+              <img class="product-img" id="main-img" src="{img}" alt="{alt_e}" loading="lazy">
               {thumbs_html}
               <h1>{name_e}</h1>
               {price_html}
@@ -505,7 +524,7 @@ jobs:
                   if kw in c: return ic
               return "box-open"
 
-          MAROON, GOLD, WHITE, SOFT = (80,0,0), (212,175,55), (255,255,255), (240,225,190)
+          MAROON, GOLD, WHITE, SOFT, DARK = (19,19,19), (255,242,0), (255,255,255), (200,200,200), (0,0,0)
           CARD_W, CARD_H = 1200, 630
 
           def load_font(name, size, weight=None):
@@ -538,14 +557,14 @@ jobs:
           def make_category_og_image(cat, slug):
               img = Image.new("RGB", (CARD_W, CARD_H), MAROON)
               dr = ImageDraw.Draw(img)
-              dr.rectangle([0, CARD_H - 96, CARD_W, CARD_H], fill=(64, 0, 0))
+              dr.rectangle([0, CARD_H - 96, CARD_W, CARD_H], fill=DARK)
               dr.rectangle([22, 22, CARD_W - 23, CARD_H - 23], outline=GOLD, width=3)
               cy = 160
               dr.ellipse([CARD_W/2 - 64, cy - 64, CARD_W/2 + 64, cy + 64], fill=GOLD)
               glyph = chr(int(ICON_CODEPOINTS[icon_for(cat)], 16))
               gf = ImageFont.truetype(f"{FONT_DIR}/FontAwesomeSolid.ttf", 64)
               bb = dr.textbbox((0, 0), glyph, font=gf)
-              dr.text((CARD_W/2 - (bb[0]+bb[2])/2, cy - (bb[1]+bb[3])/2), glyph, font=gf, fill=MAROON)
+              dr.text((CARD_W/2 - (bb[0]+bb[2])/2, cy - (bb[1]+bb[3])/2), glyph, font=gf, fill=DARK)
 
               name = cat_title(cat)
               tf = load_font("PlayfairDisplay.ttf", 64, 700)
@@ -587,6 +606,16 @@ jobs:
               # containing "</script") so it can never prematurely close this tag.
               ld_json = json.dumps(ld, ensure_ascii=False).replace('</', '<\\/')
 
+              breadcrumb_ld = {
+                  "@context": "https://schema.org",
+                  "@type": "BreadcrumbList",
+                  "itemListElement": [
+                      {"@type": "ListItem", "position": 1, "name": "Home", "item": f"{BASE_URL}/"},
+                      {"@type": "ListItem", "position": 2, "name": cat_title(cat), "item": page_url},
+                  ]
+              }
+              breadcrumb_ld_json = json.dumps(breadcrumb_ld, ensure_ascii=False).replace('</', '<\\/')
+
               cards = []
               for p in products:
                   pimg = p['images'][0] if p['images'] else f"{BASE_URL}/images/website%20banner.jpg"
@@ -598,8 +627,9 @@ jobs:
                       price_tag = f'<div class="cprice">{H.escape(p["priceDisplay"])}</div>'
                   else:
                       price_tag = ''
+                  card_alt = f'{H.escape(p["name"])} — {cat_e} | Khyber Traders'
                   cards.append(f'''<a class="card" href="{BASE_URL}/s/{p['slug']}.html">
-              <img src="{pimg}" alt="{H.escape(p['name'])}" loading="lazy">
+              <img src="{pimg}" alt="{card_alt}" loading="lazy">
               <h3>{H.escape(p['name'])}</h3>
               {price_tag}
               </a>''')
@@ -619,8 +649,13 @@ jobs:
               <meta property="og:image:height" content="630">
               <meta property="og:url" content="{page_url}">
               <meta property="og:type" content="website">
-              <link rel="icon" href="{BASE_URL}/images/KT_Logo.JPG">
+              <meta name="twitter:card" content="summary_large_image">
+              <meta name="twitter:title" content="{cat_e} — Khyber Traders">
+              <meta name="twitter:description" content="{short_desc}">
+              <meta name="twitter:image" content="{og_image}">
+              <link rel="icon" href="{BASE_URL}/images/KT_Logo_Icon.png">
               <script type="application/ld+json">{ld_json}</script>
+              <script type="application/ld+json">{breadcrumb_ld_json}</script>
               {page_head_common()}
               </head>
               <body>
@@ -662,7 +697,7 @@ jobs:
           sm_urls = [f"{BASE_URL}/"]
           sm_urls += [f"{BASE_URL}/c/{get_clean_slug(c)}.html" for c in live_categories]
           sm_urls += [f"{BASE_URL}/s/{get_clean_slug(p['name'])}.html" for p in rows]
-          sm_items = ''.join(f'<url><loc>{u}</loc></url>\n' for u in sm_urls)
+          sm_items = ''.join(f'<url><loc>{u}</loc><lastmod>{TODAY}</lastmod></url>\n' for u in sm_urls)
           with open("sitemap.xml", "w", encoding="utf-8") as fh:
               fh.write(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{sm_items}</urlset>\n')
 
@@ -681,7 +716,7 @@ jobs:
           <title>Full Product Catalog | Khyber Traders</title>
           <meta name="description" content="Complete list of wholesale veterinary products from Khyber Traders, Karachi — organized by category.">
           <link rel="canonical" href="{BASE_URL}/sitemap.html">
-          <link rel="icon" href="{BASE_URL}/images/KT_Logo.JPG">
+          <link rel="icon" href="{BASE_URL}/images/KT_Logo_Icon.png">
           {page_head_common()}
           </head>
           <body>
