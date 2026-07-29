@@ -136,7 +136,7 @@ jobs:
           .card { background: #fff; border: 1px solid #e5e7eb; padding: 14px; display: block; }
           .card:hover { border-color: #FFF200; }
           .card img { width: 100%; aspect-ratio: 1; object-fit: cover; margin-bottom: 10px; background: #f4f4f5; }
-          .card h3 { font-size: 14px; color: #1a1a1a; margin-bottom: 4px; line-height: 1.3; }
+          .card h3 { font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 14px; color: #1a1a1a; margin-bottom: 4px; line-height: 1.3; }
           .card .cprice { font-size: 12px; font-weight: 700; color: #131313; }
           .footer { text-align: center; padding: 30px 20px; color: #9ca3af; font-size: 11px; }
           .footer a { color: #131313; }
