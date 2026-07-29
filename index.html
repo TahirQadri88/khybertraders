@@ -96,18 +96,19 @@
                     },
                     colors: {
                         brand: {
-                            maroon: '#500000', 
-                            gold: '#D4AF37',   
-                            dark: '#0a0a0a',   
-                            light: '#f4f4f5',
+                            maroon: '#067F47',
+                            gold: '#05759E',
+                            goldBright: '#08AEEA',
+                            dark: '#0a0a0a',
+                            light: '#F6F6F6',
                         }
                     },
                     backgroundImage: {
-                        'hero-gradient': "linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80')",
+                        'hero-gradient': "linear-gradient(135deg, #2AF598 0%, #19D2C1 50%, #08AEEA 100%)",
                     },
                     boxShadow: {
                         'sleek': '0 4px 20px -2px rgba(0, 0, 0, 0.1)',
-                        'glow': '0 0 15px rgba(212, 175, 55, 0.3)',
+                        'glow': '0 0 15px rgba(42, 245, 152, 0.35)',
                     }
                 }
             }
@@ -163,11 +164,11 @@
     <div class="bg-brand-dark text-gray-400 text-[11px] uppercase tracking-widest py-3 border-b border-gray-900">
         <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-2">
             <div class="flex gap-6">
-                <span><i class="fas fa-phone-alt text-brand-gold mr-2"></i> +92 335 2999006</span>
-                <span class="hidden md:inline"><i class="fas fa-map-marker-alt text-brand-gold mr-2"></i> Medicine Market, Karachi</span>
+                <span><i class="fas fa-phone-alt text-brand-goldBright mr-2"></i> +92 335 2999006</span>
+                <span class="hidden md:inline"><i class="fas fa-map-marker-alt text-brand-goldBright mr-2"></i> Medicine Market, Karachi</span>
             </div>
             <div class="flex gap-6 font-semibold">
-                <a href="https://animalhealth.pk" class="text-brand-gold hover:text-white transition duration-300">animalhealth.pk</a>
+                <a href="https://animalhealth.pk" class="text-brand-goldBright hover:text-white transition duration-300">animalhealth.pk</a>
             </div>
         </div>
     </div>
@@ -212,19 +213,19 @@
     <header class="relative bg-hero-gradient bg-cover bg-center h-[440px] sm:h-[480px] flex items-center justify-center text-center">
         <div class="container mx-auto px-6 relative z-10">
             <div class="max-w-3xl mx-auto fade-in">
-                <div class="inline-block border border-brand-gold/50 px-6 py-2 mb-6 backdrop-blur-sm bg-black/30">
-                    <span class="text-brand-gold text-xs font-bold uppercase tracking-[0.2em]">A Legacy of Three Generations</span>
+                <div class="inline-block border border-brand-dark/30 px-6 py-2 mb-6 bg-white/30">
+                    <span class="text-brand-dark text-xs font-bold uppercase tracking-[0.2em]">A Legacy of Three Generations</span>
                 </div>
-                <h1 class="text-4xl md:text-6xl font-serif font-bold text-white mb-5 leading-tight drop-shadow-lg">
+                <h1 class="text-4xl md:text-6xl font-serif font-bold text-brand-dark mb-5 leading-tight">
                     The Gold Standard in <br>
-                    <span class="italic text-brand-gold">Veterinary Health</span>
+                    <span class="italic">Veterinary Health</span>
                 </h1>
-                <p class="text-gray-200 text-base sm:text-lg font-light leading-relaxed mb-8 max-w-2xl mx-auto">
+                <p class="text-brand-dark/80 text-base sm:text-lg font-light leading-relaxed mb-8 max-w-2xl mx-auto">
                     Specialized wholesale solutions for the Dairy and Cattle Industry, Karachi.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="#products" class="bg-brand-gold text-brand-dark font-bold py-4 px-10 hover:bg-white transition duration-300 shadow-glow">Browse Products</a>
-                    <a href="https://wa.me/923352999006" class="border border-white/30 text-white font-bold py-4 px-10 hover:bg-white hover:text-brand-dark transition duration-300 backdrop-blur-sm">Contact Us</a>
+                    <a href="#products" class="bg-brand-dark text-white font-bold py-4 px-10 hover:bg-white hover:text-brand-dark transition duration-300 shadow-glow">Browse Products</a>
+                    <a href="https://wa.me/923352999006" class="border border-brand-dark/40 text-brand-dark font-bold py-4 px-10 hover:bg-brand-dark hover:text-white transition duration-300">Contact Us</a>
                 </div>
             </div>
         </div>
@@ -301,16 +302,16 @@
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 flex-1 w-full">
                     <div class="bg-brand-dark text-white p-4 h-24 sm:h-28 flex flex-col justify-center items-center shadow-lg">
-                        <i class="fas fa-map-marked-alt text-xl sm:text-2xl text-brand-gold mb-2"></i>
+                        <i class="fas fa-map-marked-alt text-xl sm:text-2xl text-brand-goldBright mb-2"></i>
                         <h3 class="font-bold text-[9px] sm:text-[10px] tracking-widest uppercase text-center">Katchi Gali</h3>
                     </div>
                     <div class="bg-brand-maroon p-4 h-24 sm:h-28 flex flex-col justify-center items-center text-white shadow-lg">
-                        <i class="fas fa-shield-alt text-xl sm:text-2xl text-brand-gold mb-2"></i>
+                        <i class="fas fa-shield-alt text-xl sm:text-2xl text-white mb-2"></i>
                         <h3 class="font-bold text-[9px] sm:text-[10px] tracking-widest uppercase text-center">Authentic</h3>
                     </div>
                     <div class="bg-brand-gold p-4 h-24 sm:h-28 flex flex-col justify-center items-center shadow-lg">
-                        <i class="fas fa-boxes text-xl sm:text-2xl text-brand-maroon mb-2"></i>
-                        <h3 class="font-bold text-[9px] sm:text-[10px] tracking-widest text-brand-dark uppercase text-center">Wholesale</h3>
+                        <i class="fas fa-boxes text-xl sm:text-2xl text-white mb-2"></i>
+                        <h3 class="font-bold text-[9px] sm:text-[10px] tracking-widest text-white uppercase text-center">Wholesale</h3>
                     </div>
                     <div class="bg-gray-800 text-white p-4 h-24 sm:h-28 flex flex-col justify-center items-center shadow-lg">
                         <i class="fas fa-history text-xl sm:text-2xl text-gray-400 mb-2"></i>
@@ -329,22 +330,22 @@
                     <div>
                         <div class="text-3xl font-serif font-bold mb-8 text-white">Khyber Traders</div>
                         <div class="space-y-6 text-gray-400 text-sm font-light">
-                            <p class="flex gap-4 items-start justify-center md:justify-start"><i class="fas fa-map-pin text-brand-gold mt-1"></i> <span>Shop A2, Noori Center, Katchi Gali No 2,<br>Near Denso Hall, Karachi.</span></p>
-                            <p class="flex gap-4 items-center justify-center md:justify-start"><i class="fas fa-phone text-brand-gold"></i> <span>+92 335 2999006</span></p>
-                            <p class="flex gap-4 items-center justify-center md:justify-start"><i class="fas fa-clock text-brand-gold"></i> <span>12:30 PM – 8:00 PM (Mon-Sat)</span></p>
+                            <p class="flex gap-4 items-start justify-center md:justify-start"><i class="fas fa-map-pin text-brand-goldBright mt-1"></i> <span>Shop A2, Noori Center, Katchi Gali No 2,<br>Near Denso Hall, Karachi.</span></p>
+                            <p class="flex gap-4 items-center justify-center md:justify-start"><i class="fas fa-phone text-brand-goldBright"></i> <span>+92 335 2999006</span></p>
+                            <p class="flex gap-4 items-center justify-center md:justify-start"><i class="fas fa-clock text-brand-goldBright"></i> <span>12:30 PM – 8:00 PM (Mon-Sat)</span></p>
                         </div>
                     </div>
                     <div class="flex gap-4 justify-center md:justify-start mt-2">
                         <a href="https://www.facebook.com/khybertraderskhi/" class="w-12 h-12 bg-gray-800 flex items-center justify-center hover:bg-brand-maroon transition duration-300 text-white"><i class="fab fa-facebook-f"></i></a>
                         <a href="https://www.instagram.com/animalhealthpk/" class="w-12 h-12 bg-gray-800 flex items-center justify-center hover:bg-brand-maroon transition duration-300 text-white"><i class="fab fa-instagram"></i></a>
                         <a href="https://wa.me/923352999006" class="w-12 h-12 bg-gray-800 flex items-center justify-center hover:bg-brand-maroon transition duration-300 text-white"><i class="fab fa-whatsapp"></i></a>
-                        <a href="https://maps.app.goo.gl/Bno7agdf2HcHZjKS9" target="_blank" class="w-12 h-12 bg-brand-gold flex items-center justify-center hover:bg-white transition text-brand-dark shadow-glow"><i class="fas fa-location-arrow"></i></a>
+                        <a href="https://maps.app.goo.gl/Bno7agdf2HcHZjKS9" target="_blank" class="w-12 h-12 bg-brand-maroon flex items-center justify-center hover:bg-white transition text-white hover:text-brand-dark shadow-glow"><i class="fas fa-location-arrow"></i></a>
                     </div>
                 </div>
             </div>
             <div class="border-t border-gray-800 mt-16 pt-8 flex flex-col sm:flex-row justify-between items-center gap-3 text-[10px] uppercase tracking-widest text-gray-600">
                 <p>&copy; <span id="copyright-year">2024</span> Khyber Traders. All rights reserved.</p>
-                <a href="/sitemap.html" class="hover:text-brand-gold transition">Full Product Catalog</a>
+                <a href="/sitemap.html" class="hover:text-brand-goldBright transition">Full Product Catalog</a>
             </div>
         </div>
     </footer>
@@ -405,7 +406,7 @@
     <button id="back-to-top"
        aria-label="Back to top"
        onclick="window.scrollTo({top:0,behavior:'smooth'})"
-       class="fixed bottom-24 right-6 z-[200] w-12 h-12 bg-brand-maroon text-brand-gold rounded-full flex items-center justify-center shadow-xl transition-all duration-300 opacity-0 pointer-events-none hover:bg-brand-gold hover:text-brand-dark">
+       class="fixed bottom-24 right-6 z-[200] w-12 h-12 bg-brand-maroon text-white rounded-full flex items-center justify-center shadow-xl transition-all duration-300 opacity-0 pointer-events-none hover:bg-brand-gold hover:text-white">
         <i class="fas fa-chevron-up text-lg"></i>
     </button>
 
@@ -422,7 +423,7 @@
     <div id="cart-drawer" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white z-[260] shadow-2xl flex flex-col">
         <div class="flex items-center justify-between px-5 py-4 bg-brand-dark text-white flex-shrink-0">
             <div class="flex items-center gap-2">
-                <i class="fas fa-shopping-cart text-brand-gold"></i>
+                <i class="fas fa-shopping-cart text-brand-goldBright"></i>
                 <span class="font-bold text-sm uppercase tracking-widest">Your Order List</span>
             </div>
             <button onclick="closeCart()" class="text-gray-400 hover:text-white text-2xl leading-none">&times;</button>
@@ -540,7 +541,7 @@
                             <i class="fas fa-exclamation-circle text-brand-maroon text-4xl mb-4"></i>
                             <p class="text-brand-dark font-bold text-lg mb-2">Could not load products</p>
                             <p class="text-gray-600 text-sm mb-6">Please check your connection and try again.</p>
-                            <button onclick="fetchProducts()" class="bg-brand-maroon text-white font-bold py-3 px-8 hover:bg-brand-gold hover:text-brand-dark transition">
+                            <button onclick="fetchProducts()" class="bg-brand-maroon text-white font-bold py-3 px-8 hover:bg-brand-gold hover:text-white transition">
                                 <i class="fas fa-redo mr-2"></i> Retry
                             </button>
                         </div>`;
@@ -838,7 +839,7 @@
                                 <i class="fab fa-whatsapp text-lg"></i> Inquire on WhatsApp
                             </button>
                             <button onclick="shareProductNative(event,'${product.name.replace(/'/g,"\\'")}')"
-                                    class="w-full bg-brand-gold hover:bg-brand-maroon hover:text-white text-brand-dark py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
+                                    class="w-full bg-brand-gold hover:bg-brand-maroon text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
                                 <i class="fas fa-share-alt"></i> Share Product
                             </button>
                             <button onclick="closeProductDetailPage()"
