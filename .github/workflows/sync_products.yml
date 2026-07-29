@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   build:
@@ -699,14 +700,23 @@ jobs:
           print(f"Generated sitemap.xml ({len(sm_urls)} urls) and sitemap.html.")
 
       - name: Commit and Push Changes
+        id: commit
         run: |
           git config --global user.name "Product-Bot"
           git config --global user.email "bot@animalhealth.pk"
           git add s/ c/ images/og/ products.json sitemap.xml sitemap.html
           if git diff --staged --quiet; then
             echo "No changes to sync."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             git commit -m "Auto-sync products: $(date)"
             git pull --rebase origin claude/website-improvements-tlKIS
             git push origin HEAD:claude/website-improvements-tlKIS
+            echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Trigger Deploy
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --ref claude/website-improvements-tlKIS
