@@ -588,6 +588,28 @@ jobs:
               os.makedirs("images/og", exist_ok=True)
               img.save(f"images/og/{slug}.png", optimize=True)
 
+          # User-approved, hand-written intro paragraphs (not auto-generated from
+          # product data) giving each category page real, unique body content —
+          # Search Console flagged these pages as thin/near-duplicate. Keyed by the
+          # exact category string as stored in Firestore; a category not in this
+          # dict simply renders without an intro (no error).
+          CATEGORY_INTROS = {
+              "anti-lice shampoo for cattle": "Specialized shampoos formulated for cattle to control lice and small external parasites while keeping the coat and skin clean and healthy. Available in small packs and bulk 5-litre cans for wholesale buyers.",
+              "butter milk for fattening cattle": "Milk replacer powder (CMR) used as an easy-to-use, hygienic substitute or supplement to natural milk when raising and fattening calves, formulated for consistent milk/butter fat and high protein content.",
+              "dewromer drenches": "Oral deworming drenches for cattle and goats, formulated with anthelmintic actives such as albendazole, oxfendazole, and levamisole to control internal parasites such as roundworms, lungworms, and liver fluke, as part of a regular herd deworming programme.",
+              "drench guns and drencher syringes": "Application equipment for administering oral drenches accurately and efficiently, available in sizes suited to both goats and cattle.",
+              "ear tags for cattle & goats": "Identification tags for cattle and goats, used for herd record-keeping, traceability, and management. Supplied in bulk with optional laser engraving.",
+              "feed premix & minerals mixture": "Vitamin and mineral premix powders added to cattle feed to support general nutrition, growth, and condition, including combinations of vitamins, minerals, DCP, yeast, and toxin binders.",
+              "gripe water": "A supportive product for digestive discomfort in young calves, goats, and fattening cattle, mixed with water and dosed according to animal size.",
+              "ivomec & other skin inj.": "Injectable ivermectin-based products used for the control of internal and external parasites in cattle, buffalo, sheep, and goats, sourced from established manufacturers.",
+              "liver tonic / growth promoter / digestive support": "Tonics formulated to support liver function, digestion, and overall growth in cattle as part of routine herd health management.",
+              "protocol of artificial insemination (ai)": "A reference guide to artificial insemination protocols for cattle breeding programmes, including Ov-Synch scheduling, for farm and veterinary use.",
+              "steel needles and reusable injectors for vet use": "Durable steel needles and reusable injectors for veterinary use on farms, available in multiple gauges and volumes for routine injections.",
+              "toxin binders": "Feed additives formulated to bind mycotoxins that can occur in contaminated feed, intended to support animal health and feed safety as part of a herd nutrition programme.",
+              "vaccine chart and dosage schedule": "A reference chart summarizing common cattle vaccination timing and dosage schedules, intended as a general guide for farm and veterinary planning.",
+              "vaccines": "Vaccines for common cattle and small-ruminant diseases including FMD (Foot & Mouth Disease), LSD (Lumpy Skin Disease), PPR, HS/Pasteurella, and clostridial diseases, sourced from manufacturers in Russia, Turkey, and Spain.",
+          }
+
           def make_category_page(cat, slug, products):
               cat_e = H.escape(cat_title(cat))
               page_url = f"{BASE_URL}/c/{slug}.html"
@@ -673,6 +695,7 @@ jobs:
               <div class="wrap">
               <div class="crumb"><a href="{BASE_URL}/">Home</a> &rsaquo; {cat_e}</div>
               <h1>{cat_e}</h1>
+              {f'<p class="desc">{H.escape(CATEGORY_INTROS[cat.strip().lower()])}</p>' if cat.strip().lower() in CATEGORY_INTROS else ''}
               <p class="desc" style="margin-bottom:6px">{len(products)} product{'s' if len(products) != 1 else ''} available for wholesale order.</p>
               <div class="cta"><a class="btn btn-primary" href="{interactive_link}">View Interactive Catalog</a></div>
               <div class="grid">
