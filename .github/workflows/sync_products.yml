@@ -601,7 +601,14 @@ jobs:
                   "name": cat_title(cat),
                   "url": page_url,
                   "hasPart": [
-                      {"@type": "Product", "name": p['name'], "url": f"{BASE_URL}/s/{p['slug']}.html"}
+                      # WebPage, not Product: this is a lightweight link reference to
+                      # the product's own page, which already carries full Product
+                      # schema (offers/price/availability). Typing these as Product
+                      # without those fields tripped Google's Product rich-result
+                      # validator ("Either 'offers', 'review', or 'aggregateRating'
+                      # should be specified") on every single item, on every category
+                      # page.
+                      {"@type": "WebPage", "name": p['name'], "url": f"{BASE_URL}/s/{p['slug']}.html"}
                       for p in products
                   ]
               }
