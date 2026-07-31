@@ -516,7 +516,28 @@ jobs:
               "wheat-awn": "e2cd", "prescription-bottle-medical": "f486", "dna": "f471",
               "filter": "f0b0", "calendar-days": "f073", "shield-virus": "e06c", "syringe": "f48e",
               "flask": "f0c3", "clipboard-list": "f46d", "box-open": "f49e", "glass-water": "e4f4",
+              "screwdriver-wrench": "f7d9", "toolbox": "f552", "globe": "f0ac",
           }
+          # Exact-match icon overrides, kept in sync with CATEGORY_ICON_OVERRIDES in
+          # index.html's homepage tile grid so a category's OG share thumbnail always
+          # shows the same icon as its tile. Checked before the keyword fallback below.
+          ICON_OVERRIDES = {
+              'anti-lice shampoo for cattle': 'pump-soap',
+              'butter milk for fattening cattle': 'glass-water',
+              'dewromer drenches': 'bottle-droplet',
+              'drench guns and drencher syringes': 'screwdriver-wrench',
+              'ear tags for cattle & goats': 'tags',
+              'feed premix & minerals mixture': 'wheat-awn',
+              'gripe water': 'prescription-bottle-medical',
+              'ivomec & other skin inj.': 'syringe',
+              'liver tonic / growth promoter / digestive support': 'flask',
+              'protocol of artificial insemination (ai)': 'dna',
+              'steel needles and reusable injectors for vet use': 'toolbox',
+              'toxin binders': 'filter',
+              'vaccine chart and dosage schedule': 'calendar-days',
+              'vaccines': 'shield-virus',
+          }
+          # Keyword fallback for any category not in the exact-match table above.
           ICON_RULES = [
               ("shampoo", "pump-soap"), ("lice", "pump-soap"),
               ("milk", "glass-water"), ("fatten", "cow"),
@@ -534,13 +555,18 @@ jobs:
           ]
 
           def icon_for(cat):
-              c = cat.lower()
+              c = (cat or '').strip().lower()
+              if c in ICON_OVERRIDES: return ICON_OVERRIDES[c]
               for kw, ic in ICON_RULES:
                   if kw in c: return ic
               return "box-open"
 
-          MAROON, GOLD, WHITE, SOFT, DARK = (19,19,19), (255,242,0), (255,255,255), (200,200,200), (0,0,0)
+          # GOLD is the dominant field (matches the homepage tile cards), DARK is the
+          # icon circle / heading / border, MUTED is the de-emphasized subtitle line.
+          GOLD, DARK, MUTED = (255,242,0), (0,0,0), (60,60,60)
           CARD_W, CARD_H = 1200, 630
+          STRIP_H = 116
+          BORDER = 22
 
           def load_font(name, size, weight=None):
               f = ImageFont.truetype(f"{FONT_DIR}/{name}", size)
@@ -570,32 +596,69 @@ jobs:
               return lines
 
           def make_category_og_image(cat, slug):
-              img = Image.new("RGB", (CARD_W, CARD_H), MAROON)
+              img = Image.new("RGB", (CARD_W, CARD_H), GOLD)
               dr = ImageDraw.Draw(img)
-              dr.rectangle([0, CARD_H - 96, CARD_W, CARD_H], fill=DARK)
-              dr.rectangle([22, 22, CARD_W - 23, CARD_H - 23], outline=GOLD, width=3)
-              cy = 160
-              dr.ellipse([CARD_W/2 - 64, cy - 64, CARD_W/2 + 64, cy + 64], fill=GOLD)
-              glyph = chr(int(ICON_CODEPOINTS[icon_for(cat)], 16))
-              gf = ImageFont.truetype(f"{FONT_DIR}/FontAwesomeSolid.ttf", 64)
-              bb = dr.textbbox((0, 0), glyph, font=gf)
-              dr.text((CARD_W/2 - (bb[0]+bb[2])/2, cy - (bb[1]+bb[3])/2), glyph, font=gf, fill=DARK)
+              dr.rectangle([0, CARD_H - STRIP_H, CARD_W, CARD_H], fill=DARK)
+              dr.rectangle([BORDER, BORDER, CARD_W - BORDER - 1, CARD_H - BORDER - 1], outline=DARK, width=3)
 
               name = cat_title(cat)
-              tf = load_font("PlayfairDisplay.ttf", 64, 700)
-              lines = wrap_text(dr, name, tf, 1020)
-              if len(lines) > 2:
-                  tf = load_font("PlayfairDisplay.ttf", 52, 700)
-                  lines = wrap_text(dr, name, tf, 1020)
-              y = 268 if len(lines) > 1 else 296
+              # Pick the biggest heading size (of a few steps) that still wraps to at
+              # most 2 lines, so short names get to use the extra space instead of
+              # leaving it empty, and long names scale down instead of overflowing.
+              for size in (76, 68, 60, 52):
+                  tf = load_font("PlayfairDisplay.ttf", size, 700)
+                  lines = wrap_text(dr, name, tf, 1040)
+                  if len(lines) <= 2:
+                      break
+
+              icon_d = 148
+              gap_icon_heading = 46
+              line_gap = 14
+              heading_h = len(lines) * tf.size + (len(lines) - 1) * line_gap
+              gap_heading_divider = 40  # clears descenders (g/y/p) instead of touching them
+              divider_h = 5
+              gap_divider_subtitle = 26
+              sub_font = load_font("Manrope.ttf", 26, 500)
+
+              # Center the whole icon+heading+divider+subtitle block within the space
+              # above the bottom strip, rather than pinning it to fixed y-positions.
+              block_h = icon_d + gap_icon_heading + heading_h + gap_heading_divider + divider_h + gap_divider_subtitle + sub_font.size
+              avail_h = (CARD_H - STRIP_H) - BORDER
+              top = BORDER + (avail_h - block_h) / 2
+
+              cy = top + icon_d / 2
+              dr.ellipse([CARD_W/2 - icon_d/2, cy - icon_d/2, CARD_W/2 + icon_d/2, cy + icon_d/2], fill=DARK)
+              glyph = chr(int(ICON_CODEPOINTS[icon_for(cat)], 16))
+              gf = ImageFont.truetype(f"{FONT_DIR}/FontAwesomeSolid.ttf", int(icon_d * 0.44))
+              bb = dr.textbbox((0, 0), glyph, font=gf)
+              dr.text((CARD_W/2 - (bb[0]+bb[2])/2, cy - (bb[1]+bb[3])/2), glyph, font=gf, fill=GOLD)
+
+              y = top + icon_d + gap_icon_heading
               for ln in lines:
-                  center_text(dr, y, ln, tf, WHITE)
-                  y += tf.size + 14
-              dy = y + 18
-              dr.rectangle([CARD_W/2 - 60, dy, CARD_W/2 + 60, dy + 4], fill=GOLD)
-              center_text(dr, dy + 30, "KHYBER TRADERS  ·  WHOLESALE VETERINARY PHARMACY",
-                          load_font("Manrope.ttf", 24, 500), SOFT, tracking=2)
-              center_text(dr, CARD_H - 72, "animalhealth.pk", load_font("Manrope.ttf", 34, 700), GOLD)
+                  center_text(dr, y, ln, tf, DARK)
+                  y += tf.size + line_gap
+              y = y - line_gap + gap_heading_divider
+              dr.rectangle([CARD_W/2 - 55, y, CARD_W/2 + 55, y + divider_h], fill=DARK)
+              y += divider_h + gap_divider_subtitle
+              center_text(dr, y, "KHYBER TRADERS  ·  WHOLESALE VETERINARY PHARMACY", sub_font, MUTED, tracking=2)
+
+              # URL row: small globe icon + bigger, bolder domain name, both centered
+              # together as one unit in the bottom strip.
+              url_font = load_font("Manrope.ttf", 50, 800)
+              url_text = "animalhealth.pk"
+              url_tb = dr.textbbox((0, 0), url_text, font=url_font)
+              url_w, url_h = url_tb[2] - url_tb[0], url_tb[3] - url_tb[1]
+
+              globe_font = ImageFont.truetype(f"{FONT_DIR}/FontAwesomeSolid.ttf", 38)
+              globe_glyph = chr(int(ICON_CODEPOINTS["globe"], 16))
+              globe_tb = dr.textbbox((0, 0), globe_glyph, font=globe_font)
+              globe_w, globe_h = globe_tb[2] - globe_tb[0], globe_tb[3] - globe_tb[1]
+
+              icon_text_gap = 18
+              row_x = (CARD_W - (globe_w + icon_text_gap + url_w)) / 2
+              strip_cy = CARD_H - STRIP_H / 2
+              dr.text((row_x - globe_tb[0], strip_cy - globe_h/2 - globe_tb[1]), globe_glyph, font=globe_font, fill=GOLD)
+              dr.text((row_x + globe_w + icon_text_gap - url_tb[0], strip_cy - url_h/2 - url_tb[1]), url_text, font=url_font, fill=GOLD)
 
               os.makedirs("images/og", exist_ok=True)
               img.save(f"images/og/{slug}.png", optimize=True)
