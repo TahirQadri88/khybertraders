@@ -86,6 +86,15 @@ jobs:
                   d = doc.to_dict()
                   name = (d.get('name') or '').strip()
                   if not name: continue
+                  is_resource = d.get('isResource') is True
+                  # One-time bootstrap: these two items are free downloadable
+                  # charts, not sellable products, but predate the isResource
+                  # field. Seed it once from their existing name prefix so the
+                  # field becomes the durable source of truth in Firestore --
+                  # nothing downstream keys off this name prefix again.
+                  if not is_resource and name.startswith('Useful Information -'):
+                      doc.reference.update({'isResource': True})
+                      is_resource = True
                   rows.append({
                       'name':         name,
                       'category':     (d.get('category') or '').strip(),
@@ -96,6 +105,7 @@ jobs:
                       'inStock':      d.get('inStock', True),
                       'sortOrder':    d.get('sortOrder', 0) or 0,
                       'minQty':       max(1, int(d.get('minQty') or 1)),
+                      'isResource':   is_resource,
                   })
               rows.sort(key=lambda p: (p['category'], p['sortOrder']))
               print(f"Loaded {len(rows)} products from Firestore.")
@@ -316,7 +326,13 @@ jobs:
               pack_sizes = p.get('packSizes') or []
               price_num = parse_price_num(p['priceDisplay'])
               availability = "https://schema.org/InStock" if p['inStock'] else "https://schema.org/OutOfStock"
-              wa_text = urllib.parse.quote(f"\U0001F4E6 *Product:* {name}\n\U0001F517 *Link:* {page_url}")
+              is_resource = p.get('isResource', False)
+              if is_resource:
+                  wa_text = urllib.parse.quote(
+                      f"\U0001F4C4 *{name}*\nFree downloadable reference chart\n\n"
+                      f"\U0001F4E5 {page_url}\n\n_Khyber Traders — Wholesale Veterinary Pharmacy, Karachi_")
+              else:
+                  wa_text = urllib.parse.quote(f"\U0001F4E6 *Product:* {name}\n\U0001F517 *Link:* {page_url}")
               wa_link = f"https://wa.me/923352999006?text={wa_text}"
 
               ld = {
@@ -394,7 +410,7 @@ jobs:
                   price_html = f'<div class="price">{H.escape(p["priceDisplay"])}</div>'
               else:
                   price_html = ''
-              stock_html = '<span class="stock-in">In Stock</span>' if p['inStock'] else '<span class="stock-out">Out of Stock</span>'
+              stock_html = '' if is_resource else ('<span class="stock-in">In Stock</span>' if p['inStock'] else '<span class="stock-out">Out of Stock</span>')
               desc_html = H.escape(desc) if desc else 'Contact us on WhatsApp for full product details.'
               alt_e = f"{name_e} — {cat_e} | Khyber Traders"
               thumbs_html = ''
@@ -404,7 +420,9 @@ jobs:
                       for im in imgs
                   ) + '</div>'
 
-              if p['inStock']:
+              if is_resource:
+                  add_to_order_html = f'<a class="btn btn-primary" href="{img}" download target="_blank">Download Chart</a>'
+              elif p['inStock']:
                   # json.dumps() quotes with ", which would prematurely close this
                   # HTML attribute's own " delimiters -- HTML-escape it so the quotes
                   # survive as &quot; and the browser hands back a valid JS string.
@@ -474,7 +492,7 @@ jobs:
               <p class="desc">{desc_html}</p>
               <div class="cta">
               {add_to_order_html}
-              <a class="btn btn-wa" href="{wa_link}">Order via WhatsApp</a>
+              <a class="btn btn-wa" href="{wa_link}">{'Share on WhatsApp' if is_resource else 'Order via WhatsApp'}</a>
               </div>
               </div>
               {footer_html()}

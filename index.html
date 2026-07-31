@@ -287,6 +287,21 @@
         </div>
     </section>
 
+    <!-- Free Resources Section (informational downloads -- charts, protocols --
+         not sellable products, so no cart/order UI here, only Download + Share) -->
+    <section id="resources-section" class="py-6 sm:py-10 bg-white border-b border-gray-200 hidden">
+        <div class="container mx-auto px-4 sm:px-6 text-center">
+            <div class="mb-4 flex items-center justify-between max-w-2xl mx-auto text-left">
+                <div>
+                    <span class="text-brand-maroon font-bold uppercase tracking-widest text-[10px] font-mono">Downloads</span>
+                    <h2 class="text-xl sm:text-2xl font-serif font-bold text-brand-dark mt-0.5 leading-tight">Free Resources &amp; Charts</h2>
+                </div>
+                <div class="h-6 w-1 bg-brand-gold flex-shrink-0 ml-4"></div>
+            </div>
+            <div id="resources-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 max-w-3xl mx-auto text-left"></div>
+        </div>
+    </section>
+
     <!-- About Section (compact -- secondary to Products) -->
     <section id="about" class="py-14 bg-white border-b border-gray-100">
         <div class="container mx-auto px-6">
@@ -526,7 +541,8 @@
                         priceDisplay: d.priceDisplay || '',
                         inStock:      d.inStock !== false,
                         minQty:       Math.max(1, parseInt(d.minQty) || 1),
-                        sortOrder:    parseInt(d.sortOrder) || 0
+                        sortOrder:    parseInt(d.sortOrder) || 0,
+                        isResource:   d.isResource === true
                     });
                 });
                 allProducts.sort((a, b) => {
@@ -534,6 +550,7 @@
                     return cat !== 0 ? cat : (a.sortOrder || 0) - (b.sortOrder || 0);
                 });
                 generateTiles();
+                renderResources();
                 checkForDirectLink();
             } catch (error) {
                 console.error(error);
@@ -556,6 +573,13 @@
         function getCleanSlug(name) {
             if(!name) return '';
             return name.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        }
+
+        // Mirrors cat_title() in sync_products.yml so share captions match
+        // the category-page headings instead of shouting in ALL CAPS.
+        function catTitle(cat) {
+            return (cat || '').replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+                .replace(/\bAnd\b/g, 'and').replace(/\bFor\b/g, 'for').replace(/\bOf\b/g, 'of');
         }
 
         // Exact-match icon overrides, keyed by the precise category string as
@@ -603,7 +627,8 @@
         }
         function generateTiles() {
             const container = document.getElementById('tiles-container');
-            let uniqueCats = [...new Set(allProducts.map(p => p.category))];
+            const sellableProducts = allProducts.filter(p => !p.isResource);
+            let uniqueCats = [...new Set(sellableProducts.map(p => p.category))];
             if (shopSettings.categoryOrder && shopSettings.categoryOrder.length) {
                 const order = shopSettings.categoryOrder;
                 uniqueCats.sort((a, b) => {
@@ -616,7 +641,7 @@
             }
             container.innerHTML = uniqueCats.map((cat, i) => {
                 const safeCat = cat.replace(/'/g, "\\'");
-                const count = allProducts.filter(p => p.category === cat).length;
+                const count = sellableProducts.filter(p => p.category === cat).length;
                 return `
                 <div class="group flex flex-col overflow-hidden bg-brand-gold border border-brand-gold hover:border-transparent rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer"
                      onclick="openCategoryModal('${safeCat}')">
@@ -641,6 +666,34 @@
                         </button>
                     </div>
                 </div>`
+            }).join('');
+        }
+
+        function renderResources() {
+            const section = document.getElementById('resources-section');
+            const container = document.getElementById('resources-container');
+            const resources = allProducts.filter(p => p.isResource);
+            section.classList.toggle('hidden', resources.length === 0);
+            container.innerHTML = resources.map(p => {
+                const img = p.images[0] || '';
+                const plainDesc = (p.desc || '').replace(/\n+/g, ' ').trim();
+                return `
+                <div class="bg-white border border-gray-200 hover:border-brand-gold hover:shadow-lg rounded-lg transition-all duration-300 flex flex-col sm:flex-row overflow-hidden">
+                    <div class="sm:w-32 h-40 sm:h-auto flex-shrink-0 bg-gray-50 border-b sm:border-b-0 sm:border-r border-gray-100">
+                        ${img ? `<img src="${img}" alt="${p.name.replace(/"/g,'&quot;')}" class="w-full h-full object-cover cursor-zoom-in" onclick="openLightbox('${img}')" loading="lazy">`
+                              : `<div class="w-full h-full flex items-center justify-center"><i class="fas fa-file-download text-gray-300 text-3xl"></i></div>`}
+                    </div>
+                    <div class="p-4 flex flex-col flex-grow">
+                        <h3 class="font-bold text-brand-dark text-sm sm:text-base font-serif leading-snug mb-1">${p.name.replace('Useful Information - ', '')}</h3>
+                        <p class="text-xs text-gray-600 mb-3 line-clamp-2 leading-relaxed">${plainDesc || 'Free downloadable reference chart.'}</p>
+                        <div class="grid grid-cols-2 gap-2 mt-auto">
+                            ${img
+                                ? `<a href="${img}" download target="_blank" class="bg-brand-maroon hover:bg-brand-dark text-white py-2.5 text-[10px] sm:text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition"><i class="fas fa-download"></i> Download</a>`
+                                : `<button disabled class="bg-gray-200 text-gray-400 py-2.5 text-[10px] sm:text-xs font-bold uppercase cursor-not-allowed">Unavailable</button>`}
+                            <button onclick="shareProductNative(event,'${p.name.replace(/'/g,"\\'")}')" class="border border-gray-200 text-gray-600 hover:border-brand-gold py-2.5 text-[10px] sm:text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition"><i class="fas fa-share-alt"></i> Share</button>
+                        </div>
+                    </div>
+                </div>`;
             }).join('');
         }
 
@@ -679,9 +732,11 @@
                             <button onclick="openProductByName('${p.name.replace(/'/g,"\\'")}');" class="py-2.5 text-[10px] sm:text-xs font-bold uppercase text-brand-maroon hover:bg-brand-maroon/5 flex items-center justify-center gap-1 transition border-r border-gray-100"><i class="fas fa-expand-alt text-[9px]"></i> View</button>
                             <button onclick="shareProductNative(event,'${p.name.replace(/'/g,"\\'")}')" class="py-2.5 text-[10px] sm:text-xs font-bold uppercase text-gray-500 hover:bg-gray-50 flex items-center justify-center gap-1 transition"><i class="fas fa-share-alt text-[9px]"></i> Share</button>
                         </div>
-                        ${p.inStock
-                            ? `<button onclick="window.addToCart('${p.name.replace(/'/g,"\\'")}')" class="bg-brand-maroon hover:bg-brand-dark text-white py-2.5 text-[10px] sm:text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition shadow w-full"><i class="fas fa-plus text-sm"></i> Add to Order</button>`
-                            : `<button disabled class="bg-gray-200 text-gray-400 py-2.5 text-[10px] sm:text-xs font-bold uppercase w-full cursor-not-allowed">Out of Stock</button>`}
+                        ${p.isResource
+                            ? `<a href="${imageLink}" download target="_blank" class="bg-brand-maroon hover:bg-brand-dark text-white py-2.5 text-[10px] sm:text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition shadow w-full"><i class="fas fa-download"></i> Download</a>`
+                            : p.inStock
+                                ? `<button onclick="window.addToCart('${p.name.replace(/'/g,"\\'")}')" class="bg-brand-maroon hover:bg-brand-dark text-white py-2.5 text-[10px] sm:text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition shadow w-full"><i class="fas fa-plus text-sm"></i> Add to Order</button>`
+                                : `<button disabled class="bg-gray-200 text-gray-400 py-2.5 text-[10px] sm:text-xs font-bold uppercase w-full cursor-not-allowed">Out of Stock</button>`}
                     </div>
                 </div>`;
             }).join('');
@@ -699,7 +754,8 @@
             if (typeof gtag !== 'undefined') gtag('event', 'share', { method: 'whatsapp', content_type: 'category', content_id: cat });
             const slug = getCleanSlug(cat);
             const redirectLink = `https://animalhealth.pk/c/${slug}.html`;
-            const caption = `📂 *Category:* ${cat.toUpperCase()}\nCheck out our collection here:\n🔗 ${redirectLink}`;
+            const count = allProducts.filter(p => p.category === cat).length;
+            const caption = `📂 *${catTitle(cat)}*\n${count} product${count !== 1 ? 's' : ''} available for wholesale order.\n\n🔗 ${redirectLink}\n\n_Khyber Traders — Wholesale Veterinary Pharmacy, Karachi_`;
             
             try {
                 if (navigator.share) {
@@ -729,10 +785,16 @@
             const slug = getCleanSlug(name);
             const shareLink = `https://animalhealth.pk/s/${slug}.html`;
             const imgUrl = p.images[0] || '';
-            const cleanDesc = (p.desc || '').replace(/<[^>]*>?/gm, '');
+            const cleanDesc = (p.desc || '').replace(/<[^>]*>?/gm, '').trim();
             if (typeof gtag !== 'undefined') gtag('event', 'share', { method: 'whatsapp', content_type: 'product', content_id: name });
             const btn = event.currentTarget;
-            const caption = `\uD83D\uDCE6 *Product:* ${name}\n\uD83D\uDCC2 *Category:* ${p.category.toUpperCase()}\n\uD83D\uDCDD *Details:* ${cleanDesc}\n──────────\n\uD83D\uDD17 *Link:* ${shareLink}`;
+            const priceLine = (p.packSizes && p.packSizes.length)
+                ? `\n\uD83D\uDCB0 ${p.packSizes.map(ps => `${ps.size}: ${ps.price}`).join(', ')}`
+                : p.priceDisplay ? `\n\uD83D\uDCB0 ${p.priceDisplay}` : '';
+            const descLine = cleanDesc ? `\n\uD83D\uDCDD ${cleanDesc}` : '';
+            const caption = p.isResource
+                ? `\uD83D\uDCC4 *${name.replace('Useful Information - ', '')}*\nFree downloadable reference chart\n\n\uD83D\uDCE5 ${shareLink}\n\n_Khyber Traders — Wholesale Veterinary Pharmacy, Karachi_`
+                : `\uD83D\uDCE6 *${name}*\n\uD83D\uDCC2 ${catTitle(p.category)}${priceLine}${descLine}\n\n\uD83D\uDD17 ${shareLink}\n\n_Khyber Traders — Wholesale Veterinary Pharmacy, Karachi_`;
 
             btn.classList.add('btn-loading');
             try {
@@ -837,7 +899,12 @@
                             ? `<div class="text-sm text-gray-800 leading-relaxed formatted-text mb-8">${formattedDesc}</div>`
                             : `<p class="text-gray-600 text-sm mb-8 italic">No description available.</p>`}
                         <div class="space-y-3">
-                            ${(product.minQty || 1) > 1 ? `<p class="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200 px-3 py-2 text-center"><i class="fas fa-layer-group mr-1"></i>Minimum order: ${product.minQty} units</p>` : ''}
+                            ${product.isResource
+                                ? `<a href="${firstImg}" download target="_blank"
+                                    class="w-full bg-brand-maroon hover:bg-brand-dark text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
+                                    <i class="fas fa-download"></i> Download Chart
+                                </a>`
+                                : `${(product.minQty || 1) > 1 ? `<p class="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200 px-3 py-2 text-center"><i class="fas fa-layer-group mr-1"></i>Minimum order: ${product.minQty} units</p>` : ''}
                             <button onclick="window.addToCart('${product.name.replace(/'/g,"\\'")}', _pdpPackSize);"
                                 class="w-full bg-brand-maroon hover:bg-brand-dark text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
                                 <i class="fas fa-plus text-lg"></i> Add to Order
@@ -845,7 +912,7 @@
                             <button onclick="window.inquireProduct('${product.name.replace(/'/g,"\\'")}','${product.category}','${redirectLink}')"
                                 class="w-full bg-green-500 hover:bg-green-600 text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
                                 <i class="fab fa-whatsapp text-lg"></i> Inquire on WhatsApp
-                            </button>
+                            </button>`}
                             <button onclick="shareProductNative(event,'${product.name.replace(/'/g,"\\'")}')"
                                     class="w-full bg-brand-gold hover:bg-brand-maroon text-brand-dark hover:text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition">
                                 <i class="fas fa-share-alt"></i> Share Product
