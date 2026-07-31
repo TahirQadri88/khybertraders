@@ -99,10 +99,10 @@ tailwind.config = {
     
     <h1>IVERMECTIN SG 100ML</h1>
     
-    <span class="stock-out">Out of Stock</span>
+    <span class="stock-in">In Stock</span>
     <p class="desc">(Ivermectin 1%)</p>
     <div class="cta">
-    <button type="button" class="btn" style="background:#e5e7eb;color:#9ca3af;cursor:not-allowed" disabled>Out of Stock</button>
+    <button type="button" class="btn btn-primary" onclick="window.addToCart(&quot;IVERMECTIN SG 100ML&quot;, window.__SELECTED_PACK__)">Add to Order</button>
     <a class="btn btn-wa" href="https://wa.me/923352999006?text=%F0%9F%93%A6%20%2AProduct%3A%2A%20IVERMECTIN%20SG%20100ML%0A%F0%9F%94%97%20%2ALink%3A%2A%20https%3A//animalhealth.pk/s/ivermectin-sg-100ml.html">Order via WhatsApp</a>
     </div>
     </div>
@@ -193,7 +193,7 @@ tailwind.config = {
 </div>
     <script src="https://animalhealth.pk/assets/cart.js"></script>
     <script>
-    window.__PRODUCT__ = {"name": "IVERMECTIN SG 100ML", "category": "ivomec & other skin inj.", "packSizes": [], "priceDisplay": "", "images": ["https://animalhealth.pk/images/ivermectin.jpeg"], "inStock": false, "minQty": 1};
+    window.__PRODUCT__ = {"name": "IVERMECTIN SG 100ML", "category": "ivomec & other skin inj.", "packSizes": [], "priceDisplay": "", "images": ["https://animalhealth.pk/images/ivermectin.jpeg"], "inStock": true, "minQty": 1};
     window.__SELECTED_PACK__ = (window.__PRODUCT__.packSizes && window.__PRODUCT__.packSizes.length) ? window.__PRODUCT__.packSizes[0] : null;
     function selectOrderPack(idx) {
         window.__SELECTED_PACK__ = window.__PRODUCT__.packSizes[idx];
