@@ -316,6 +316,20 @@
             <input type="hidden" id="f-instock" value="true">
         </div>
 
+        <div class="flex items-center gap-3">
+            <label class="label mb-0">Free Resource <span class="text-gray-400 font-normal">(not for sale)</span></label>
+            <div class="ml-auto flex items-center gap-2">
+                <span id="resource-label" class="text-xs font-bold text-gray-400">Regular Product</span>
+                <button type="button" id="resource-toggle"
+                    onclick="toggleResource()"
+                    class="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-300 transition-colors focus:outline-none">
+                    <span id="resource-dot" class="inline-block h-4 w-4 transform translate-x-1 rounded-full bg-white transition-transform"></span>
+                </button>
+            </div>
+            <input type="hidden" id="f-isresource" value="false">
+        </div>
+        <p id="resource-hint" class="text-[10px] text-gray-400 -mt-2 hidden">Shown in the homepage's "Free Resources &amp; Charts" section with a Download button instead of Add to Order &mdash; use this for free charts/protocols, not sellable products.</p>
+
         <div class="flex gap-6">
             <div>
                 <label class="label">Sort Order <span class="text-gray-400 font-normal">(within category)</span></label>
@@ -425,6 +439,7 @@ let currentImages    = [];
 let currentPackSizes = [];
 let pendingDeleteId  = null;
 let isStockOn        = true;
+let isResourceOn     = false;
 
 // ── Auth ──────────────────────────────────────────────────────────
 auth.onAuthStateChanged(user => {
@@ -658,7 +673,7 @@ function renderTable(products) {
         return `<tr class="border-b border-gray-50 hover:bg-gray-50 transition" data-name="${esc(p.name)}" data-cat="${esc(p.category || '')}">
             <td class="p-3">${thumb}</td>
             <td class="p-3">
-                <div class="font-bold text-brand-dark text-xs leading-tight max-w-[200px]">${esc(p.name)}</div>
+                <div class="font-bold text-brand-dark text-xs leading-tight max-w-[200px]">${esc(p.name)}${p.isResource ? ' <span class="inline-block bg-brand-maroon/10 text-brand-maroon text-[8px] font-bold uppercase px-1.5 py-0.5 align-middle">Resource</span>' : ''}</div>
                 <div class="text-[10px] text-gray-400 mt-0.5 md:hidden capitalize">${esc(p.category || '')}</div>
             </td>
             <td class="p-3 hidden md:table-cell text-xs capitalize text-gray-500">${esc(p.category || '')}</td>
@@ -741,6 +756,7 @@ function openDrawer(productId) {
         document.getElementById('f-sort').value     = p.sortOrder || 0;
         document.getElementById('f-min-qty').value  = p.minQty || 1;
         setStock(p.inStock !== false);
+        setResource(p.isResource === true);
         currentImages = [...(p.images || [])];
         renderImagePreviews();
         currentPackSizes = (p.packSizes || []).map(ps => ({ ...ps }));
@@ -778,6 +794,7 @@ function resetForm() {
     currentPackSizes = [];
     renderPackSizes();
     setStock(true);
+    setResource(false);
     document.getElementById('slug-preview').textContent = '';
     document.getElementById('upload-progress').classList.add('hidden');
 }
@@ -804,6 +821,33 @@ function setStock(on) {
 
 function toggleStock() {
     setStock(!isStockOn);
+}
+
+// ── Free Resource Toggle ─────────────────────────────────────────
+function setResource(on) {
+    isResourceOn = on;
+    document.getElementById('f-isresource').value = String(on);
+    const toggle = document.getElementById('resource-toggle');
+    const dot    = document.getElementById('resource-dot');
+    const label  = document.getElementById('resource-label');
+    const hint   = document.getElementById('resource-hint');
+    if (on) {
+        toggle.classList.replace('bg-gray-300', 'bg-brand-maroon');
+        dot.classList.replace('translate-x-1', 'translate-x-6');
+        label.textContent = 'Free Resource';
+        label.className = 'text-xs font-bold text-brand-maroon';
+        hint.classList.remove('hidden');
+    } else {
+        toggle.classList.replace('bg-brand-maroon', 'bg-gray-300');
+        dot.classList.replace('translate-x-6', 'translate-x-1');
+        label.textContent = 'Regular Product';
+        label.className = 'text-xs font-bold text-gray-400';
+        hint.classList.add('hidden');
+    }
+}
+
+function toggleResource() {
+    setResource(!isResourceOn);
 }
 
 // ── Slug preview ──────────────────────────────────────────────────
@@ -1010,6 +1054,7 @@ async function saveProduct() {
         priceDisplay: document.getElementById('f-price').value.trim(),
         packSizes:    currentPackSizes.filter(ps => ps.size && ps.size.trim()),
         inStock:      document.getElementById('f-instock').value === 'true',
+        isResource:   document.getElementById('f-isresource').value === 'true',
         sortOrder:    parseInt(document.getElementById('f-sort').value) || 0,
         minQty:       Math.max(1, parseInt(document.getElementById('f-min-qty').value) || 1),
         images:       currentImages,
