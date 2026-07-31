@@ -558,6 +558,13 @@
             return name.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
         }
 
+        // Mirrors cat_title() in sync_products.yml so share captions match
+        // the category-page headings instead of shouting in ALL CAPS.
+        function catTitle(cat) {
+            return (cat || '').replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+                .replace(/\bAnd\b/g, 'and').replace(/\bFor\b/g, 'for').replace(/\bOf\b/g, 'of');
+        }
+
         // Exact-match icon overrides, keyed by the precise category string as
         // stored in Firestore (lowercased) — hand-picked per category, checked
         // before the keyword-based CAT_ICONS fallback below. Verified against
@@ -699,7 +706,8 @@
             if (typeof gtag !== 'undefined') gtag('event', 'share', { method: 'whatsapp', content_type: 'category', content_id: cat });
             const slug = getCleanSlug(cat);
             const redirectLink = `https://animalhealth.pk/c/${slug}.html`;
-            const caption = `📂 *Category:* ${cat.toUpperCase()}\nCheck out our collection here:\n🔗 ${redirectLink}`;
+            const count = allProducts.filter(p => p.category === cat).length;
+            const caption = `📂 *${catTitle(cat)}*\n${count} product${count !== 1 ? 's' : ''} available for wholesale order.\n\n🔗 ${redirectLink}\n\n_Khyber Traders — Wholesale Veterinary Pharmacy, Karachi_`;
             
             try {
                 if (navigator.share) {
@@ -729,10 +737,14 @@
             const slug = getCleanSlug(name);
             const shareLink = `https://animalhealth.pk/s/${slug}.html`;
             const imgUrl = p.images[0] || '';
-            const cleanDesc = (p.desc || '').replace(/<[^>]*>?/gm, '');
+            const cleanDesc = (p.desc || '').replace(/<[^>]*>?/gm, '').trim();
             if (typeof gtag !== 'undefined') gtag('event', 'share', { method: 'whatsapp', content_type: 'product', content_id: name });
             const btn = event.currentTarget;
-            const caption = `\uD83D\uDCE6 *Product:* ${name}\n\uD83D\uDCC2 *Category:* ${p.category.toUpperCase()}\n\uD83D\uDCDD *Details:* ${cleanDesc}\n──────────\n\uD83D\uDD17 *Link:* ${shareLink}`;
+            const priceLine = (p.packSizes && p.packSizes.length)
+                ? `\n\uD83D\uDCB0 ${p.packSizes.map(ps => `${ps.size}: ${ps.price}`).join(', ')}`
+                : p.priceDisplay ? `\n\uD83D\uDCB0 ${p.priceDisplay}` : '';
+            const descLine = cleanDesc ? `\n\uD83D\uDCDD ${cleanDesc}` : '';
+            const caption = `\uD83D\uDCE6 *${name}*\n\uD83D\uDCC2 ${catTitle(p.category)}${priceLine}${descLine}\n\n\uD83D\uDD17 ${shareLink}\n\n_Khyber Traders — Wholesale Veterinary Pharmacy, Karachi_`;
 
             btn.classList.add('btn-loading');
             try {
