@@ -558,19 +558,28 @@
             return name.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
         }
 
-        const CAT_COLORS = [
-            { bg:'#eff6ff', bar:'#3b82f6', iconBg:'#dbeafe', iconFg:'#1d4ed8' },
-            { bg:'#f0fdf4', bar:'#16a34a', iconBg:'#dcfce7', iconFg:'#166534' },
-            { bg:'#fffbeb', bar:'#d97706', iconBg:'#fef3c7', iconFg:'#92400e' },
-            { bg:'#f5f3ff', bar:'#7c3aed', iconBg:'#ede9fe', iconFg:'#4c1d95' },
-            { bg:'#fff1f2', bar:'#e11d48', iconBg:'#ffe4e6', iconFg:'#9f1239' },
-            { bg:'#f0fdfa', bar:'#0d9488', iconBg:'#ccfbf1', iconFg:'#134e4a' },
-            { bg:'#fff7ed', bar:'#ea580c', iconBg:'#ffedd5', iconFg:'#7c2d12' },
-            { bg:'#fdf4ff', bar:'#a21caf', iconBg:'#fae8ff', iconFg:'#701a75' },
-            { bg:'#f0f9ff', bar:'#0284c7', iconBg:'#e0f2fe', iconFg:'#0c4a6e' },
-            { bg:'#eef2ff', bar:'#4f46e5', iconBg:'#e0e7ff', iconFg:'#3730a3' },
-        ];
-
+        // Exact-match icon overrides, keyed by the precise category string as
+        // stored in Firestore (lowercased) — hand-picked per category, checked
+        // before the keyword-based CAT_ICONS fallback below. Verified against
+        // the actual Font Awesome 6.4.0 free set loaded on this page.
+        const CATEGORY_ICON_OVERRIDES = {
+            'anti-lice shampoo for cattle': 'fa-pump-soap',
+            'butter milk for fattening cattle': 'fa-glass-water',
+            'dewromer drenches': 'fa-bottle-droplet',
+            'drench guns and drencher syringes': 'fa-screwdriver-wrench',
+            'ear tags for cattle & goats': 'fa-tags',
+            'feed premix & minerals mixture': 'fa-wheat-awn',
+            'gripe water': 'fa-prescription-bottle-medical',
+            'ivomec & other skin inj.': 'fa-syringe',
+            'liver tonic / growth promoter / digestive support': 'fa-flask',
+            'protocol of artificial insemination (ai)': 'fa-dna',
+            'steel needles and reusable injectors for vet use': 'fa-toolbox',
+            'toxin binders': 'fa-filter',
+            'vaccine chart and dosage schedule': 'fa-calendar-days',
+            'vaccines': 'fa-shield-virus',
+        };
+        // Keyword fallback for any category not in the exact-match list above
+        // (e.g. a new category added later via the admin panel).
         const CAT_ICONS = [
             ['shampoo', 'fa-pump-soap'], ['lice', 'fa-pump-soap'],
             ['milk', 'fa-glass-water'], ['fatten', 'fa-cow'],
@@ -587,12 +596,10 @@
             ['protocol', 'fa-clipboard-list'],
         ];
         function getCategoryIcon(cat) {
-            const c = (cat || '').toLowerCase();
+            const c = (cat || '').trim().toLowerCase();
+            if (CATEGORY_ICON_OVERRIDES[c]) return CATEGORY_ICON_OVERRIDES[c];
             for (const [kw, icon] of CAT_ICONS) if (c.includes(kw)) return icon;
             return 'fa-box-open';
-        }
-        function getCategoryIconHTML(cat, color) {
-            return `<i class="fas ${getCategoryIcon(cat)} text-base" style="color:${color}"></i>`;
         }
         function generateTiles() {
             const container = document.getElementById('tiles-container');
@@ -608,29 +615,27 @@
                 });
             }
             container.innerHTML = uniqueCats.map((cat, i) => {
-                const c = CAT_COLORS[i % CAT_COLORS.length];
                 const safeCat = cat.replace(/'/g, "\\'");
                 const count = allProducts.filter(p => p.category === cat).length;
                 return `
-                <div class="group flex flex-col overflow-hidden bg-white border border-gray-100 hover:border-transparent rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer"
+                <div class="group flex flex-col overflow-hidden bg-brand-gold border border-brand-gold hover:border-transparent rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer"
                      onclick="openCategoryModal('${safeCat}')">
-                    <div class="h-1.5 w-full flex-shrink-0" style="background:${c.bar}"></div>
+                    <div class="h-1.5 w-full flex-shrink-0 bg-brand-dark"></div>
                     <div class="flex flex-col items-center text-center p-5 sm:p-6 flex-1">
-                        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mb-3 transition-transform duration-300 group-hover:scale-110"
-                             style="background:${c.iconBg}">
-                            <i class="fas ${getCategoryIcon(cat)} text-xl sm:text-2xl" style="color:${c.iconFg}"></i>
+                        <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mb-3 bg-brand-dark transition-transform duration-300 group-hover:scale-110">
+                            <i class="fas ${getCategoryIcon(cat)} text-2xl sm:text-3xl text-brand-gold"></i>
                         </div>
-                        <h3 class="font-semibold text-sm sm:text-base leading-tight capitalize text-gray-800 font-sans mb-1">${cat}</h3>
-                        <p class="text-[11px] sm:text-xs font-medium" style="color:${c.bar}">${count} product${count !== 1 ? 's' : ''}</p>
+                        <h3 class="font-bold text-base sm:text-lg leading-tight capitalize text-brand-dark font-serif mb-1">${cat}</h3>
+                        <p class="text-xs sm:text-sm font-bold text-brand-dark">${count} product${count !== 1 ? 's' : ''}</p>
                     </div>
-                    <div class="flex border-t border-gray-100 flex-shrink-0">
+                    <div class="flex border-t border-black/15 flex-shrink-0">
                         <button onclick="openCategoryModal('${safeCat}')"
-                                class="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[10px] sm:text-xs font-bold uppercase tracking-wide text-gray-600 hover:bg-gray-50 transition border-r border-gray-100"
+                                class="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[10px] sm:text-xs font-bold uppercase tracking-wide text-brand-dark hover:bg-black/10 transition border-r border-black/15"
                                 title="View products">
                             <i class="fas fa-eye"></i> View
                         </button>
                         <button onclick="shareCategory(event, '${safeCat}')"
-                                class="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[10px] sm:text-xs font-bold uppercase tracking-wide text-gray-600 hover:bg-gray-50 transition"
+                                class="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[10px] sm:text-xs font-bold uppercase tracking-wide text-brand-dark hover:bg-black/10 transition"
                                 title="Share category">
                             <i class="fas fa-share-alt"></i> Share
                         </button>
