@@ -687,7 +687,9 @@
                         <h3 class="font-bold text-brand-dark text-sm sm:text-base font-serif leading-snug mb-1">${p.name.replace('Useful Information - ', '')}</h3>
                         <p class="text-xs text-gray-600 mb-3 line-clamp-2 leading-relaxed">${plainDesc || 'Free downloadable reference chart.'}</p>
                         <div class="grid grid-cols-2 gap-2 mt-auto">
-                            <a href="${img}" download target="_blank" class="bg-brand-maroon hover:bg-brand-dark text-white py-2.5 text-[10px] sm:text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition"><i class="fas fa-download"></i> Download</a>
+                            ${img
+                                ? `<a href="${img}" download target="_blank" class="bg-brand-maroon hover:bg-brand-dark text-white py-2.5 text-[10px] sm:text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition"><i class="fas fa-download"></i> Download</a>`
+                                : `<button disabled class="bg-gray-200 text-gray-400 py-2.5 text-[10px] sm:text-xs font-bold uppercase cursor-not-allowed">Unavailable</button>`}
                             <button onclick="shareProductNative(event,'${p.name.replace(/'/g,"\\'")}')" class="border border-gray-200 text-gray-600 hover:border-brand-gold py-2.5 text-[10px] sm:text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition"><i class="fas fa-share-alt"></i> Share</button>
                         </div>
                     </div>
