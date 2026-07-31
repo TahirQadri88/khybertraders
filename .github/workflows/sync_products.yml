@@ -354,9 +354,21 @@ jobs:
                       "availability": availability,
                       "seller": {"@type": "Organization", "name": "Khyber Traders"}
                   }
-              # Escape any literal "</" in the JSON payload (e.g. a product name/desc
-              # containing "</script") so it can never prematurely close this tag.
-              ld_json = json.dumps(ld, ensure_ascii=False).replace('</', '<\\/')
+              # Google's Product structured data requires offers, review, or
+              # aggregateRating to be present -- a Product block with none of
+              # those is invalid and gets flagged in Search Console. Around a
+              # fifth of the catalog has no price set yet (out of stock /
+              # not yet priced), so for those, skip the Product JSON-LD block
+              # entirely rather than ship structured data Google will reject.
+              # The breadcrumb JSON-LD below is unaffected and always emitted.
+              if "offers" in ld:
+                  # Escape any literal "</" in the JSON payload (e.g. a product
+                  # name/desc containing "</script") so it can never prematurely
+                  # close this tag.
+                  ld_json_escaped = json.dumps(ld, ensure_ascii=False).replace('</', '<\\/')
+                  ld_json_script = f'<script type="application/ld+json">{ld_json_escaped}</script>'
+              else:
+                  ld_json_script = ''
 
               breadcrumb_ld = {
                   "@context": "https://schema.org",
@@ -445,7 +457,7 @@ jobs:
               <meta name="twitter:description" content="{short_desc}">
               <meta name="twitter:image" content="{img}">
               <link rel="icon" href="{BASE_URL}/images/KT_Logo_Icon.png">
-              <script type="application/ld+json">{ld_json}</script>
+              {ld_json_script}
               <script type="application/ld+json">{breadcrumb_ld_json}</script>
               {page_head_common()}
               {product_page_extra_head()}
