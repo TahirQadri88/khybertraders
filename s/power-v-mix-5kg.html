@@ -34,6 +34,7 @@ h1 { font-family: 'Archivo', sans-serif; font-size: 28px; color: #131313; margin
 .stock-in { display: inline-block; background: #dcfce7; color: #166534; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 4px 10px; margin-bottom: 16px; }
 .stock-out { display: inline-block; background: #fee2e2; color: #991b1b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 4px 10px; margin-bottom: 16px; }
 .product-img { width: 100%; max-width: 380px; display: block; background: #fff; border: 1px solid #e5e7eb; margin-bottom: 10px; }
+#share-canvas { display: none; }
 .thumbs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
 .thumbs img { width: 64px; height: 64px; object-fit: cover; background: #fff; border: 2px solid #e5e7eb; cursor: pointer; transition: border-color 0.15s; }
 .thumbs img:hover { border-color: #FFF200; }
@@ -46,6 +47,9 @@ h1 { font-family: 'Archivo', sans-serif; font-size: 28px; color: #131313; margin
 .btn-primary:hover { background: #000000; }
 .btn-wa { background: #25D366; color: #fff; }
 .btn-wa:hover { background: #128C4A; }
+.btn-outline { background: #fff; color: #131313; border: 1px solid #e5e7eb; }
+.btn-outline:hover { border-color: #131313; }
+.btn-loading { opacity: 0.6; pointer-events: none; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin: 24px 0 32px; }
 .card { background: #fff; border: 1px solid #e5e7eb; padding: 14px; display: block; }
 .card:hover { border-color: #FFF200; }
@@ -103,8 +107,7 @@ tailwind.config = {
     <p class="desc">*Power V Mix* Turkey 5kg*
 (Powerful Combo of Vitamins, Minerals, DCP, Yeast &amp; Toxin Binder)</p>
     <div class="cta">
-    <button type="button" class="btn btn-primary" onclick="window.addToCart(&quot;Power V Mix 5kg&quot;, window.__SELECTED_PACK__)">Add to Order</button>
-    <a class="btn btn-wa" href="https://wa.me/923352999006?text=%F0%9F%93%A6%20%2AProduct%3A%2A%20Power%20V%20Mix%205kg%0A%F0%9F%94%97%20%2ALink%3A%2A%20https%3A//animalhealth.pk/s/power-v-mix-5kg.html">Order via WhatsApp</a>
+    <button type="button" class="btn btn-primary" onclick="window.addToCart(&quot;Power V Mix 5kg&quot;, window.__SELECTED_PACK__)"><i class="fas fa-plus"></i> Add to Order</button><button type="button" class="btn btn-wa" onclick="window.checkoutProduct(&quot;Power V Mix 5kg&quot;, window.__SELECTED_PACK__)"><i class="fab fa-whatsapp"></i> Checkout Now</button><button type="button" class="btn btn-outline" onclick="window.inquireProduct(&quot;Power V Mix 5kg&quot;,&quot;feed premix &amp; minerals mixture&quot;,&quot;https://animalhealth.pk/s/power-v-mix-5kg.html&quot;)"><i class="fas fa-circle-question"></i> Ask a Question</button><button type="button" class="btn btn-outline" onclick="shareProductNative(event,&quot;Power V Mix 5kg&quot;)"><i class="fas fa-share-alt"></i> Share</button>
     </div>
     </div>
     <div class="footer">
@@ -192,9 +195,10 @@ tailwind.config = {
         </div>
     </div>
 </div>
+    <canvas id="share-canvas"></canvas>
     <script src="https://animalhealth.pk/assets/cart.js"></script>
     <script>
-    window.__PRODUCT__ = {"name": "Power V Mix 5kg", "category": "feed premix & minerals mixture", "packSizes": [], "priceDisplay": "Rs. 3500", "images": ["https://animalhealth.pk/images/Power%20V%20Mix%205kg.png", "https://animalhealth.pk/images/PowerVMix.jpeg"], "inStock": true, "minQty": 1};
+    window.__PRODUCT__ = {"name": "Power V Mix 5kg", "category": "feed premix & minerals mixture", "desc": "*Power V Mix* Turkey 5kg*\n(Powerful Combo of Vitamins, Minerals, DCP, Yeast & Toxin Binder)", "packSizes": [], "priceDisplay": "Rs. 3500", "images": ["https://animalhealth.pk/images/Power%20V%20Mix%205kg.png", "https://animalhealth.pk/images/PowerVMix.jpeg"], "inStock": true, "minQty": 1, "isResource": false};
     window.__SELECTED_PACK__ = (window.__PRODUCT__.packSizes && window.__PRODUCT__.packSizes.length) ? window.__PRODUCT__.packSizes[0] : null;
     function selectOrderPack(idx) {
         window.__SELECTED_PACK__ = window.__PRODUCT__.packSizes[idx];

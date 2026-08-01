@@ -34,6 +34,7 @@ h1 { font-family: 'Archivo', sans-serif; font-size: 28px; color: #131313; margin
 .stock-in { display: inline-block; background: #dcfce7; color: #166534; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 4px 10px; margin-bottom: 16px; }
 .stock-out { display: inline-block; background: #fee2e2; color: #991b1b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 4px 10px; margin-bottom: 16px; }
 .product-img { width: 100%; max-width: 380px; display: block; background: #fff; border: 1px solid #e5e7eb; margin-bottom: 10px; }
+#share-canvas { display: none; }
 .thumbs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
 .thumbs img { width: 64px; height: 64px; object-fit: cover; background: #fff; border: 2px solid #e5e7eb; cursor: pointer; transition: border-color 0.15s; }
 .thumbs img:hover { border-color: #FFF200; }
@@ -46,6 +47,9 @@ h1 { font-family: 'Archivo', sans-serif; font-size: 28px; color: #131313; margin
 .btn-primary:hover { background: #000000; }
 .btn-wa { background: #25D366; color: #fff; }
 .btn-wa:hover { background: #128C4A; }
+.btn-outline { background: #fff; color: #131313; border: 1px solid #e5e7eb; }
+.btn-outline:hover { border-color: #131313; }
+.btn-loading { opacity: 0.6; pointer-events: none; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin: 24px 0 32px; }
 .card { background: #fff; border: 1px solid #e5e7eb; padding: 14px; display: block; }
 .card:hover { border-color: #FFF200; }
@@ -103,8 +107,7 @@ tailwind.config = {
     <p class="desc">RUSSIAN (WATER BASE) 50ML 
 25 DOSE OF COWS</p>
     <div class="cta">
-    <button type="button" class="btn" style="background:#e5e7eb;color:#9ca3af;cursor:not-allowed" disabled>Out of Stock</button>
-    <a class="btn btn-wa" href="https://wa.me/923352999006?text=%F0%9F%93%A6%20%2AProduct%3A%2A%20FMD%20%28Foot%20%26%20Mouth%20Disease%29%20Vaccine%20Russian%20Aqua%20/%20Jel%20Base%0A%F0%9F%94%97%20%2ALink%3A%2A%20https%3A//animalhealth.pk/s/fmd-foot-and-mouth-disease-vaccine-russian-aqua--jel-base.html">Order via WhatsApp</a>
+    <button type="button" class="btn" style="background:#e5e7eb;color:#9ca3af;cursor:not-allowed" disabled>Out of Stock</button><button type="button" class="btn btn-outline" onclick="window.inquireProduct(&quot;FMD (Foot &amp; Mouth Disease) Vaccine Russian Aqua / Jel Base&quot;,&quot;vaccines&quot;,&quot;https://animalhealth.pk/s/fmd-foot-and-mouth-disease-vaccine-russian-aqua--jel-base.html&quot;)"><i class="fas fa-circle-question"></i> Ask a Question</button><button type="button" class="btn btn-outline" onclick="shareProductNative(event,&quot;FMD (Foot &amp; Mouth Disease) Vaccine Russian Aqua / Jel Base&quot;)"><i class="fas fa-share-alt"></i> Share</button>
     </div>
     </div>
     <div class="footer">
@@ -192,9 +195,10 @@ tailwind.config = {
         </div>
     </div>
 </div>
+    <canvas id="share-canvas"></canvas>
     <script src="https://animalhealth.pk/assets/cart.js"></script>
     <script>
-    window.__PRODUCT__ = {"name": "FMD (Foot & Mouth Disease) Vaccine Russian Aqua / Jel Base", "category": "vaccines", "packSizes": [], "priceDisplay": "", "images": ["https://animalhealth.pk/images/FMDWaterRussian.JPG"], "inStock": false, "minQty": 1};
+    window.__PRODUCT__ = {"name": "FMD (Foot & Mouth Disease) Vaccine Russian Aqua / Jel Base", "category": "vaccines", "desc": "RUSSIAN (WATER BASE) 50ML \n25 DOSE OF COWS", "packSizes": [], "priceDisplay": "", "images": ["https://animalhealth.pk/images/FMDWaterRussian.JPG"], "inStock": false, "minQty": 1, "isResource": false};
     window.__SELECTED_PACK__ = (window.__PRODUCT__.packSizes && window.__PRODUCT__.packSizes.length) ? window.__PRODUCT__.packSizes[0] : null;
     function selectOrderPack(idx) {
         window.__SELECTED_PACK__ = window.__PRODUCT__.packSizes[idx];
