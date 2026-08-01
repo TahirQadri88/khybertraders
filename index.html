@@ -678,19 +678,21 @@
                 const img = p.images[0] || '';
                 const plainDesc = (p.desc || '').replace(/\n+/g, ' ').trim();
                 return `
-                <div class="bg-white border border-gray-200 hover:border-brand-gold hover:shadow-lg rounded-lg transition-all duration-300 flex flex-col sm:flex-row overflow-hidden">
-                    <div class="sm:w-32 h-40 sm:h-auto flex-shrink-0 bg-gray-50 border-b sm:border-b-0 sm:border-r border-gray-100">
-                        ${img ? `<img src="${img}" alt="${p.name.replace(/"/g,'&quot;')}" class="w-full h-full object-cover cursor-zoom-in" onclick="openLightbox('${img}')" loading="lazy">`
-                              : `<div class="w-full h-full flex items-center justify-center"><i class="fas fa-file-download text-gray-300 text-3xl"></i></div>`}
+                <div class="bg-white border border-brand-gold/40 hover:shadow-lg rounded-lg transition-all duration-300 flex flex-col overflow-hidden">
+                    <div class="h-1.5 w-full flex-shrink-0 bg-brand-dark"></div>
+                    <div class="bg-gray-100 aspect-[3/4] flex items-center justify-center">
+                        ${img ? `<img src="${img}" alt="${p.name.replace(/"/g,'&quot;')}" class="w-full h-full object-contain cursor-zoom-in" onclick="openLightbox('${img}')" loading="lazy">`
+                              : `<i class="fas fa-file-download text-gray-300 text-3xl"></i>`}
                     </div>
                     <div class="p-4 flex flex-col flex-grow">
-                        <h3 class="font-bold text-brand-dark text-sm sm:text-base font-serif leading-snug mb-1">${p.name.replace('Useful Information - ', '')}</h3>
+                        <span class="inline-block bg-brand-gold text-brand-dark text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 mb-1.5 self-start">Free Download</span>
+                        <h3 class="font-bold text-brand-dark text-base sm:text-lg font-serif leading-snug mb-1">${p.name.replace('Useful Information - ', '')}</h3>
                         <p class="text-xs text-gray-600 mb-3 line-clamp-2 leading-relaxed">${plainDesc || 'Free downloadable reference chart.'}</p>
                         <div class="grid grid-cols-2 gap-2 mt-auto">
                             ${img
-                                ? `<a href="${img}" download target="_blank" class="bg-brand-maroon hover:bg-brand-dark text-white py-2.5 text-[10px] sm:text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition"><i class="fas fa-download"></i> Download</a>`
+                                ? `<a href="${img}" download target="_blank" class="bg-brand-dark hover:bg-black text-white py-2.5 text-[10px] sm:text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition"><i class="fas fa-download"></i> Download</a>`
                                 : `<button disabled class="bg-gray-200 text-gray-400 py-2.5 text-[10px] sm:text-xs font-bold uppercase cursor-not-allowed">Unavailable</button>`}
-                            <button onclick="shareProductNative(event,'${p.name.replace(/'/g,"\\'")}')" class="border border-gray-200 text-gray-600 hover:border-brand-gold py-2.5 text-[10px] sm:text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition"><i class="fas fa-share-alt"></i> Share</button>
+                            <button onclick="shareProductNative(event,'${p.name.replace(/'/g,"\\'")}')" class="border border-brand-dark/20 text-brand-dark hover:border-brand-gold py-2.5 text-[10px] sm:text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition"><i class="fas fa-share-alt"></i> Share</button>
                         </div>
                     </div>
                 </div>`;
