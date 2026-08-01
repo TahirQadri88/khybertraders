@@ -38,6 +38,18 @@ function findProduct(name) {
     return null;
 }
 
+function getCleanSlug(name) {
+    if (!name) return '';
+    return name.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+}
+
+// Mirrors cat_title() in sync_products.yml so share captions match the
+// category-page headings instead of shouting in ALL CAPS.
+function catTitle(cat) {
+    return (cat || '').replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .replace(/\bAnd\b/g, 'and').replace(/\bFor\b/g, 'for').replace(/\bOf\b/g, 'of');
+}
+
 async function fetchSettings() {
     try {
         const doc = await db.collection('settings').doc('shop').get();
@@ -259,11 +271,78 @@ function checkoutViaWhatsApp() {
     window.open('https://wa.me/923352999006?text=' + encodeURIComponent(msg), '_blank');
     if (typeof gtag !== 'undefined') gtag('event', 'generate_lead', { method: 'whatsapp_cart', value: itemCount });
 }
+// A quick pre-order question -- distinct from placing an order. Opens
+// WhatsApp immediately with no form, since asking a question shouldn't
+// require delivery details.
 window.inquireProduct = function(name, category, link) {
-    const text = '📦 *Product:* ' + name + '\n🔗 *Link:* ' + link;
+    const text = '❓ *Question about:* ' + name + '\n🔗 ' + link +
+        '\n\nHi, I’d like to know more about this product before ordering.';
     window.open('https://wa.me/923352999006?text=' + encodeURIComponent(text), '_blank');
     if (typeof gtag !== 'undefined') gtag('event', 'generate_lead', { item_name: name, item_category: category });
 };
+
+// The real "place an order" action: add the item to the cart, then go
+// straight to the checkout screen (order terms + delivery details form)
+// instead of bypassing it with a bare single-item WhatsApp message.
+window.checkoutProduct = function(name, packSize) {
+    window.addToCart(name, packSize);
+    if (cart.length) openCheckout();
+};
+
+window.shareProductNative = async (event, name) => {
+    const p = findProduct(name);
+    if (!p) return;
+    const slug = getCleanSlug(name);
+    const shareLink = `https://animalhealth.pk/s/${slug}.html`;
+    const imgUrl = (p.images && p.images[0]) || '';
+    const cleanDesc = (p.desc || '').replace(/<[^>]*>?/gm, '').trim();
+    if (typeof gtag !== 'undefined') gtag('event', 'share', { method: 'whatsapp', content_type: 'product', content_id: name });
+    const btn = event.currentTarget;
+    const priceLine = (p.packSizes && p.packSizes.length)
+        ? `\n💰 ${p.packSizes.map(ps => `${ps.size}: ${ps.price}`).join(', ')}`
+        : p.priceDisplay ? `\n💰 ${p.priceDisplay}` : '';
+    const descLine = cleanDesc ? `\n📝 ${cleanDesc}` : '';
+    const caption = p.isResource
+        ? `📄 *${name.replace('Useful Information - ', '')}*\nFree downloadable reference chart\n\n📥 ${shareLink}\n\n_Khyber Traders — Wholesale Veterinary Pharmacy, Karachi_`
+        : `📦 *${name}*\n📂 ${catTitle(p.category)}${priceLine}${descLine}\n\n🔗 ${shareLink}\n\n_Khyber Traders — Wholesale Veterinary Pharmacy, Karachi_`;
+
+    btn.classList.add('btn-loading');
+    try {
+        if (imgUrl && navigator.canShare && navigator.share) {
+            const tempImg = new Image();
+            tempImg.crossOrigin = "anonymous";
+            tempImg.src = imgUrl + (imgUrl.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
+
+            await new Promise((res, rej) => {
+                tempImg.onload = res;
+                tempImg.onerror = rej;
+                setTimeout(rej, 4500);
+            });
+
+            const canvas = document.getElementById('share-canvas');
+            canvas.width = tempImg.width;
+            canvas.height = tempImg.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(tempImg, 0, 0);
+
+            const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.8));
+            const file = new File([blob], `${slug}.jpg`, { type: 'image/jpeg' });
+
+            if (navigator.canShare({ files: [file] })) {
+                await navigator.share({ files: [file], text: caption });
+                btn.classList.remove('btn-loading');
+                return;
+            }
+        }
+        if (navigator.share) await navigator.share({ text: caption });
+        else { await navigator.clipboard.writeText(caption); alert("Details copied!"); }
+    } catch (e) {
+        if (e && e.name === 'AbortError') { btn.classList.remove('btn-loading'); return; }
+        window.open(`https://wa.me/?text=${encodeURIComponent(caption)}`, '_blank');
+    }
+    btn.classList.remove('btn-loading');
+};
+
 window.openCart = openCart;
 window.closeCart = closeCart;
 window.clearCart = clearCart;

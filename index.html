@@ -570,17 +570,8 @@
             }
         }
 
-        function getCleanSlug(name) {
-            if(!name) return '';
-            return name.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-        }
-
-        // Mirrors cat_title() in sync_products.yml so share captions match
-        // the category-page headings instead of shouting in ALL CAPS.
-        function catTitle(cat) {
-            return (cat || '').replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-                .replace(/\bAnd\b/g, 'and').replace(/\bFor\b/g, 'for').replace(/\bOf\b/g, 'of');
-        }
+        // getCleanSlug() and catTitle() now live in assets/cart.js (loaded
+        // above) so /s/ pages' shareProductNative() can use them too.
 
         // Exact-match icon overrides, keyed by the precise category string as
         // stored in Firestore (lowercased) — hand-picked per category, checked
@@ -678,19 +669,21 @@
                 const img = p.images[0] || '';
                 const plainDesc = (p.desc || '').replace(/\n+/g, ' ').trim();
                 return `
-                <div class="bg-white border border-gray-200 hover:border-brand-gold hover:shadow-lg rounded-lg transition-all duration-300 flex flex-col sm:flex-row overflow-hidden">
-                    <div class="sm:w-32 h-40 sm:h-auto flex-shrink-0 bg-gray-50 border-b sm:border-b-0 sm:border-r border-gray-100">
-                        ${img ? `<img src="${img}" alt="${p.name.replace(/"/g,'&quot;')}" class="w-full h-full object-cover cursor-zoom-in" onclick="openLightbox('${img}')" loading="lazy">`
-                              : `<div class="w-full h-full flex items-center justify-center"><i class="fas fa-file-download text-gray-300 text-3xl"></i></div>`}
+                <div class="bg-white border border-brand-gold/40 hover:shadow-lg rounded-lg transition-all duration-300 flex flex-col overflow-hidden">
+                    <div class="h-1.5 w-full flex-shrink-0 bg-brand-dark"></div>
+                    <div class="bg-gray-100 aspect-[3/4] flex items-center justify-center">
+                        ${img ? `<img src="${img}" alt="${p.name.replace(/"/g,'&quot;')}" class="w-full h-full object-contain cursor-zoom-in" onclick="openLightbox('${img}')" loading="lazy">`
+                              : `<i class="fas fa-file-download text-gray-300 text-3xl"></i>`}
                     </div>
                     <div class="p-4 flex flex-col flex-grow">
-                        <h3 class="font-bold text-brand-dark text-sm sm:text-base font-serif leading-snug mb-1">${p.name.replace('Useful Information - ', '')}</h3>
+                        <span class="inline-block bg-brand-gold text-brand-dark text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 mb-1.5 self-start">Free Download</span>
+                        <h3 class="font-bold text-brand-dark text-base sm:text-lg font-serif leading-snug mb-1">${p.name.replace('Useful Information - ', '')}</h3>
                         <p class="text-xs text-gray-600 mb-3 line-clamp-2 leading-relaxed">${plainDesc || 'Free downloadable reference chart.'}</p>
                         <div class="grid grid-cols-2 gap-2 mt-auto">
                             ${img
-                                ? `<a href="${img}" download target="_blank" class="bg-brand-maroon hover:bg-brand-dark text-white py-2.5 text-[10px] sm:text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition"><i class="fas fa-download"></i> Download</a>`
+                                ? `<a href="${img}" download target="_blank" class="bg-brand-dark hover:bg-black text-white py-2.5 text-[10px] sm:text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition"><i class="fas fa-download"></i> Download</a>`
                                 : `<button disabled class="bg-gray-200 text-gray-400 py-2.5 text-[10px] sm:text-xs font-bold uppercase cursor-not-allowed">Unavailable</button>`}
-                            <button onclick="shareProductNative(event,'${p.name.replace(/'/g,"\\'")}')" class="border border-gray-200 text-gray-600 hover:border-brand-gold py-2.5 text-[10px] sm:text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition"><i class="fas fa-share-alt"></i> Share</button>
+                            <button onclick="shareProductNative(event,'${p.name.replace(/'/g,"\\'")}')" class="border border-brand-dark/20 text-brand-dark hover:border-brand-gold py-2.5 text-[10px] sm:text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition"><i class="fas fa-share-alt"></i> Share</button>
                         </div>
                     </div>
                 </div>`;
@@ -779,59 +772,7 @@
             }
         };
 
-        window.shareProductNative = async (event, name) => {
-            const p = allProducts.find(x => x.name === name);
-            if (!p) return;
-            const slug = getCleanSlug(name);
-            const shareLink = `https://animalhealth.pk/s/${slug}.html`;
-            const imgUrl = p.images[0] || '';
-            const cleanDesc = (p.desc || '').replace(/<[^>]*>?/gm, '').trim();
-            if (typeof gtag !== 'undefined') gtag('event', 'share', { method: 'whatsapp', content_type: 'product', content_id: name });
-            const btn = event.currentTarget;
-            const priceLine = (p.packSizes && p.packSizes.length)
-                ? `\n\uD83D\uDCB0 ${p.packSizes.map(ps => `${ps.size}: ${ps.price}`).join(', ')}`
-                : p.priceDisplay ? `\n\uD83D\uDCB0 ${p.priceDisplay}` : '';
-            const descLine = cleanDesc ? `\n\uD83D\uDCDD ${cleanDesc}` : '';
-            const caption = p.isResource
-                ? `\uD83D\uDCC4 *${name.replace('Useful Information - ', '')}*\nFree downloadable reference chart\n\n\uD83D\uDCE5 ${shareLink}\n\n_Khyber Traders — Wholesale Veterinary Pharmacy, Karachi_`
-                : `\uD83D\uDCE6 *${name}*\n\uD83D\uDCC2 ${catTitle(p.category)}${priceLine}${descLine}\n\n\uD83D\uDD17 ${shareLink}\n\n_Khyber Traders — Wholesale Veterinary Pharmacy, Karachi_`;
-
-            btn.classList.add('btn-loading');
-            try {
-                if (imgUrl && navigator.canShare && navigator.share) {
-                    const tempImg = new Image();
-                    tempImg.crossOrigin = "anonymous";
-                    tempImg.src = imgUrl + (imgUrl.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
-
-                    await new Promise((res, rej) => {
-                        tempImg.onload = res;
-                        tempImg.onerror = rej;
-                        setTimeout(rej, 4500);
-                    });
-
-                    const canvas = document.getElementById('share-canvas');
-                    canvas.width = tempImg.width;
-                    canvas.height = tempImg.height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(tempImg, 0, 0);
-
-                    const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.8));
-                    const file = new File([blob], `${slug}.jpg`, { type: 'image/jpeg' });
-
-                    if (navigator.canShare({ files: [file] })) {
-                        await navigator.share({ files: [file], text: caption });
-                        btn.classList.remove('btn-loading');
-                        return;
-                    }
-                }
-                if (navigator.share) await navigator.share({ text: caption });
-                else { await navigator.clipboard.writeText(caption); alert("Details copied!"); }
-            } catch (e) {
-                if (e && e.name === 'AbortError') { btn.classList.remove('btn-loading'); return; }
-                window.open(`https://wa.me/?text=${encodeURIComponent(caption)}`, '_blank');
-            }
-            btn.classList.remove('btn-loading');
-        };
+        // shareProductNative() now lives in assets/cart.js so /s/ pages can use it too.
 
         function checkForDirectLink() {
             const params = new URLSearchParams(window.location.search);
@@ -903,20 +844,30 @@
                                 ? `<a href="${firstImg}" download target="_blank"
                                     class="w-full bg-brand-maroon hover:bg-brand-dark text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
                                     <i class="fas fa-download"></i> Download Chart
-                                </a>`
+                                </a>
+                                <button onclick="shareProductNative(event,'${product.name.replace(/'/g,"\\'")}')"
+                                        class="w-full bg-brand-gold hover:bg-brand-maroon text-brand-dark hover:text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition">
+                                    <i class="fas fa-share-alt"></i> Share
+                                </button>`
                                 : `${(product.minQty || 1) > 1 ? `<p class="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200 px-3 py-2 text-center"><i class="fas fa-layer-group mr-1"></i>Minimum order: ${product.minQty} units</p>` : ''}
                             <button onclick="window.addToCart('${product.name.replace(/'/g,"\\'")}', _pdpPackSize);"
                                 class="w-full bg-brand-maroon hover:bg-brand-dark text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
                                 <i class="fas fa-plus text-lg"></i> Add to Order
                             </button>
-                            <button onclick="window.inquireProduct('${product.name.replace(/'/g,"\\'")}','${product.category}','${redirectLink}')"
+                            <button onclick="window.checkoutProduct('${product.name.replace(/'/g,"\\'")}', _pdpPackSize);"
                                 class="w-full bg-green-500 hover:bg-green-600 text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition shadow">
-                                <i class="fab fa-whatsapp text-lg"></i> Inquire on WhatsApp
-                            </button>`}
-                            <button onclick="shareProductNative(event,'${product.name.replace(/'/g,"\\'")}')"
-                                    class="w-full bg-brand-gold hover:bg-brand-maroon text-brand-dark hover:text-white py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition">
-                                <i class="fas fa-share-alt"></i> Share Product
+                                <i class="fab fa-whatsapp text-lg"></i> Checkout Now
                             </button>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button onclick="window.inquireProduct('${product.name.replace(/'/g,"\\'")}','${product.category}','${redirectLink}')"
+                                    class="w-full border border-gray-200 text-gray-700 py-2.5 text-xs font-bold uppercase tracking-widest hover:border-brand-maroon hover:text-brand-maroon transition flex items-center justify-center gap-1.5">
+                                    <i class="fas fa-circle-question"></i> Ask a Question
+                                </button>
+                                <button onclick="shareProductNative(event,'${product.name.replace(/'/g,"\\'")}')"
+                                        class="w-full bg-brand-gold hover:bg-brand-maroon text-brand-dark hover:text-white py-2.5 text-xs font-bold uppercase tracking-widest transition flex items-center justify-center gap-1.5">
+                                    <i class="fas fa-share-alt"></i> Share
+                                </button>
+                            </div>`}
                             <button onclick="closeProductDetailPage()"
                                     class="w-full border border-gray-200 text-gray-700 py-2.5 text-xs font-bold uppercase tracking-widest hover:border-brand-maroon hover:text-brand-maroon transition">
                                 <i class="fas fa-th-large mr-1"></i> Browse All Products
