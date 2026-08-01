@@ -130,6 +130,7 @@ jobs:
           .stock-in { display: inline-block; background: #dcfce7; color: #166534; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 4px 10px; margin-bottom: 16px; }
           .stock-out { display: inline-block; background: #fee2e2; color: #991b1b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 4px 10px; margin-bottom: 16px; }
           .product-img { width: 100%; max-width: 380px; display: block; background: #fff; border: 1px solid #e5e7eb; margin-bottom: 10px; }
+          #share-canvas { display: none; }
           .thumbs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
           .thumbs img { width: 64px; height: 64px; object-fit: cover; background: #fff; border: 2px solid #e5e7eb; cursor: pointer; transition: border-color 0.15s; }
           .thumbs img:hover { border-color: #FFF200; }
@@ -142,6 +143,9 @@ jobs:
           .btn-primary:hover { background: #000000; }
           .btn-wa { background: #25D366; color: #fff; }
           .btn-wa:hover { background: #128C4A; }
+          .btn-outline { background: #fff; color: #131313; border: 1px solid #e5e7eb; }
+          .btn-outline:hover { border-color: #131313; }
+          .btn-loading { opacity: 0.6; pointer-events: none; }
           .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin: 24px 0 32px; }
           .card { background: #fff; border: 1px solid #e5e7eb; padding: 14px; display: block; }
           .card:hover { border-color: #FFF200; }
@@ -327,13 +331,6 @@ jobs:
               price_num = parse_price_num(p['priceDisplay'])
               availability = "https://schema.org/InStock" if p['inStock'] else "https://schema.org/OutOfStock"
               is_resource = p.get('isResource', False)
-              if is_resource:
-                  wa_text = urllib.parse.quote(
-                      f"\U0001F4C4 *{name}*\nFree downloadable reference chart\n\n"
-                      f"\U0001F4E5 {page_url}\n\n_Khyber Traders — Wholesale Veterinary Pharmacy, Karachi_")
-              else:
-                  wa_text = urllib.parse.quote(f"\U0001F4E6 *Product:* {name}\n\U0001F517 *Link:* {page_url}")
-              wa_link = f"https://wa.me/923352999006?text={wa_text}"
 
               ld = {
                   "@context": "https://schema.org",
@@ -420,28 +417,52 @@ jobs:
                       for im in imgs
                   ) + '</div>'
 
+              # json.dumps() quotes with ", which would prematurely close this HTML
+              # attribute's own " delimiters -- HTML-escape it so the quotes survive
+              # as &quot; and the browser hands back a valid JS string/argument.
+              name_js_attr = H.escape(json.dumps(name))
+              category_js_attr = H.escape(json.dumps(p['category']))
+              page_url_js_attr = H.escape(json.dumps(page_url))
+
               if is_resource:
-                  add_to_order_html = f'<a class="btn btn-primary" href="{img}" download target="_blank">Download Chart</a>'
+                  cta_html = (
+                      f'<a class="btn btn-primary" href="{img}" download target="_blank"><i class="fas fa-download"></i> Download Chart</a>'
+                      f'<button type="button" class="btn btn-outline" onclick="shareProductNative(event,{name_js_attr})"><i class="fas fa-share-alt"></i> Share</button>'
+                  )
               elif p['inStock']:
-                  # json.dumps() quotes with ", which would prematurely close this
-                  # HTML attribute's own " delimiters -- HTML-escape it so the quotes
-                  # survive as &quot; and the browser hands back a valid JS string.
-                  name_js_attr = H.escape(json.dumps(name))
-                  add_to_order_html = f'<button type="button" class="btn btn-primary" onclick="window.addToCart({name_js_attr}, window.__SELECTED_PACK__)">Add to Order</button>'
+                  # "Order via WhatsApp" used to bypass the cart/checkout flow
+                  # entirely with a bare single-item message -- no chance to add
+                  # more items, and no minimum-order/delivery-charge info. Checkout
+                  # Now now goes through the same cart + checkout screen as adding
+                  # multiple items does. Ask a Question stays a separate, instant,
+                  # no-form shortcut for a pre-order question.
+                  cta_html = (
+                      f'<button type="button" class="btn btn-primary" onclick="window.addToCart({name_js_attr}, window.__SELECTED_PACK__)"><i class="fas fa-plus"></i> Add to Order</button>'
+                      f'<button type="button" class="btn btn-wa" onclick="window.checkoutProduct({name_js_attr}, window.__SELECTED_PACK__)"><i class="fab fa-whatsapp"></i> Checkout Now</button>'
+                      f'<button type="button" class="btn btn-outline" onclick="window.inquireProduct({name_js_attr},{category_js_attr},{page_url_js_attr})"><i class="fas fa-circle-question"></i> Ask a Question</button>'
+                      f'<button type="button" class="btn btn-outline" onclick="shareProductNative(event,{name_js_attr})"><i class="fas fa-share-alt"></i> Share</button>'
+                  )
               else:
-                  add_to_order_html = '<button type="button" class="btn" style="background:#e5e7eb;color:#9ca3af;cursor:not-allowed" disabled>Out of Stock</button>'
+                  cta_html = (
+                      '<button type="button" class="btn" style="background:#e5e7eb;color:#9ca3af;cursor:not-allowed" disabled>Out of Stock</button>'
+                      f'<button type="button" class="btn btn-outline" onclick="window.inquireProduct({name_js_attr},{category_js_attr},{page_url_js_attr})"><i class="fas fa-circle-question"></i> Ask a Question</button>'
+                      f'<button type="button" class="btn btn-outline" onclick="shareProductNative(event,{name_js_attr})"><i class="fas fa-share-alt"></i> Share</button>'
+                  )
 
               # window.__PRODUCT__ lets the shared cart.js (also used by index.html)
-              # add this single product to the order list without fetching the
-              # whole catalog. Escape literal "</" the same way as the JSON-LD above.
+              # add this single product to the order list, share it, or build an
+              # inquiry message without fetching the whole catalog. Escape literal
+              # "</" the same way as the JSON-LD above.
               product_json = json.dumps({
                   "name":         name,
                   "category":     p['category'],
+                  "desc":         desc,
                   "packSizes":    pack_sizes,
                   "priceDisplay": p['priceDisplay'],
                   "images":       imgs,
                   "inStock":      p['inStock'],
                   "minQty":       p['minQty'],
+                  "isResource":   is_resource,
               }, ensure_ascii=False).replace('</', '<\\/')
               # Loaded after cart.js (below) so fetchSettings(), defined there, exists
               # by the time this script calls it.
@@ -491,12 +512,12 @@ jobs:
               {stock_html}
               <p class="desc">{desc_html}</p>
               <div class="cta">
-              {add_to_order_html}
-              <a class="btn btn-wa" href="{wa_link}">{'Share on WhatsApp' if is_resource else 'Order via WhatsApp'}</a>
+              {cta_html}
               </div>
               </div>
               {footer_html()}
               {cart_widget_html()}
+              <canvas id="share-canvas"></canvas>
               <script src="{BASE_URL}/assets/cart.js"></script>
               {page_script}
               </body>
