@@ -297,7 +297,7 @@
     "category": "vaccines",
     "name": "PPR Vaccine Turkey (100 dose)",
     "slug": "ppr-vaccine-turkey-100-dose",
-    "inStock": true,
+    "inStock": false,
     "priceDisplay": "Rs 3500"
   },
   {
