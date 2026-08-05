@@ -304,8 +304,8 @@
     "category": "vaccines",
     "name": "ANTOX 9 100ml (Russia)",
     "slug": "antox-9-100ml-russia",
-    "inStock": false,
-    "priceDisplay": ""
+    "inStock": true,
+    "priceDisplay": "7500"
   },
   {
     "category": "vaccines",
