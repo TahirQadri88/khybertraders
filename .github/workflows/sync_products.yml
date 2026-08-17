@@ -321,7 +321,7 @@ jobs:
               imgs  = p['images']
               slug  = get_clean_slug(name)
               cat_slug = get_clean_slug(p['category'])
-              img   = imgs[0] if imgs else "https://tahirqadri88.github.io/khybertraders/images/website%20banner.jpg"
+              img   = imgs[0] if imgs else f"{BASE_URL}/images/website%20banner.jpg"
               page_url = f"{BASE_URL}/s/{slug}.html"
               cat_link = f"{BASE_URL}/c/{cat_slug}.html"
               name_e = H.escape(name)
