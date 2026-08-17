@@ -77,6 +77,14 @@
         }
     </script>
 
+    <!-- Resource hints: the page pulls from 4 external origins before first
+         paint, so warm the connections up front instead of paying DNS/TLS
+         setup cost serially as each tag below is discovered. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://www.gstatic.com">
+
     <!-- 4. FIREBASE SDK (Firestore — products database) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -130,7 +138,7 @@
             transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         .slider-btn:hover { background: #FFF200; color: #131313; }
-        #lightbox { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); justify-content: center; align-items: center; }
+        #lightbox { display: flex; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); justify-content: center; align-items: center; }
         #lightbox img { max-width: 90%; max-height: 90%; object-fit: contain; border: 2px solid #FFF200; }
         #lightbox-close { position: absolute; top: 20px; right: 20px; color: white; font-size: 30px; cursor: pointer; z-index: 10001; background: rgba(0,0,0,0.5); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
         #link-loader { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index: 9000; justify-content: center; align-items: center; flex-direction: column; }
@@ -149,6 +157,42 @@
         #cart-items-list::-webkit-scrollbar { width: 5px; }
         #cart-items-list::-webkit-scrollbar-track { background: #f4f4f5; border-radius: 3px; }
         #cart-items-list::-webkit-scrollbar-thumb { background: #131313; border-radius: 3px; }
+
+        /* Full-screen overlays (category modal, product detail page, lightbox)
+           used to snap open/closed via display:none, which can't be
+           transitioned — they now fade via opacity + visibility instead.
+           visibility is listed in the transition so it flips to hidden only
+           at the END of the closing fade (keeping it out of the tab order
+           and a11y tree while closed), and to visible immediately when
+           opening (so the fade-in is actually visible). pointer-events is
+           dropped instantly on close so a closing overlay can't still be
+           clicked through mid-fade. */
+        .overlay-anim { transition: opacity 0.25s ease, visibility 0.25s ease; }
+        .overlay-anim.is-closed { opacity: 0; visibility: hidden; pointer-events: none; }
+
+        /* Quick fade for content that swaps in via innerHTML (product tiles,
+           search results) so the replacement doesn't pop in abruptly right
+           after the loading spinner. */
+        .content-fade-in { animation: fadeIn 0.4s ease-out; }
+
+        /* Scroll-reveal for below-the-fold sections (About, footer): fades
+           and lifts content in as it enters view. JS adds .revealed on
+           intersection, with a hard fallback timeout so content can never
+           get stuck invisible if the observer fails for any reason. */
+        .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .reveal.revealed { opacity: 1; transform: translateY(0); }
+
+        /* Respect the OS-level "reduce motion" preference: collapse every
+           transition/animation to effectively instant rather than removing
+           them, so nothing relies on motion to reach its end state. */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased selection:bg-brand-maroon selection:text-white">
@@ -305,7 +349,7 @@
     <!-- About Section (compact -- secondary to Products) -->
     <section id="about" class="py-14 bg-white border-b border-gray-100">
         <div class="container mx-auto px-6">
-            <div class="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+            <div class="reveal flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
                 <div class="lg:max-w-md text-center lg:text-left">
                     <div class="flex items-center gap-3 mb-3 justify-center lg:justify-start">
                         <div class="h-1 w-10 bg-brand-maroon"></div>
@@ -341,7 +385,7 @@
     <!-- FULLY RESTORED PERFECTED FOOTER (V52/V57) -->
     <footer id="contact" class="bg-brand-dark text-white pt-24 pb-12">
         <div class="container mx-auto px-6">
-            <div class="flex flex-col items-center gap-10">
+            <div class="reveal flex flex-col items-center gap-10">
                 <div class="w-full max-w-3xl text-center md:text-left md:flex md:justify-between md:items-start md:gap-16">
                     <div>
                         <div class="inline-block bg-white p-4 mb-8 shadow-lg">
@@ -369,7 +413,7 @@
     </footer>
 
     <!-- CATEGORY MODAL (FIXED HEADER ALIGNMENT) -->
-    <div id="category-modal" class="fixed inset-0 bg-black/95 hidden z-[100] overflow-y-auto backdrop-blur-sm transition-opacity duration-300">
+    <div id="category-modal" class="fixed inset-0 bg-black/95 overlay-anim is-closed z-[100] overflow-y-auto backdrop-blur-sm">
         <div class="min-h-screen px-2 sm:px-4 flex justify-center items-start">
             <div class="fixed inset-0" onclick="closeCategoryModal()"></div>
             <div class="w-full max-w-6xl p-4 sm:p-8 my-6 sm:my-12 text-left transition-all transform bg-white shadow-2xl relative border-t-4 border-brand-maroon">
@@ -392,13 +436,13 @@
     </div>
 
     <!-- LIGHTBOX WITH CLOSE BUTTON -->
-    <div id="lightbox" onclick="closeLightbox()">
+    <div id="lightbox" class="overlay-anim is-closed" onclick="closeLightbox()">
         <div id="lightbox-close" onclick="closeLightbox()"><i class="fas fa-times"></i></div>
         <img id="lightbox-img" src="">
     </div>
 
     <!-- Product Detail Page -->
-    <div id="product-detail-page" class="fixed inset-0 bg-white z-[150] overflow-y-auto hidden">
+    <div id="product-detail-page" class="fixed inset-0 bg-white z-[150] overflow-y-auto overlay-anim is-closed">
         <div class="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
             <div class="container mx-auto px-4 py-3 flex items-center gap-3">
                 <button onclick="closeProductDetailPage()" class="flex items-center gap-2 text-brand-maroon font-bold text-xs uppercase tracking-widest hover:text-brand-dark transition flex-shrink-0">
@@ -616,6 +660,16 @@
             for (const [kw, icon] of CAT_ICONS) if (c.includes(kw)) return icon;
             return 'fa-box-open';
         }
+        // Re-triggers the .content-fade-in CSS animation on an element whose
+        // innerHTML was just replaced -- removing then re-adding the class
+        // forces the browser to treat it as a fresh animation rather than a
+        // no-op (a class already present doesn't restart its animation).
+        function retriggerFade(el) {
+            el.classList.remove('content-fade-in');
+            void el.offsetWidth;
+            el.classList.add('content-fade-in');
+        }
+
         function generateTiles() {
             const container = document.getElementById('tiles-container');
             const sellableProducts = allProducts.filter(p => !p.isResource);
@@ -658,6 +712,7 @@
                     </div>
                 </div>`
             }).join('');
+            retriggerFade(container);
         }
 
         function renderResources() {
@@ -688,6 +743,7 @@
                     </div>
                 </div>`;
             }).join('');
+            retriggerFade(container);
         }
 
         window.openCategoryModal = (category, specificItemName = null) => {
@@ -739,7 +795,7 @@
                     items: filtered.map(p => ({ item_name: p.name, item_category: p.category }))
                 });
             }
-            document.getElementById('category-modal').classList.remove('hidden');
+            document.getElementById('category-modal').classList.remove('is-closed');
         };
 
         window.shareCategory = async (event, cat) => {
@@ -876,12 +932,12 @@
                     </div>
                 </div>`;
 
-            document.getElementById('product-detail-page').classList.remove('hidden');
+            document.getElementById('product-detail-page').classList.remove('is-closed');
             window.scrollTo(0, 0);
         };
 
         window.closeProductDetailPage = function() {
-            document.getElementById('product-detail-page').classList.add('hidden');
+            document.getElementById('product-detail-page').classList.add('is-closed');
             document.title = 'Khyber Traders | Wholesale Veterinary Pharmacy';
             history.replaceState(null, '', '/');
             document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
@@ -948,6 +1004,7 @@
                 .sort((a, b) => b.score - a.score);
             if (!matched.length) {
                 results.innerHTML = `<div class="text-center py-10 text-gray-600"><i class="fas fa-search text-3xl mb-3 block text-gray-400"></i>No products found for "<strong>${query}</strong>"</div>`;
+                retriggerFade(results);
                 return;
             }
             const snippet = (s, q) => {
@@ -975,6 +1032,7 @@
                         </div>`;
                     }).join('')}
                 </div>`;
+            retriggerFade(results);
         }
 
         // Dynamic copyright year
@@ -1011,15 +1069,15 @@
         // Escape key to close modals (lightbox → category modal → mobile menu)
         document.addEventListener('keydown', function(e) {
             if (e.key !== 'Escape') return;
-            if (document.getElementById('lightbox').style.display === 'flex') {
+            if (!document.getElementById('lightbox').classList.contains('is-closed')) {
                 closeLightbox();
             } else if (!document.getElementById('checkout-screen').classList.contains('hidden')) {
                 closeCheckout();
-            } else if (!document.getElementById('product-detail-page').classList.contains('hidden')) {
+            } else if (!document.getElementById('product-detail-page').classList.contains('is-closed')) {
                 closeProductDetailPage();
             } else if (document.getElementById('cart-drawer').classList.contains('open')) {
                 closeCart();
-            } else if (!document.getElementById('category-modal').classList.contains('hidden')) {
+            } else if (!document.getElementById('category-modal').classList.contains('is-closed')) {
                 closeCategoryModal();
             } else {
                 closeMobileMenu();
@@ -1043,9 +1101,35 @@
         window.trackInquiry = (name, category) => {
             if (typeof gtag !== 'undefined') gtag('event', 'generate_lead', { item_name: name, item_category: category });
         };
-        window.closeCategoryModal = () => document.getElementById('category-modal').classList.add('hidden');
-        window.openLightbox = (s) => { document.getElementById('lightbox-img').src = s; document.getElementById('lightbox').style.display = 'flex'; };
-        window.closeLightbox = () => document.getElementById('lightbox').style.display = 'none';
+        window.closeCategoryModal = () => document.getElementById('category-modal').classList.add('is-closed');
+        window.openLightbox = (s) => { document.getElementById('lightbox-img').src = s; document.getElementById('lightbox').classList.remove('is-closed'); };
+        window.closeLightbox = () => document.getElementById('lightbox').classList.add('is-closed');
+
+        // Scroll-reveal for below-the-fold sections. Guarded so content can
+        // never end up permanently invisible: a hard fallback timeout reveals
+        // anything left un-revealed, independent of whether the observer
+        // itself works, and IntersectionObserver support is checked before
+        // relying on it at all.
+        (function setupScrollReveal() {
+            const revealEls = document.querySelectorAll('.reveal');
+            if (!revealEls.length) return;
+            if ('IntersectionObserver' in window) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('revealed');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+                revealEls.forEach(el => observer.observe(el));
+            } else {
+                revealEls.forEach(el => el.classList.add('revealed'));
+            }
+            setTimeout(() => {
+                document.querySelectorAll('.reveal:not(.revealed)').forEach(el => el.classList.add('revealed'));
+            }, 4000);
+        })();
 
         fetchProducts();
         fetchSettings();
