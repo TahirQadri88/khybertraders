@@ -24,7 +24,13 @@ jobs:
           python-version: '3.x'
 
       - name: Install Dependencies
-        run: pip install firebase-admin pillow
+        # google-cloud-firestore was previously unpinned (installed
+        # transitively via firebase-admin) and 2.29.0 (released 2026-08-24)
+        # broke every single run with "400 Invalid database id (default)" --
+        # the database ID was never actually wrong, that release regressed.
+        # Pinned below it; firebase-admin only requires >=2.21.0 so this
+        # doesn't conflict with its own dependency resolution.
+        run: pip install firebase-admin "google-cloud-firestore<2.29.0" pillow
 
       - name: Generate Product & Category Pages
         shell: python
