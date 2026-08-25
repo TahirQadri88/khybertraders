@@ -26,6 +26,7 @@
     <meta name="twitter:image" content="https://animalhealth.pk/images/website%20banner.jpg">
 
     <meta name="description" content="Khyber Traders - Wholesale Veterinary Pharmacy. Specialized in Dairy and Cattle Industry solutions.">
+    <link rel="canonical" id="canonical-link" href="https://animalhealth.pk">
     <link rel="icon" type="image/png" href="images/KT_Logo_Icon.png">
     <link rel="apple-touch-icon" href="images/KT_Logo_Icon.png">
 
@@ -832,6 +833,16 @@
 
         // shareProductNative() now lives in assets/cart.js so /s/ pages can use it too.
 
+        // Points the canonical tag at the real /s/ or /c/ URL for this
+        // content instead of leaving it on the ?item=/?cat= query-string
+        // address -- otherwise Google indexes the query-string link as a
+        // separate page from its own clean-URL counterpart (confirmed via
+        // Search Console: both were indexed for the same product).
+        function setCanonical(url) {
+            const link = document.getElementById('canonical-link');
+            if (link) link.href = url;
+        }
+
         function checkForDirectLink() {
             const params = new URLSearchParams(window.location.search);
             const item = params.get('item');
@@ -841,11 +852,17 @@
                 const target = item.toLowerCase().replace(/[^a-z0-9]/g, '');
                 const product = allProducts.find(p => p.name.toLowerCase().replace(/[^a-z0-9]/g, '') === target);
                 document.getElementById('link-loader').style.display = 'none';
-                if (product) openProductDetailPage(product);
+                if (product) {
+                    setCanonical(`https://animalhealth.pk/s/${getCleanSlug(product.name)}.html`);
+                    openProductDetailPage(product);
+                }
             } else if (cat) {
                 const targetCat = allProducts.find(p => getCleanSlug(p.category) === cat);
                 document.getElementById('link-loader').style.display = 'none';
-                if (targetCat) openCategoryModal(targetCat.category);
+                if (targetCat) {
+                    setCanonical(`https://animalhealth.pk/c/${cat}.html`);
+                    openCategoryModal(targetCat.category);
+                }
                 else alert("Category not found");
             } else {
                 document.getElementById('link-loader').style.display = 'none';
