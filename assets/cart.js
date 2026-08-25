@@ -23,6 +23,26 @@ let shopSettings = { minOrderValue: 0 };
 let cart = [];
 let _pdpPackSize = null;
 
+// Cart persistence: items are self-contained snapshots (name, price, pack
+// size, image, qty) taken at add-time, not live references to product data,
+// so writing/reading the whole array is safe on both index.html and every
+// /s/ page. Fails silently if storage is unavailable (private browsing,
+// quota) -- the cart still works in-memory for that session either way.
+const CART_STORAGE_KEY = 'kt_cart_v1';
+function saveCartToStorage() {
+    try { localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart)); } catch (e) {}
+}
+function restoreCartFromStorage() {
+    try {
+        const raw = localStorage.getItem(CART_STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+            cart = parsed.filter(x => x && typeof x === 'object' && typeof x.name === 'string' && typeof x.key === 'string');
+        }
+    } catch (e) {}
+}
+
 function parsePrice(str) {
     if (!str) return null;
     const m = str.replace(/,/g, '').match(/\d+/);
@@ -104,11 +124,13 @@ window.addToCart = function(name, packSize) {
     if (existing) { existing.qty++; } else {
         cart.push({ key, name: p.name, category: p.category, packSize: ps, priceDisplay: ps ? ps.price : (p.priceDisplay || ''), image: p.images[0] || '', minQty, qty: minQty });
     }
+    saveCartToStorage();
     updateCartBadge();
     openCart();
 };
 window.removeFromCart = function(idx) {
     cart.splice(idx, 1);
+    saveCartToStorage();
     updateCartBadge();
     renderCart();
 };
@@ -123,6 +145,7 @@ window.updateCartQty = function(idx, qty) {
     } else {
         item.qty = qty;
     }
+    saveCartToStorage();
     updateCartBadge();
     renderCart();
 };
@@ -185,6 +208,7 @@ function renderCart() {
 function clearCart() {
     if (!cart.length) return;
     cart = [];
+    saveCartToStorage();
     updateCartBadge();
     renderCart();
 }
@@ -270,6 +294,13 @@ function checkoutViaWhatsApp() {
     msg += '• Delivery time will be confirmed by our WhatsApp representative';
     window.open('https://wa.me/923352999006?text=' + encodeURIComponent(msg), '_blank');
     if (typeof gtag !== 'undefined') gtag('event', 'generate_lead', { method: 'whatsapp_cart', value: itemCount });
+    // Now that the cart persists across reloads, it must also reset once an
+    // order is actually sent -- otherwise coming back to the tab later would
+    // show the same items still sitting in the cart, inviting an accidental
+    // duplicate order.
+    clearCart();
+    closeCheckout();
+    closeCart();
 }
 // A quick pre-order question -- distinct from placing an order. Opens
 // WhatsApp immediately with no form, since asking a question shouldn't
@@ -349,3 +380,9 @@ window.clearCart = clearCart;
 window.openCheckout = openCheckout;
 window.closeCheckout = closeCheckout;
 window.checkoutViaWhatsApp = checkoutViaWhatsApp;
+
+// Restore any cart left over from a previous visit (e.g. switching to
+// WhatsApp mid-order and coming back) as soon as this script runs, so the
+// badge count is correct without the user needing to open the drawer first.
+restoreCartFromStorage();
+updateCartBadge();
