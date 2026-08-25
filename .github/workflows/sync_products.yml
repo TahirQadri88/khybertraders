@@ -24,13 +24,19 @@ jobs:
           python-version: '3.x'
 
       - name: Install Dependencies
-        # google-cloud-firestore was previously unpinned (installed
-        # transitively via firebase-admin) and 2.29.0 (released 2026-08-24)
-        # broke every single run with "400 Invalid database id (default)" --
-        # the database ID was never actually wrong, that release regressed.
-        # Pinned below it; firebase-admin only requires >=2.21.0 so this
-        # doesn't conflict with its own dependency resolution.
-        run: pip install firebase-admin "google-cloud-firestore<2.29.0" pillow
+        # Root cause of "400 Invalid database id (default)" on every run:
+        # google-api-core 2.35.0 (released 2026-08-24, previously installed
+        # unpinned as a transitive dep) added urllib.parse.quote() around
+        # path-template values in path_template.py -- Python's quote()
+        # percent-encodes "(" and ")" by default, so Firestore's literal
+        # "(default)" database sentinel got sent as "%28default%29" and the
+        # API rejected it. The database ID was never actually wrong; that
+        # release regressed. Pinning google-cloud-firestore alone did NOT
+        # fix this (verified) since it doesn't own path encoding -- pinning
+        # google-api-core below the broken release does. Neither pin
+        # conflicts with firebase-admin's own requirements (verified with a
+        # dry-run install).
+        run: pip install firebase-admin "google-api-core<2.35.0" "google-cloud-firestore<2.29.0" pillow
 
       - name: Generate Product & Category Pages
         shell: python
