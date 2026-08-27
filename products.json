@@ -67,7 +67,7 @@
     "name": "Avinide Drench China UM Ent.",
     "slug": "avinide-drench-china-um-ent",
     "inStock": false,
-    "priceDisplay": ""
+    "priceDisplay": "Rs 5250"
   },
   {
     "category": "dewromer drenches",
@@ -263,7 +263,7 @@
     "name": "FMD (Foot & Mouth Disease) Vaccine Russian Oil Base",
     "slug": "fmd-foot-and-mouth-disease-vaccine-russian-oil-base",
     "inStock": true,
-    "priceDisplay": "Rs. 11000"
+    "priceDisplay": "Rs. 10500"
   },
   {
     "category": "vaccines",
@@ -312,6 +312,6 @@
     "name": "FMD (Foot & Mouth Disease) Vaccine Russian Aqua / Jel Base",
     "slug": "fmd-foot-and-mouth-disease-vaccine-russian-aqua--jel-base",
     "inStock": false,
-    "priceDisplay": ""
+    "priceDisplay": "Rs 9500"
   }
 ]
