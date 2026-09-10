@@ -507,7 +507,8 @@ jobs:
               <meta name="twitter:title" content="{name_e}">
               <meta name="twitter:description" content="{short_desc}">
               <meta name="twitter:image" content="{img}">
-              <link rel="icon" href="{BASE_URL}/images/KT_Logo_Icon.png">
+              <link rel="icon" type="image/png" sizes="32x32" href="{BASE_URL}/images/favicon-32.png">
+              <link rel="icon" type="image/png" sizes="64x64" href="{BASE_URL}/images/favicon-64.png">
               {ld_json_script}
               <script type="application/ld+json">{breadcrumb_ld_json}</script>
               {page_head_common()}
@@ -811,7 +812,8 @@ jobs:
               <meta name="twitter:title" content="{cat_e} — Khyber Traders">
               <meta name="twitter:description" content="{short_desc}">
               <meta name="twitter:image" content="{og_image}">
-              <link rel="icon" href="{BASE_URL}/images/KT_Logo_Icon.png">
+              <link rel="icon" type="image/png" sizes="32x32" href="{BASE_URL}/images/favicon-32.png">
+              <link rel="icon" type="image/png" sizes="64x64" href="{BASE_URL}/images/favicon-64.png">
               <script type="application/ld+json">{ld_json}</script>
               <script type="application/ld+json">{breadcrumb_ld_json}</script>
               {page_head_common()}
@@ -875,7 +877,8 @@ jobs:
           <title>Full Product Catalog | Khyber Traders</title>
           <meta name="description" content="Complete list of wholesale veterinary products from Khyber Traders, Karachi — organized by category.">
           <link rel="canonical" href="{BASE_URL}/sitemap.html">
-          <link rel="icon" href="{BASE_URL}/images/KT_Logo_Icon.png">
+          <link rel="icon" type="image/png" sizes="32x32" href="{BASE_URL}/images/favicon-32.png">
+          <link rel="icon" type="image/png" sizes="64x64" href="{BASE_URL}/images/favicon-64.png">
           {page_head_common()}
           </head>
           <body>
