@@ -126,6 +126,13 @@ jobs:
               exit(1)
 
           # ── Shared page chrome (brand header/footer, no Tailwind dependency) ──
+          # Brand tokens: this Python string can't @import index.html's :root
+          # CSS custom properties (no build pipeline connects the two), so the
+          # hex values below (#131313 ink, #FFF200 yellow, #000000 dark,
+          # #F6F6F6 surface) are a manually-synced mirror of the :root block
+          # in index.html's <style> tag. Two-typeface system: Archivo
+          # (display/headings) + Manrope (body) — keep in sync with
+          # index.html's tailwind.config fontFamily.
           PAGE_CSS = """
           * { box-sizing: border-box; margin: 0; padding: 0; }
           body { font-family: 'Manrope', sans-serif; color: #1a1a1a; background: #f4f4f5; line-height: 1.6; }
@@ -148,7 +155,7 @@ jobs:
           .thumbs img:hover { border-color: #FFF200; }
           .packs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
           .packs span { background: #131313; color: #fff; font-size: 12px; font-weight: 700; padding: 6px 14px; }
-          .desc { color: #374151; font-size: 15px; margin-bottom: 26px; white-space: pre-line; font-family: 'Source Serif 4', serif; }
+          .desc { color: #374151; font-size: 15px; margin-bottom: 26px; white-space: pre-line; font-family: 'Manrope', sans-serif; }
           .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 40px; }
           .btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 22px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
           .btn-primary { background: #131313; color: #fff; }
@@ -174,7 +181,7 @@ jobs:
 
           def page_head_common():
               return ('<link rel="preconnect" href="https://fonts.googleapis.com">'
-                      '<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Manrope:wght@400;500;700&family=Roboto+Mono:wght@500;600;700&family=Source+Serif+4:wght@400&display=swap" rel="stylesheet">'
+                      '<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">'
                       f'<style>{PAGE_CSS}</style>'
                       '<script async src="https://www.googletagmanager.com/gtag/js?id=G-GZN53B9YMP"></script>'
                       '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}'
@@ -205,7 +212,11 @@ jobs:
           <script>
           tailwind.config = {
               theme: { extend: {
-                  fontFamily: { sans: ['"Manrope"', 'sans-serif'], serif: ['"Archivo"', 'sans-serif'], mono: ['"Roboto Mono"', 'monospace'] },
+                  /* mono aliased to Manrope, not removed — see index.html's
+                     tailwind.config for why (keeps font-mono classes on the
+                     shared cart widget visually intact with only 2 real
+                     typefaces loaded). */
+                  fontFamily: { sans: ['"Manrope"', 'sans-serif'], serif: ['"Archivo"', 'sans-serif'], mono: ['"Manrope"', 'sans-serif'] },
                   colors: { brand: { maroon: '#131313', gold: '#FFF200', goldBright: '#FFF200', dark: '#000000', light: '#F6F6F6' } }
               } }
           };

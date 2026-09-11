@@ -170,9 +170,24 @@ function showCartToast(text) {
 function updateCartBadge() {
     const total = cart.reduce((s, x) => s + x.qty, 0);
     const badge = document.getElementById('cart-badge');
-    if (!badge) return;
-    badge.textContent = total > 9 ? '9+' : String(total);
-    total > 0 ? badge.classList.remove('hidden') : badge.classList.add('hidden');
+    if (badge) {
+        badge.textContent = total > 9 ? '9+' : String(total);
+        total > 0 ? badge.classList.remove('hidden') : badge.classList.add('hidden');
+    }
+
+    // The header cart icon is easy to lose while browsing a long catalog on a
+    // phone. Keep a compact, non-overlapping review CTA visible after an item
+    // has been added; it is hidden on tablet/desktop where the header remains
+    // in view and when the order is empty.
+    const mobileBar = document.getElementById('mobile-cart-bar');
+    const mobileCount = document.getElementById('mobile-cart-count');
+    const mobilePlural = document.getElementById('mobile-cart-plural');
+    if (mobileBar) {
+        mobileBar.classList.toggle('hidden', total === 0);
+        mobileBar.classList.toggle('flex', total > 0);
+        if (mobileCount) mobileCount.textContent = total;
+        if (mobilePlural) mobilePlural.textContent = total === 1 ? '' : 's';
+    }
 }
 function updateCartScrollFade() {
     const list = document.getElementById('cart-items-list');
