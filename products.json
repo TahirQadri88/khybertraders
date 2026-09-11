@@ -147,6 +147,34 @@
     "priceDisplay": "Rs. 13000"
   },
   {
+    "category": "feeders and nipples",
+    "name": "Feeder",
+    "slug": "feeder",
+    "inStock": true,
+    "priceDisplay": ""
+  },
+  {
+    "category": "feeders and nipples",
+    "name": "Nipples for Calves Universal (Fits in most bottles)",
+    "slug": "nipples-for-calves-universal-fits-in-most-bottles",
+    "inStock": true,
+    "priceDisplay": "85"
+  },
+  {
+    "category": "feeders and nipples",
+    "name": "Calf Feeding Nipples — For Feeders",
+    "slug": "calf-feeding-nipples--for-feeders",
+    "inStock": true,
+    "priceDisplay": "150"
+  },
+  {
+    "category": "feeders and nipples",
+    "name": "BABY GOAT NIPPLES with CAP",
+    "slug": "baby-goat-nipples-with-cap",
+    "inStock": true,
+    "priceDisplay": "85"
+  },
+  {
     "category": "gripe water",
     "name": "Life Gripe Water 1 & 5 Litre",
     "slug": "life-gripe-water-1-and-5-litre",
@@ -276,7 +304,7 @@
     "category": "vaccines",
     "name": "LSD (lumpy skin disease) Vaccine 50 dose Russia",
     "slug": "lsd-lumpy-skin-disease-vaccine-50-dose-russia",
-    "inStock": true,
+    "inStock": false,
     "priceDisplay": "Rs. 10000"
   },
   {
