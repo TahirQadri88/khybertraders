@@ -104,8 +104,10 @@ function openCart() {
         list.addEventListener('scroll', updateCartScrollFade);
         list._scrollBound = true;
     }
+    if (typeof trapFocus === 'function') trapFocus(document.getElementById('cart-drawer'));
 }
 function closeCart() {
+    if (typeof releaseFocusTrap === 'function') releaseFocusTrap();
     document.getElementById('cart-overlay').classList.add('hidden');
     document.getElementById('cart-drawer').classList.remove('open');
 }
@@ -123,6 +125,14 @@ window.addToCart = function(name, packSize) {
     const existing = cart.find(x => x.key === key);
     if (existing) { existing.qty++; } else {
         cart.push({ key, name: p.name, category: p.category, packSize: ps, priceDisplay: ps ? ps.price : (p.priceDisplay || ''), image: p.images[0] || '', minQty, qty: minQty });
+    }
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'add_to_cart', {
+            item_name: p.name,
+            item_category: p.category,
+            value: parsePrice(ps ? ps.price : p.priceDisplay) || undefined,
+            currency: 'PKR'
+        });
     }
     saveCartToStorage();
     updateCartBadge();
@@ -233,8 +243,10 @@ function openCheckout() {
         </div>`;
     document.getElementById('checkout-screen').classList.remove('hidden');
     if (typeof gtag !== 'undefined') gtag('event', 'begin_checkout', { value: totalAmt, currency: 'PKR' });
+    if (typeof trapFocus === 'function') trapFocus(document.getElementById('checkout-screen'));
 }
 function closeCheckout() {
+    if (typeof releaseFocusTrap === 'function') releaseFocusTrap();
     document.getElementById('checkout-screen').classList.add('hidden');
 }
 function checkoutViaWhatsApp() {
@@ -291,7 +303,8 @@ function checkoutViaWhatsApp() {
     if (shopSettings.minOrderValue > 0) msg += '• Minimum order for delivery: *' + formatPKR(shopSettings.minOrderValue) + '*\n';
     msg += '• Delivery charges depend on area and vehicle\n';
     msg += '• Order will be dispatched after payment confirmation\n';
-    msg += '• Delivery time will be confirmed by our WhatsApp representative';
+    msg += '• Delivery time will be confirmed by our WhatsApp representative\n';
+    msg += '• Cold chain items (vaccines) are only delivered within Karachi';
     window.open('https://wa.me/923352999006?text=' + encodeURIComponent(msg), '_blank');
     if (typeof gtag !== 'undefined') gtag('event', 'generate_lead', { method: 'whatsapp_cart', value: itemCount });
     // Now that the cart persists across reloads, it must also reset once an
