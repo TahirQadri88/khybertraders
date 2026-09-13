@@ -1,6 +1,9 @@
 name: Catalogue Render QA
 
 on:
+  push:
+    branches: [claude/website-improvements-tlKIS]
+    paths: ['assets/cart.js', 'index.html', '.github/workflows/qa-catalogue.yml']
   workflow_dispatch:
 
 jobs:
@@ -11,30 +14,23 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: claude/website-improvements-tlKIS
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
       - name: Install Playwright
         run: |
           npm init -y
           npm install --no-save playwright
           npx playwright install --with-deps chromium
-
       - name: Validate JavaScript
         run: node --check assets/cart.js
-
       - name: Run rendered desktop/mobile QA
         run: |
           cat > /tmp/qa.js <<'NODE'
           const { chromium } = require('playwright');
-          const { execFileSync, spawn } = require('child_process');
-          const path = require('path');
-          const fs = require('fs');
+          const { spawn } = require('child_process');
           const server = spawn('python3', ['-m', 'http.server', '4173', '--bind', '127.0.0.1'], {cwd: process.cwd(), stdio:'ignore'});
-          const sleep = ms => new Promise(r=>setTimeout(r,ms));
           (async()=>{
             const browser = await chromium.launch({headless:true});
             try {
@@ -48,17 +44,25 @@ jobs:
                 await page.waitForFunction(()=>Array.isArray(window.allProducts) && window.allProducts.length>0,{timeout:30000});
                 await page.waitForSelector('#kt-home-catalogue .kt-card',{timeout:30000});
                 const result=await page.evaluate(()=>{
-                  const cards=[...document.querySelectorAll('#kt-home-catalogue .kt-card')];
-                  const search=document.querySelector('#product-search');
                   const legacyModal=document.querySelector('#category-modal');
                   const legacyResults=document.querySelector('#search-results');
-                  const bars=[...document.querySelectorAll('#kt-order-bar')];
+                  const bars=document.querySelectorAll('#kt-order-bar');
                   const mobileBar=document.querySelector('#mobile-cart-bar');
-                  const nav=document.querySelector('#kt-category-nav');
                   const strip=document.querySelector('#kt-category-strip');
-                  const prev=document.querySelector('#kt-cat-prev'), next=document.querySelector('#kt-cat-next');
                   const grid=document.querySelector('#kt-home-catalogue .kt-grid');
-                  return {cards:cards.length,searchCount:document.querySelectorAll('#product-search').length,legacyModalVisible:legacyModal && getComputedStyle(legacyModal).display!=='none',legacyResultsVisible:legacyResults && getComputedStyle(legacyResults).display!=='none,bars':bars.length,mobileBarVisible:!!mobileBar && getComputedStyle(mobileBar).display!=='none',nav:!!nav,arrows:!!prev&&!!next,overflow:!!strip&&strip.scrollWidth>strip.clientWidth,gridCols:grid?getComputedStyle(grid).gridTemplateColumns.split(' ').length:0,heading:document.querySelector('#products h2')?.textContent.trim()};
+                  return {
+                    cards:document.querySelectorAll('#kt-home-catalogue .kt-card').length,
+                    searchCount:document.querySelectorAll('#product-search').length,
+                    legacyModalVisible:!!legacyModal && getComputedStyle(legacyModal).display!=='none',
+                    legacyResultsVisible:!!legacyResults && getComputedStyle(legacyResults).display!=='none',
+                    bars:bars.length,
+                    mobileBarVisible:!!mobileBar && getComputedStyle(mobileBar).display!=='none',
+                    nav:!!document.querySelector('#kt-category-nav'),
+                    arrows:!!document.querySelector('#kt-cat-prev')&&!!document.querySelector('#kt-cat-next'),
+                    overflow:!!strip&&strip.scrollWidth>strip.clientWidth,
+                    gridCols:grid?getComputedStyle(grid).gridTemplateColumns.split(' ').length:0,
+                    heading:document.querySelector('#products h2')?.textContent.trim()
+                  };
                 });
                 if(result.cards<20) throw new Error(`${vp.name}: only ${result.cards} catalogue cards`);
                 if(result.searchCount!==1) throw new Error(`${vp.name}: expected one search input, got ${result.searchCount}`);
@@ -69,50 +73,45 @@ jobs:
                 if(!result.nav||!result.arrows) throw new Error(`${vp.name}: category navigation/arrows missing`);
                 const expectedCols=vp.name==='mobile'?2:4;
                 if(result.gridCols!==expectedCols) throw new Error(`${vp.name}: expected ${expectedCols} grid columns, got ${result.gridCols}`);
-                // Category filter interaction.
-                const cat=await page.locator('#kt-category-strip button[data-category]').first();
-                const catName=await cat.getAttribute('data-category');
-                await cat.click();
-                await page.waitForTimeout(100);
+                const categories=page.locator('#kt-category-strip button[data-category]');
+                const count=await categories.count();
+                if(count<2) throw new Error(`${vp.name}: insufficient category filters`);
+                const firstCategory=await categories.nth(1).getAttribute('data-category');
+                const initialCount=result.cards;
+                await categories.nth(1).click();
+                await page.waitForTimeout(150);
                 const filtered=await page.locator('#kt-home-catalogue .kt-card').count();
-                if(filtered<1 || filtered>=result.cards) throw new Error(`${vp.name}: category filter did not narrow catalogue`);
-                // Search interaction.
-                await searchFill(page, 'milk');
+                if(filtered<1 || filtered>=initialCount) throw new Error(`${vp.name}: category filter did not narrow catalogue`);
+                await page.locator('#product-search').fill('milk');
+                await page.waitForTimeout(250);
                 const searched=await page.locator('#kt-home-catalogue .kt-card').count();
-                if(searched<1 || searched>=result.cards) throw new Error(`${vp.name}: search did not narrow catalogue`);
+                if(searched<1 || searched>=initialCount) throw new Error(`${vp.name}: search did not narrow catalogue`);
                 await page.locator('#product-search').fill('');
-                await page.waitForTimeout(100);
-                // Add flow using first visible card with a pack button if needed.
+                await page.waitForTimeout(150);
                 const card=page.locator('#kt-home-catalogue .kt-card').first();
                 const packButtons=card.locator('.kt-pack-btn');
                 if(await packButtons.count()>1) await packButtons.first().click();
                 const before=await page.locator('#kt-order-bar').textContent();
                 await card.locator('.kt-add').click();
-                await page.waitForTimeout(150);
+                await page.waitForTimeout(200);
                 const after=await page.locator('#kt-order-bar').textContent();
                 if(before===after) throw new Error(`${vp.name}: Add to Order did not update persistent order bar`);
                 if(await page.locator('#cart-drawer').isVisible().catch(()=>false)) throw new Error(`${vp.name}: Add to Order opened cart drawer`);
-                // Reload persistence.
                 await page.reload({waitUntil:'domcontentloaded'});
                 await page.waitForFunction(()=>Array.isArray(window.allProducts)&&window.allProducts.length>0,{timeout:30000});
                 await page.waitForSelector('#kt-home-catalogue .kt-card',{timeout:30000});
                 const persisted=await page.locator('#kt-order-bar').textContent();
                 if(!/\b[1-9]\d*\s+products?\b/i.test(persisted)) throw new Error(`${vp.name}: cart did not persist after reload`);
-                // Review opens the existing order/cart UI.
-                await page.locator('#kt-order-bar button, #kt-order-bar a').first().click().catch(async()=>await page.locator('#kt-order-bar').click());
-                await page.waitForTimeout(100);
-                checks.push({viewport:vp.name,result,category:catName,filtered,searched,consoleErrors});
+                checks.push({viewport:vp.name,result,category:firstCategory,filtered,searched,consoleErrors});
                 await page.close();
               }
-              console.log(JSON.stringify({status:'PASS',checks},null,2));
               const bad=checks.flatMap(x=>x.consoleErrors).filter(e=>!/(ERR_BLOCKED_BY_CLIENT|404|animalhealth\.pk|cloudinary|fonts|fontawesome|tailwind|google-analytics)/i.test(e));
               if(bad.length) throw new Error('Unexpected console errors: '+bad.join('\n'));
+              console.log(JSON.stringify({status:'PASS',checks},null,2));
             } finally { await browser.close(); server.kill('SIGTERM'); }
           })().catch(e=>{ console.error(e.stack||e); process.exit(1); });
-          async function searchFill(page, value){ await page.locator('#product-search').fill(value); await page.waitForTimeout(250); }
           NODE
           node /tmp/qa.js
-
       - name: Remove temporary QA workflow
         if: success()
         run: |
