@@ -390,298 +390,32 @@ window.checkoutViaWhatsApp = checkoutViaWhatsApp;
 restoreCartFromStorage();
 updateCartBadge();
 
-// ── Premium wholesale ordering layer ────────────────────────────────────
-// This layer keeps the existing Firebase/product architecture intact while
-// making the buying journey faster: search → choose pack → set quantity →
-// add → continue browsing → review order → WhatsApp.
-(function initWholesaleUX() {
-    const isHome = !!document.getElementById('tiles-container') || !!document.getElementById('products');
-    if (!isHome) return;
-
-    const style = document.createElement('style');
-    style.textContent = `
-      #kt-wholesale-bar{position:sticky;top:72px;z-index:35;background:#fff;border-bottom:1px solid #e5e7eb;box-shadow:0 4px 16px rgba(0,0,0,.05)}
-      #kt-wholesale-inner{max-width:1280px;margin:auto;padding:10px 24px}
-      #kt-wholesale-search{width:100%;height:46px;border:1px solid #d1d5db;border-radius:6px;padding:0 16px;font:600 14px Manrope, sans-serif;color:#131313;outline:none}
-      #kt-wholesale-search:focus{border-color:#131313;box-shadow:0 0 0 2px rgba(19,19,19,.08)}
-      #kt-category-strip{display:flex;gap:8px;overflow-x:auto;padding:9px 0 2px;scrollbar-width:none}
-      #kt-category-strip::-webkit-scrollbar{display:none}
-      .kt-cat{white-space:nowrap;border:1px solid #d1d5db;background:#fff;border-radius:999px;padding:7px 13px;font:700 11px Manrope,sans-serif;cursor:pointer}
-      .kt-cat.active{background:#131313;color:#fff;border-color:#131313}
-      #kt-order-bar{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:80;width:min(680px,calc(100% - 24px));background:#131313;color:#fff;border:1px solid #333;border-radius:10px;box-shadow:0 12px 35px rgba(0,0,0,.24);display:none;align-items:center;justify-content:space-between;gap:14px;padding:12px 14px}
-      #kt-order-bar.show{display:flex}
-      #kt-order-bar button{border:0;border-radius:6px;background:#fff200;color:#131313;font:800 12px Manrope,sans-serif;padding:10px 15px;cursor:pointer;white-space:nowrap}
-      .kt-added{background:#131313!important;color:#fff!important}
-      .kt-toast{position:fixed;right:18px;bottom:82px;z-index:90;background:#131313;color:#fff;padding:10px 14px;border-radius:6px;font:700 12px Manrope,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.2);opacity:0;transform:translateY(8px);pointer-events:none;transition:.18s}
-      .kt-toast.show{opacity:1;transform:translateY(0)}
-      @media(max-width:767px){#kt-wholesale-bar{top:0}#kt-wholesale-inner{padding:9px 12px}#kt-order-bar{bottom:10px}.kt-toast{right:12px;bottom:74px}}
-    `;
-    document.head.appendChild(style);
-
-    let activeCategory = 'All';
-    let lastProducts = null;
-    const qtyState = Object.create(null);
-
-    function getProducts() {
-        return (typeof allProducts !== 'undefined' && Array.isArray(allProducts)) ? allProducts : [];
-    }
-    function esc(value) {
-        return String(value == null ? '' : value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    }
-    function categoryName(p) { return String(p.category || 'Other').trim(); }
-    function searchable(p) {
-        return [p.name,p.category,p.brand,p.type,p.desc,p.description,p.keywords]
-            .filter(Boolean).join(' ').toLowerCase();
-    }
-    function currentCartTotal() { return cart.reduce((s,x) => s + (Number(x.qty)||0), 0); }
-    function currentCartProducts() { return cart.length; }
-
-    function ensureUI() {
-        if (!document.getElementById('kt-wholesale-bar')) {
-            const bar = document.createElement('div');
-            bar.id = 'kt-wholesale-bar';
-            bar.innerHTML = `<div id="kt-wholesale-inner">
-              <div style="display:flex;align-items:center;gap:10px">
-                <input id="kt-wholesale-search" type="search" autocomplete="off" placeholder="Search products, brands or categories…" aria-label="Search wholesale products">
-              </div>
-              <div id="category-strip-label" style="font:800 10px Manrope,sans-serif;text-transform:uppercase;letter-spacing:.12em;color:#6b7280;padding-top:9px">Browse categories</div>
-              <div id="kt-category-strip" role="tablist" aria-label="Product categories"></div>
-            </div>`;
-            const anchor = document.getElementById('products') || document.getElementById('tiles-container');
-            if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(bar, anchor);
-        }
-        if (!document.getElementById('kt-order-bar')) {
-            const orderBar = document.createElement('div');
-            orderBar.id = 'kt-order-bar';
-            orderBar.innerHTML = `<div><strong id="kt-order-products">0 products</strong><span> · </span><span id="kt-order-units">0 units</span></div><button type="button" id="kt-review-order">Review order →</button>`;
-            document.body.appendChild(orderBar);
-            document.getElementById('kt-review-order').addEventListener('click', () => window.openCart());
-        }
-        if (!document.getElementById('kt-toast')) {
-            const toast = document.createElement('div');
-            toast.id = 'kt-toast';
-            toast.className = 'kt-toast';
-            toast.setAttribute('role','status');
-            document.body.appendChild(toast);
-        }
-        bindSearch();
-    }
-
-    let searchBound = false;
-    function bindSearch() {
-        if (searchBound) return;
-        const input = document.getElementById('kt-wholesale-search');
-        if (!input) return;
-        searchBound = true;
-        input.addEventListener('input', () => renderEnhancedCatalog());
-    }
-
-    function buildCategories(products) {
-        const cats = [...new Set(products.map(categoryName).filter(Boolean))].sort((a,b) => a.localeCompare(b));
-        const strip = document.getElementById('kt-category-strip');
-        if (!strip) return;
-        strip.innerHTML = ['All', ...cats].map(cat => `<button type="button" class="kt-cat ${activeCategory.toLowerCase()===cat.toLowerCase()?'active':''}" data-cat="${esc(cat)}">${esc(catTitle(cat))}</button>`).join('');
-        strip.querySelectorAll('.kt-cat').forEach(btn => btn.addEventListener('click', () => { activeCategory = btn.dataset.cat; renderEnhancedCatalog(); }));
-    }
-
-    function filtered(products) {
-        const q = (document.getElementById('kt-wholesale-search')?.value || '').trim().toLowerCase();
-        return products.filter(p => {
-            const catOk = activeCategory === 'All' || categoryName(p).toLowerCase() === activeCategory.toLowerCase();
-            return catOk && (!q || searchable(p).includes(q));
-        });
-    }
-
-    function packButtons(p, idx) {
-        const packs = Array.isArray(p.packSizes) ? p.packSizes : [];
-        if (!packs.length) return p.priceDisplay ? `<div class="kt-pack-label">${esc(p.priceDisplay)}</div>` : '<div class="kt-pack-label">Price on confirmation</div>';
-        return packs.map((ps,i) => `<button type="button" class="kt-pack" data-name="${esc(p.name)}" data-pack-index="${i}">${esc(ps.size || 'Pack')} <span>${esc(ps.price || '')}</span></button>`).join('');
-    }
-
-    function card(p, idx) {
-        const id = String(idx);
-        const min = Number(p.minQty) || 1;
-        const q = qtyState[id] || min;
-        const image = p.images && p.images[0] ? p.images[0] : '';
-        const stock = p.inStock === false ? 'Out of stock' : 'In stock';
-        return `<article class="kt-card" data-product-index="${id}">
-          ${image ? `<img class="kt-card-img" loading="lazy" src="${esc(image)}" alt="${esc(p.name)}">` : '<div class="kt-card-img kt-no-image">Product image</div>'}
-          <div class="kt-card-body">
-            <div class="kt-card-meta"><span>${esc(catTitle(categoryName(p)))}</span><span class="kt-stock ${p.inStock===false?'out':''}">${stock}</span></div>
-            <h3>${esc(p.name)}</h3>
-            ${p.brand ? `<div class="kt-brand">${esc(p.brand)}</div>` : ''}
-            <div class="kt-packs">${packButtons(p,idx)}</div>
-            <div class="kt-buy-row">
-              <div class="kt-qty"><button type="button" class="kt-qty-btn" data-qty="minus">−</button><span class="kt-qty-value">${q}</span><button type="button" class="kt-qty-btn" data-qty="plus">+</button></div>
-              <button type="button" class="kt-add" ${p.inStock===false?'disabled':''}>Add to order</button>
-            </div>
-            ${min>1 ? `<div class="kt-moq">Minimum ${min} units</div>` : ''}
-          </div>
-        </article>`;
-    }
-
-    function injectCardStyle() {
-        if (document.getElementById('kt-card-style')) return;
-        const s = document.createElement('style');
-        s.id = 'kt-card-style';
-        s.textContent = `
-          #tiles-container.kt-hidden-source{display:none!important}
-          #kt-enhanced-catalog{max-width:1280px;margin:0 auto;padding:18px 24px 110px}
-          .kt-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:start}
-          .kt-card{background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;min-width:0;transition:box-shadow .16s,border-color .16s}
-          .kt-card:hover{border-color:#cfd2d6;box-shadow:0 8px 24px rgba(0,0,0,.07)}
-          .kt-card-img{width:100%;height:190px;object-fit:contain;background:#fff;display:block;padding:10px}
-          .kt-no-image{display:flex;align-items:center;justify-content:center;color:#9ca3af;font:600 12px Manrope,sans-serif;background:#f8f8f8}
-          .kt-card-body{padding:12px;display:flex;flex-direction:column}
-          .kt-card-meta{display:flex;justify-content:space-between;gap:8px;font:700 9px Manrope,sans-serif;text-transform:uppercase;letter-spacing:.08em;color:#6b7280;margin-bottom:7px}
-          .kt-stock{color:#166534}.kt-stock.out{color:#b91c1c}
-          .kt-card h3{font:800 15px/1.2 Archivo,Manrope,sans-serif;color:#131313;margin:0;min-height:36px}
-          .kt-brand{font:600 10px Manrope,sans-serif;color:#6b7280;margin-top:4px;min-height:14px}
-          .kt-packs{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
-          .kt-pack{border:1px solid #d1d5db;background:#fff;border-radius:5px;padding:7px 8px;font:700 10px/1.1 Manrope,sans-serif;color:#131313;cursor:pointer}
-          .kt-pack:hover,.kt-pack.selected{border-color:#131313;background:#f7f7f7}
-          .kt-pack span{display:block;color:#6b7280;font-size:9px;margin-top:2px}
-          .kt-pack-label{font:600 11px Manrope,sans-serif;color:#4b5563;margin-top:10px}
-          .kt-buy-row{display:flex;gap:7px;margin-top:12px;padding-top:0}
-          .kt-qty{display:flex;align-items:center;border:1px solid #d1d5db;border-radius:5px;overflow:hidden;height:38px}
-          .kt-qty-btn{width:31px;height:100%;border:0;background:#f3f4f6;font-size:17px;font-weight:800;cursor:pointer}
-          .kt-qty-value{min-width:31px;text-align:center;font:800 12px Manrope,sans-serif}
-          .kt-add{flex:1;height:38px;border:0;border-radius:5px;background:#131313;color:#fff;font:800 11px Manrope,sans-serif;cursor:pointer}
-          .kt-add:hover{background:#000}.kt-add:disabled{opacity:.45;cursor:not-allowed}
-          .kt-moq{font:700 9px Manrope,sans-serif;color:#92400e;text-transform:uppercase;letter-spacing:.05em;margin-top:6px}
-          .kt-empty{padding:40px 20px;text-align:center;border:1px dashed #d1d5db;border-radius:8px;color:#6b7280;font:600 13px Manrope,sans-serif}
-          @media(max-width:1023px){.kt-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-          @media(max-width:767px){#kt-enhanced-catalog{padding:12px 12px 110px}.kt-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.kt-card-img{height:145px;padding:7px}.kt-card-body{padding:9px}.kt-card h3{font-size:13px;min-height:32px}.kt-pack{padding:6px 6px;font-size:9px}.kt-buy-row{gap:5px}.kt-qty-btn{width:27px}.kt-qty-value{min-width:26px}.kt-add{font-size:10px}}
-        `;
-        document.head.appendChild(s);
-    }
-
-    function renderEnhancedCatalog() {
-        const products = getProducts();
-        if (!products.length) return;
-        ensureUI();
-        injectCardStyle();
-        buildCategories(products);
-        const source = document.getElementById('tiles-container');
-        if (source) source.classList.add('kt-hidden-source');
-        let root = document.getElementById('kt-enhanced-catalog');
-        if (!root) {
-            root = document.createElement('section');
-            root.id = 'kt-enhanced-catalog';
-            root.setAttribute('aria-label','Wholesale product catalogue');
-            const target = source || document.getElementById('products');
-            if (target && target.parentNode) target.parentNode.insertBefore(root, target.nextSibling);
-        }
-        const visible = filtered(products);
-        root.innerHTML = visible.length ? `<div class="kt-grid">${visible.map((p,i) => card(p, products.indexOf(p))).join('')}</div>` : '<div class="kt-empty">No products match your search. Try another product name, brand or category.</div>';
-        root.querySelectorAll('.kt-card').forEach(el => {
-            const idx = Number(el.dataset.productIndex);
-            const p = products[idx];
-            el.querySelectorAll('.kt-pack').forEach(btn => btn.addEventListener('click', () => {
-                el.querySelectorAll('.kt-pack').forEach(x => x.classList.remove('selected'));
-                btn.classList.add('selected');
-                el.dataset.packIndex = btn.dataset.packIndex;
-            }));
-            el.querySelectorAll('.kt-qty-btn').forEach(btn => btn.addEventListener('click', () => {
-                const min = Number(p.minQty) || 1;
-                const cur = qtyState[idx] || min;
-                const next = btn.dataset.qty === 'plus' ? cur + 1 : Math.max(min, cur - 1);
-                qtyState[idx] = next;
-                el.querySelector('.kt-qty-value').textContent = next;
-            }));
-            const add = el.querySelector('.kt-add');
-            add?.addEventListener('click', () => {
-                const min = Number(p.minQty) || 1;
-                const packIndex = Number(el.dataset.packIndex);
-                const ps = Array.isArray(p.packSizes) && Number.isInteger(packIndex) ? p.packSizes[packIndex] : (Array.isArray(p.packSizes) && p.packSizes.length === 1 ? p.packSizes[0] : null);
-                if (Array.isArray(p.packSizes) && p.packSizes.length > 1 && !ps) {
-                    showWholesaleToast('Choose a pack size first');
-                    return;
-                }
-                const quantity = Math.max(min, qtyState[idx] || min);
-                const key = p.name + (ps ? '‖' + ps.size : '');
-                const existing = cart.find(x => x.key === key);
-                if (existing) existing.qty += quantity;
-                else cart.push({ key, name:p.name, category:p.category, packSize:ps, priceDisplay:ps ? ps.price : (p.priceDisplay || ''), image:(p.images && p.images[0]) || '', minQty:min, qty:quantity });
-                saveCartToStorage();
-                updateCartBadge();
-                add.classList.add('kt-added');
-                const old = add.textContent;
-                add.textContent = '✓ Added';
-                showWholesaleToast(`${p.name} added to your order`);
-                setTimeout(() => { add.classList.remove('kt-added'); add.textContent = old; }, 900);
-                updateWholesaleOrderBar();
-            });
-        });
-        lastProducts = products;
-        updateWholesaleOrderBar();
-    }
-
-    function updateWholesaleOrderBar() {
-        const bar = document.getElementById('kt-order-bar');
-        if (!bar) return;
-        const products = currentCartProducts();
-        const units = currentCartTotal();
-        bar.classList.toggle('show', units > 0);
-        const pEl = document.getElementById('kt-order-products');
-        const uEl = document.getElementById('kt-order-units');
-        if (pEl) pEl.textContent = products + (products === 1 ? ' product' : ' products');
-        if (uEl) uEl.textContent = units + (units === 1 ? ' unit' : ' units');
-    }
-    function showWholesaleToast(text) {
-        const toast = document.getElementById('kt-toast');
-        if (!toast) return;
-        toast.textContent = text;
-        toast.classList.add('show');
-        clearTimeout(toast._timer);
-        toast._timer = setTimeout(() => toast.classList.remove('show'), 1800);
-    }
-
-    // Replace the original add-to-cart behavior only after the original
-    // function exists. The cart data model remains identical; the difference
-    // is that adding from the catalogue no longer forcibly opens the drawer.
-    const originalAdd = window.addToCart;
-    if (typeof originalAdd === 'function') {
-        window.addToCart = function(name, packSize) {
-            originalAdd(name, packSize);
-            // If the legacy handler opened the drawer, close it immediately.
-            // This preserves its validation/analytics/storage behavior while
-            // keeping the wholesale buyer on the catalogue.
-            if (document.getElementById('cart-drawer')?.classList.contains('open')) closeCart();
-            updateWholesaleOrderBar();
-        };
-    }
-
-    const observer = new MutationObserver(() => {
-        const products = getProducts();
-        if (products.length && products !== lastProducts) renderEnhancedCatalog();
-    });
-    observer.observe(document.body, { childList:true, subtree:true });
-
-    // Existing product loading is asynchronous. Retry briefly without a
-    // permanent interval, then let the observer catch later DOM changes.
-    let tries = 0;
-    const boot = () => {
-        if (getProducts().length) { renderEnhancedCatalog(); return; }
-        if (++tries < 30) setTimeout(boot, 500);
-    };
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once:true });
-    else boot();
-
-    // Keep the order bar synchronized when the legacy drawer changes quantity.
-    const originalUpdateQty = window.updateCartQty;
-    window.updateCartQty = function(idx, qty) {
-        originalUpdateQty(idx, qty);
-        updateWholesaleOrderBar();
-    };
-    const originalRemove = window.removeFromCart;
-    window.removeFromCart = function(idx) {
-        originalRemove(idx);
-        updateWholesaleOrderBar();
-    };
-    const originalClear = window.clearCart;
-    window.clearCart = function() {
-        originalClear();
-        updateWholesaleOrderBar();
-    };
+/* Single homepage wholesale catalogue controller. */
+(function initSingleHomepageCatalogue(){
+  function isHome(){return !!document.getElementById('tiles-container') && !!document.getElementById('product-search');}
+  if(!isHome()) return;
+  const state={category:'All',query:'',qty:Object.create(null),installed:false};
+  const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const cat=p=>String(p.category||'Other').trim()||'Other';
+  const products=()=>typeof allProducts!=='undefined'&&Array.isArray(allProducts)?allProducts:[];
+  const key=p=>p.name;
+  const minQty=p=>Math.max(1,Number(p.minQty)||1);
+  const totalUnits=()=>cart.reduce((n,x)=>n+(Number(x.qty)||0),0);
+  const showToast=text=>{let el=document.getElementById('kt-toast');if(!el){el=document.createElement('div');el.id='kt-toast';el.className='kt-toast';el.setAttribute('role','status');document.body.appendChild(el);}el.textContent=text;el.classList.add('show');clearTimeout(el._timer);el._timer=setTimeout(()=>el.classList.remove('show'),1800);};
+  function installStyles(){if(document.getElementById('kt-single-catalogue-style'))return;const s=document.createElement('style');s.id='kt-single-catalogue-style';s.textContent=`
+#category-modal{display:none!important}#search-results{display:none!important}#tiles-container.kt-source-hidden{display:none!important}
+#kt-catalogue-controls{max-width:1280px;margin:0 auto;padding:0 24px 8px;text-align:left}#kt-category-strip{display:flex;gap:7px;overflow-x:auto;padding:4px 0 8px;scrollbar-width:none}#kt-category-strip::-webkit-scrollbar{display:none}.kt-cat{flex:0 0 auto;border:1px solid #d1d5db;background:#fff;border-radius:999px;padding:7px 13px;font:700 11px Manrope,sans-serif;cursor:pointer;color:#131313}.kt-cat.active{background:#131313;color:#fff;border-color:#131313}
+#kt-home-catalogue{max-width:1280px;margin:0 auto;padding:8px 24px 110px;text-align:left}.kt-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:start}.kt-card{background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;min-width:0}.kt-card:hover{border-color:#cfd2d6;box-shadow:0 7px 20px rgba(0,0,0,.06)}.kt-card-img{width:100%;height:190px;object-fit:contain;background:#fff;display:block;padding:10px}.kt-no-image{display:flex;align-items:center;justify-content:center;color:#9ca3af;font:600 12px Manrope,sans-serif;background:#f8f8f8}.kt-card-body{padding:12px;display:flex;flex-direction:column}.kt-card-meta{display:flex;justify-content:space-between;gap:8px;font:700 9px Manrope,sans-serif;text-transform:uppercase;letter-spacing:.07em;color:#6b7280;margin-bottom:7px}.kt-stock{color:#166534}.kt-stock.out{color:#b91c1c}.kt-card h3{font:800 15px/1.2 Archivo,Manrope,sans-serif;color:#131313;margin:0;min-height:36px}.kt-brand{font:600 10px Manrope,sans-serif;color:#6b7280;margin-top:4px;min-height:14px}.kt-packs{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}.kt-pack{border:1px solid #d1d5db;background:#fff;border-radius:5px;padding:7px 8px;font:700 10px/1.1 Manrope,sans-serif;color:#131313;cursor:pointer}.kt-pack:hover,.kt-pack.selected{border-color:#131313;background:#f7f7f7}.kt-pack span{display:block;color:#6b7280;font-size:9px;margin-top:2px}.kt-price{font:600 11px Manrope,sans-serif;color:#4b5563;margin-top:10px}.kt-buy-row{display:flex;gap:7px;margin-top:12px}.kt-qty{display:flex;align-items:center;border:1px solid #d1d5db;border-radius:5px;overflow:hidden;height:38px}.kt-qty-btn{width:31px;height:100%;border:0;background:#f3f4f6;font-size:17px;font-weight:800;cursor:pointer}.kt-qty-value{min-width:31px;text-align:center;font:800 12px Manrope,sans-serif}.kt-add{flex:1;height:38px;border:0;border-radius:5px;background:#131313;color:#fff;font:800 11px Manrope,sans-serif;cursor:pointer}.kt-add:hover{background:#000}.kt-add:disabled{opacity:.45;cursor:not-allowed}.kt-moq{font:700 9px Manrope,sans-serif;color:#92400e;text-transform:uppercase;letter-spacing:.05em;margin-top:6px}.kt-empty{padding:42px 20px;text-align:center;border:1px dashed #d1d5db;border-radius:8px;color:#6b7280;font:600 13px Manrope,sans-serif}
+#kt-order-bar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:80;width:min(680px,calc(100% - 24px));background:#131313;color:#fff;border:1px solid #333;border-radius:9px;box-shadow:0 12px 32px rgba(0,0,0,.24);display:none;align-items:center;justify-content:space-between;gap:14px;padding:11px 13px}#kt-order-bar.show{display:flex}.kt-review{border:0;border-radius:5px;background:#fff200;color:#131313;font:800 12px Manrope,sans-serif;padding:10px 15px;cursor:pointer;white-space:nowrap}.kt-added{background:#166534!important}.kt-toast{position:fixed;right:18px;bottom:78px;z-index:90;background:#131313;color:#fff;padding:10px 14px;border-radius:6px;font:700 12px Manrope,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.2);opacity:0;transform:translateY(8px);pointer-events:none;transition:.18s}.kt-toast.show{opacity:1;transform:translateY(0)}
+@media(max-width:1023px){.kt-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:767px){#kt-catalogue-controls{padding:0 12px 6px}#kt-home-catalogue{padding:6px 12px 105px}.kt-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.kt-card-img{height:145px;padding:7px}.kt-card-body{padding:9px}.kt-card h3{font-size:13px;min-height:32px}.kt-pack{padding:6px;font-size:9px}.kt-buy-row{gap:5px}.kt-qty-btn{width:27px}.kt-qty-value{min-width:26px}.kt-add{font-size:10px}#kt-order-bar{bottom:9px}.kt-toast{right:12px;bottom:70px}}
+`;document.head.appendChild(s);}
+  function ensureControls(){const search=document.getElementById('product-search');if(!search)return;if(!search.dataset.ktBound){search.dataset.ktBound='1';search.removeAttribute('oninput');search.setAttribute('aria-label','Search wholesale products');search.addEventListener('input',()=>{state.query=search.value.trim().toLowerCase();render();});}if(!document.getElementById('kt-catalogue-controls')){const c=document.createElement('div');c.id='kt-catalogue-controls';c.innerHTML='<div style="font:800 10px Manrope,sans-serif;text-transform:uppercase;letter-spacing:.12em;color:#6b7280;padding:2px 0 3px">Browse categories</div><div id="kt-category-strip" role="tablist" aria-label="Product categories"></div>';search.closest('.mb-4')?.insertAdjacentElement('afterend',c);}const source=document.getElementById('tiles-container');if(source)source.classList.add('kt-source-hidden');const oldHeading=document.querySelector('#products h2');if(oldHeading)oldHeading.textContent='Wholesale Catalogue';const oldEyebrow=oldHeading?.previousElementSibling;if(oldEyebrow)oldEyebrow.textContent='Products';if(!document.getElementById('kt-home-catalogue')){const root=document.createElement('div');root.id='kt-home-catalogue';root.setAttribute('aria-label','Wholesale product catalogue');(source||document.getElementById('products'))?.insertAdjacentElement('afterend',root);}if(!document.getElementById('kt-order-bar')){const bar=document.createElement('div');bar.id='kt-order-bar';bar.innerHTML='<div><strong id="kt-order-products">0 products</strong><span> · </span><span id="kt-order-units">0 units</span></div><button type="button" class="kt-review">Review order →</button>';document.body.appendChild(bar);bar.querySelector('.kt-review').addEventListener('click',()=>openCart());}}
+  function categories(ps){const list=[...new Set(ps.map(cat))].sort((a,b)=>a.localeCompare(b));const strip=document.getElementById('kt-category-strip');if(!strip)return;strip.innerHTML=['All',...list].map(c=>`<button type="button" class="kt-cat ${state.category.toLowerCase()===c.toLowerCase()?'active':''}" data-cat="${esc(c)}">${esc(catTitle(c))}</button>`).join('');strip.querySelectorAll('.kt-cat').forEach(b=>b.addEventListener('click',()=>{state.category=b.dataset.cat;render();}));}
+  function filtered(ps){return ps.filter(p=>(state.category==='All'||cat(p).toLowerCase()===state.category.toLowerCase())&&(!state.query||[p.name,p.category,p.brand,p.type,p.desc,p.description,p.keywords].filter(Boolean).join(' ').toLowerCase().includes(state.query)));}
+  function card(p){const id=key(p),min=minQty(p),q=state.qty[id]||min,packs=Array.isArray(p.packSizes)?p.packSizes:[],img=p.images?.[0]||'';const packHtml=packs.length?packs.map((x,i)=>`<button type="button" class="kt-pack" data-pack-index="${i}">${esc(x.size||'Pack')} <span>${esc(x.price||'')}</span></button>`).join(''):`<div class="kt-price">${esc(p.priceDisplay||'Price on confirmation')}</div>`;return `<article class="kt-card" data-name="${esc(p.name)}">${img?`<img class="kt-card-img" loading="lazy" src="${esc(img)}" alt="${esc(p.name)}">`:'<div class="kt-card-img kt-no-image">Product image</div>'}<div class="kt-card-body"><div class="kt-card-meta"><span>${esc(catTitle(cat(p)))}</span><span class="kt-stock ${p.inStock===false?'out':''}">${p.inStock===false?'Out of stock':'In stock'}</span></div><h3>${esc(p.name)}</h3>${p.brand?`<div class="kt-brand">${esc(p.brand)}</div>`:'<div class="kt-brand"></div>'}<div class="kt-packs">${packHtml}</div><div class="kt-buy-row"><div class="kt-qty"><button type="button" class="kt-qty-btn" data-dir="-">−</button><span class="kt-qty-value">${q}</span><button type="button" class="kt-qty-btn" data-dir="+">+</button></div><button type="button" class="kt-add" ${p.inStock===false?'disabled':''}>Add to order</button></div>${min>1?`<div class="kt-moq">Minimum ${min} units</div>`:''}</div></article>`;}
+  function add(p,el){const packs=Array.isArray(p.packSizes)?p.packSizes:[],selected=el.querySelector('.kt-pack.selected'),ps=selected?packs[Number(selected.dataset.packIndex)]:packs.length===1?packs[0]:null;if(packs.length>1&&!ps){showToast('Choose a pack size first');return;}const qty=Math.max(minQty(p),state.qty[key(p)]||minQty(p)),k=p.name+(ps?'‖'+ps.size:'');const existing=cart.find(x=>x.key===k);if(existing)existing.qty+=qty;else cart.push({key:k,name:p.name,category:p.category,packSize:ps,priceDisplay:ps?ps.price:(p.priceDisplay||''),image:p.images?.[0]||'',minQty:minQty(p),qty});saveCartToStorage();updateCartBadge();updateOrderBar();const b=el.querySelector('.kt-add');b.classList.add('kt-added');b.textContent='✓ Added';showToast('Added to your order');setTimeout(()=>{b.classList.remove('kt-added');b.textContent='Add to order';},900);}
+  function render(){const ps=products();if(!ps.length)return;ensureControls();categories(ps);const visible=filtered(ps),root=document.getElementById('kt-home-catalogue');if(!root)return;root.innerHTML=visible.length?`<div class="kt-grid">${visible.map(card).join('')}</div>`:'<div class="kt-empty">No products match your search. Try another product name, brand or category.</div>';root.querySelectorAll('.kt-card').forEach(el=>{const p=ps.find(x=>x.name===el.dataset.name);if(!p)return;el.querySelectorAll('.kt-pack').forEach(b=>b.addEventListener('click',()=>{el.querySelectorAll('.kt-pack').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');}));el.querySelectorAll('.kt-qty-btn').forEach(b=>b.addEventListener('click',()=>{const m=minQty(p),cur=state.qty[key(p)]||m;state.qty[key(p)]=b.dataset.dir==='+'?cur+1:Math.max(m,cur-1);el.querySelector('.kt-qty-value').textContent=state.qty[key(p)];}));el.querySelector('.kt-add')?.addEventListener('click',()=>add(p,el));});updateOrderBar();}
+  function updateOrderBar(){const bar=document.getElementById('kt-order-bar');if(!bar)return;const units=totalUnits();bar.classList.toggle('show',units>0);document.getElementById('kt-order-products').textContent=cart.length+(cart.length===1?' product':' products');document.getElementById('kt-order-units').textContent=units+(units===1?' unit':' units');}
+  function install(){if(state.installed)return;state.installed=true;installStyles();ensureControls();const legacy=window.addToCart;window.addToCart=function(name,pack){legacy(name,pack);if(document.getElementById('cart-drawer')?.classList.contains('open'))closeCart();updateOrderBar();};const oldQty=window.updateCartQty;window.updateCartQty=function(i,q){oldQty(i,q);updateOrderBar();};const oldRemove=window.removeFromCart;window.removeFromCart=function(i){oldRemove(i);updateOrderBar();};const oldClear=window.clearCart;window.clearCart=function(){oldClear();updateOrderBar();};render();}
+  let tries=0;function boot(){if(!isHome())return;if(products().length){install();return;}if(++tries<40)setTimeout(boot,500);}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
