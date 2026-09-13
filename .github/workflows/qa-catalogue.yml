@@ -41,7 +41,18 @@ jobs:
                 page.on('console',m=>{ if(m.type()==='error') consoleErrors.push(m.text()); });
                 page.on('pageerror',e=>consoleErrors.push('PAGEERROR: '+e.message));
                 await page.goto('http://127.0.0.1:4173/index.html', {waitUntil:'domcontentloaded'});
-                await page.waitForFunction(()=>Array.isArray(window.allProducts) && window.allProducts.length>0,{timeout:30000});
+                try {
+                  await page.waitForFunction(()=>Array.isArray(window.allProducts) && window.allProducts.length>0,{timeout:30000});
+                } catch (e) {
+                  const state=await page.evaluate(()=>({
+                    allProductsType:Array.isArray(window.allProducts)?'array':typeof window.allProducts,
+                    allProductsLength:Array.isArray(window.allProducts)?window.allProducts.length:null,
+                    firebaseApp:typeof firebase,
+                    db:typeof db,
+                    bodyText:(document.body.innerText||'').slice(0,1000)
+                  }));
+                  throw new Error(`${vp.name}: product data did not load within 30s; state=${JSON.stringify(state)}; consoleErrors=${JSON.stringify(consoleErrors)}`);
+                }
                 await page.waitForSelector('#kt-home-catalogue .kt-card',{timeout:30000});
                 const result=await page.evaluate(()=>{
                   const legacyModal=document.querySelector('#category-modal');
@@ -73,10 +84,10 @@ jobs:
                 if(!result.nav||!result.arrows) throw new Error(`${vp.name}: category navigation/arrows missing`);
                 const expectedCols=vp.name==='mobile'?2:4;
                 if(result.gridCols!==expectedCols) throw new Error(`${vp.name}: expected ${expectedCols} grid columns, got ${result.gridCols}`);
-                const categories=page.locator('#kt-category-strip button[data-category]');
+                const categories=page.locator('#kt-category-strip button[data-cat]');
                 const count=await categories.count();
                 if(count<2) throw new Error(`${vp.name}: insufficient category filters`);
-                const firstCategory=await categories.nth(1).getAttribute('data-category');
+                const firstCategory=await categories.nth(1).getAttribute('data-cat');
                 const initialCount=result.cards;
                 await categories.nth(1).click();
                 await page.waitForTimeout(150);
@@ -89,7 +100,7 @@ jobs:
                 await page.locator('#product-search').fill('');
                 await page.waitForTimeout(150);
                 const card=page.locator('#kt-home-catalogue .kt-card').first();
-                const packButtons=card.locator('.kt-pack-btn');
+                const packButtons=card.locator('.kt-pack');
                 if(await packButtons.count()>1) await packButtons.first().click();
                 const before=await page.locator('#kt-order-bar').textContent();
                 await card.locator('.kt-add').click();
@@ -110,7 +121,6 @@ jobs:
               console.log(JSON.stringify({status:'PASS',checks},null,2));
             } finally { await browser.close(); server.kill('SIGTERM'); }
           })().catch(e=>{ console.error(e.stack||e); process.exit(1); });
-          NODE
           NODE_PATH="$PWD/node_modules" node /tmp/qa.js
       - name: Remove temporary QA workflow
         if: success()
