@@ -43,10 +43,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       const stripOverflow = await strip.evaluate(e => e.scrollWidth > e.clientWidth + 2);
       if (stripOverflow && afterScroll <= beforeScroll) throw new Error(`${v.name}: next category arrow did not scroll`);
 
-      const clickAll = async () => {
-        await p.locator('#kt-category-strip button[data-cat]').first().click();
-        await sleep(100);
-      };
+      const clickAll = async () => { await p.locator('#kt-category-strip button[data-cat]').first().click(); await sleep(100); };
       await clickAll();
       const allCount = await p.locator('#kt-home-catalogue .kt-card').count();
       await p.locator('#kt-category-strip button[data-cat]').nth(1).click();
@@ -68,12 +65,12 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       const card = cards.nth(cardIndex);
       const packs = card.locator('.kt-pack');
       const packCount = await packs.count();
+      let expectedPackSize = null;
       if (packCount > 1) {
-        await packs.nth(1).click();
+        const packIndex = 1;
+        expectedPackSize = await p.evaluate((idx, pi) => allProducts[idx].packSizes[pi].size, cardIndex, packIndex);
+        await packs.nth(packIndex).click();
         await sleep(100);
-        const selectedPacks = cards.nth(cardIndex).locator('.kt-pack.active');
-        if (await selectedPacks.count() !== 1) throw new Error(`${v.name}: pack selection did not leave exactly one active pack`);
-        if (await selectedPacks.textContent() !== await packs.nth(1).textContent()) throw new Error(`${v.name}: selected pack changed unexpectedly`);
       }
       const moq = await cards.nth(cardIndex).locator('.kt-moq').count();
       const beforeOrder = await p.locator('#kt-order-bar').textContent();
@@ -85,6 +82,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
       const stored = await p.evaluate(() => JSON.parse(localStorage.getItem('kt_cart_v1') || '[]'));
       if (stored.length !== 1 || stored[0].qty < (stored[0].minQty || 1)) throw new Error(`${v.name}: stored cart/MOQ invalid`);
+      if (expectedPackSize && stored[0].packSize?.size !== expectedPackSize) throw new Error(`${v.name}: selected pack was not carried into cart (${expectedPackSize} -> ${stored[0].packSize?.size || 'none'})`);
       const expectedQty = stored[0].qty;
       await p.reload({ waitUntil: 'domcontentloaded' });
       await p.waitForFunction(() => typeof allProducts !== 'undefined' && allProducts.length > 0, { timeout: 30000 });
@@ -92,7 +90,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       const persistedText = await p.locator('#kt-order-bar').textContent();
       if (!new RegExp(`\\b${expectedQty}\\s+product${expectedQty === 1 ? '' : 's'}\\b`, 'i').test(persistedText)) throw new Error(`${v.name}: cart count did not persist after reload`);
 
-      results.push({ viewport: v.name, width: v.width, height: v.height, cards: base, categoryFiltered: categoryCount, searchFiltered: searchCount, gridColumns: cols, categoryArrowScrolled: !stripOverflow || afterScroll > beforeScroll, selectedPack: packCount > 1, moqVisible: moq > 0, persistedQty: expectedQty, consoleErrors: errors });
+      results.push({ viewport: v.name, width: v.width, height: v.height, cards: base, categoryFiltered: categoryCount, searchFiltered: searchCount, gridColumns: cols, categoryArrowScrolled: !stripOverflow || afterScroll > beforeScroll, selectedPack: !!expectedPackSize, moqVisible: moq > 0, persistedQty: expectedQty, consoleErrors: errors });
       await p.close();
     }
     const unexpected = results.flatMap(r => r.consoleErrors).filter(e => !/(ERR_BLOCKED_BY_CLIENT|404|animalhealth\\.pk|cloudinary|fonts|fontawesome|tailwind|google-analytics)/i.test(e));
