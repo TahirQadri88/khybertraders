@@ -44,8 +44,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       if (stripOverflow && afterScroll <= beforeScroll) throw new Error(`${v.name}: next category arrow did not scroll`);
 
       const clickAll = async () => {
-        const all = p.locator('#kt-category-strip button[data-cat]').first();
-        await all.click();
+        await p.locator('#kt-category-strip button[data-cat]').first().click();
         await sleep(100);
       };
       await clickAll();
@@ -71,11 +70,14 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       const packCount = await packs.count();
       if (packCount > 1) {
         await packs.nth(1).click();
-        if (await packs.nth(1).evaluate(e => !e.classList.contains('active'))) throw new Error(`${v.name}: second pack did not become active`);
+        await sleep(100);
+        const selectedPacks = cards.nth(cardIndex).locator('.kt-pack.active');
+        if (await selectedPacks.count() !== 1) throw new Error(`${v.name}: pack selection did not leave exactly one active pack`);
+        if (await selectedPacks.textContent() !== await packs.nth(1).textContent()) throw new Error(`${v.name}: selected pack changed unexpectedly`);
       }
-      const moq = await card.locator('.kt-moq').count();
+      const moq = await cards.nth(cardIndex).locator('.kt-moq').count();
       const beforeOrder = await p.locator('#kt-order-bar').textContent();
-      await card.locator('.kt-add').click();
+      await cards.nth(cardIndex).locator('.kt-add').click();
       await sleep(200);
       const afterOrder = await p.locator('#kt-order-bar').textContent();
       if (beforeOrder === afterOrder) throw new Error(`${v.name}: Add to Order did not update persistent bar`);
