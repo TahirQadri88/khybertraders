@@ -1,0 +1,42 @@
+name: Apply card layout fix
+on:
+  push:
+    branches:
+      - claude/website-improvements-tlKIS
+permissions:
+  contents: write
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/website-improvements-tlKIS
+          fetch-depth: 0
+      - name: Fix product card sizing
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('assets/cart.js')
+          s = p.read_text()
+          old = ".kt-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}"
+          new = ".kt-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:start}"
+          s = s.replace(old, new, 1)
+          old = ".kt-card-body{padding:12px;display:flex;flex-direction:column;flex:1}"
+          new = ".kt-card-body{padding:12px;display:flex;flex-direction:column}"
+          s = s.replace(old, new, 1)
+          old = ".kt-buy-row{display:flex;gap:7px;margin-top:auto;padding-top:12px}"
+          new = ".kt-buy-row{display:flex;gap:7px;margin-top:12px;padding-top:0}"
+          s = s.replace(old, new, 1)
+          p.write_text(s)
+          PY
+          git diff --check
+          git diff -- assets/cart.js
+      - name: Commit fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/cart.js
+          git commit -m "Fix uneven product card heights" || exit 0
+          git push origin HEAD:claude/website-improvements-tlKIS
