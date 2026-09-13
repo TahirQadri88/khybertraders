@@ -43,8 +43,14 @@ if '<!-- FINAL_SINGLE_CATALOGUE -->' not in s:
   s=s.replace('</body>','<script src="assets/catalogue.js"></script>\n</body>',1)
  p.write_text(s)
 c=Path('assets/cart.js'); cs=c.read_text()
-cs=cs.replace('window.addToCart = function(name, packSize) {','window.addToCart = function(name, packSize, openDrawer = true) {',1)
-cs=cs.replace('    openCart();\n};','    if (openDrawer) openCart();\n};',1)
+sig='window.addToCart = function(name, packSize) {'
+if sig not in cs: raise SystemExit('expected cart addToCart signature not found; refusing to certify unpatched cart')
+cs=cs.replace(sig,'window.addToCart = function(name, packSize, openDrawer = true) {',1)
+needle='    openCart();\n};'
+if needle not in cs: raise SystemExit('expected cart openCart tail not found; refusing to certify unpatched cart')
+cs=cs.replace(needle,'    if (openDrawer) openCart();\n};',1)
+if 'window.addToCart = function(name, packSize, openDrawer = true)' not in cs or 'if (openDrawer) openCart();' not in cs:
+ raise SystemExit('cart.js patch verification failed')
 c.write_text(cs)
 PY
 cat > assets/catalogue.js <<'EOF'
