@@ -7,10 +7,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   const browser = await chromium.launch({ headless: true });
   const results = [];
   try {
-    for (const v of [
-      { name: 'desktop', width: 1440, height: 1000 },
-      { name: 'mobile', width: 390, height: 844 }
-    ]) {
+    for (const v of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 'mobile', width: 390, height: 844 }]) {
       const p = await browser.newPage({ viewport: { width: v.width, height: v.height } });
       const errors = [];
       p.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
@@ -18,7 +15,6 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       await p.goto('http://127.0.0.1:4173/index.html', { waitUntil: 'domcontentloaded' });
       await p.waitForFunction(() => typeof allProducts !== 'undefined' && allProducts.length > 0, { timeout: 30000 });
       await p.waitForSelector('#kt-home-catalogue .kt-card', { timeout: 30000 });
-
       await p.evaluate(() => localStorage.removeItem('kt_cart_v1'));
       await p.reload({ waitUntil: 'domcontentloaded' });
       await p.waitForFunction(() => typeof allProducts !== 'undefined' && allProducts.length > 0, { timeout: 30000 });
@@ -47,16 +43,19 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       const stripOverflow = await strip.evaluate(e => e.scrollWidth > e.clientWidth + 2);
       if (stripOverflow && afterScroll <= beforeScroll) throw new Error(`${v.name}: next category arrow did not scroll`);
 
-      const allButton = p.locator('#kt-category-strip button[data-cat=""]').first();
-      await allButton.click();
-      await sleep(100);
+      const clickAll = async () => {
+        const all = p.locator('#kt-category-strip button[data-cat]').first();
+        await all.click();
+        await sleep(100);
+      };
+      await clickAll();
       const allCount = await p.locator('#kt-home-catalogue .kt-card').count();
-      await cats.nth(1).click();
+      await p.locator('#kt-category-strip button[data-cat]').nth(1).click();
       await sleep(150);
       const categoryCount = await p.locator('#kt-home-catalogue .kt-card').count();
       if (categoryCount < 1 || categoryCount >= allCount) throw new Error(`${v.name}: category filter did not narrow (${allCount} -> ${categoryCount})`);
 
-      await allButton.click();
+      await clickAll();
       await p.locator('#product-search').fill('milk');
       await sleep(250);
       const searchCount = await p.locator('#kt-home-catalogue .kt-card').count();
@@ -94,7 +93,6 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       results.push({ viewport: v.name, width: v.width, height: v.height, cards: base, categoryFiltered: categoryCount, searchFiltered: searchCount, gridColumns: cols, categoryArrowScrolled: !stripOverflow || afterScroll > beforeScroll, selectedPack: packCount > 1, moqVisible: moq > 0, persistedQty: expectedQty, consoleErrors: errors });
       await p.close();
     }
-
     const unexpected = results.flatMap(r => r.consoleErrors).filter(e => !/(ERR_BLOCKED_BY_CLIENT|404|animalhealth\\.pk|cloudinary|fonts|fontawesome|tailwind|google-analytics)/i.test(e));
     if (unexpected.length) throw new Error('Unexpected console/page errors:\n' + unexpected.join('\n'));
     console.log(JSON.stringify({ status: 'PASS', results }, null, 2));
