@@ -42,11 +42,12 @@ jobs:
                 page.on('pageerror',e=>consoleErrors.push('PAGEERROR: '+e.message));
                 await page.goto('http://127.0.0.1:4173/index.html', {waitUntil:'domcontentloaded'});
                 try {
-                  await page.waitForFunction(()=>Array.isArray(window.allProducts) && window.allProducts.length>0,{timeout:30000});
+                  await page.waitForFunction(()=>typeof allProducts!=='undefined' && Array.isArray(allProducts) && allProducts.length>0,{timeout:30000});
                 } catch (e) {
                   const state=await page.evaluate(()=>({
-                    allProductsType:Array.isArray(window.allProducts)?'array':typeof window.allProducts,
-                    allProductsLength:Array.isArray(window.allProducts)?window.allProducts.length:null,
+                    allProductsType:typeof allProducts,
+                    allProductsLength:typeof allProducts!=='undefined' && Array.isArray(allProducts)?allProducts.length:null,
+                    windowAllProductsType:typeof window.allProducts,
                     firebaseApp:typeof firebase,
                     db:typeof db,
                     bodyText:(document.body.innerText||'').slice(0,1000)
@@ -109,7 +110,7 @@ jobs:
                 if(before===after) throw new Error(`${vp.name}: Add to Order did not update persistent order bar`);
                 if(await page.locator('#cart-drawer').isVisible().catch(()=>false)) throw new Error(`${vp.name}: Add to Order opened cart drawer`);
                 await page.reload({waitUntil:'domcontentloaded'});
-                await page.waitForFunction(()=>Array.isArray(window.allProducts)&&window.allProducts.length>0,{timeout:30000});
+                await page.waitForFunction(()=>typeof allProducts!=='undefined' && Array.isArray(allProducts)&&allProducts.length>0,{timeout:30000});
                 await page.waitForSelector('#kt-home-catalogue .kt-card',{timeout:30000});
                 const persisted=await page.locator('#kt-order-bar').textContent();
                 if(!/\b[1-9]\d*\s+products?\b/i.test(persisted)) throw new Error(`${vp.name}: cart did not persist after reload`);
