@@ -38,7 +38,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       const strip = p.locator('#kt-category-strip');
       const beforeScroll = await strip.evaluate(e => e.scrollLeft);
       await p.locator('#kt-cat-next').click();
-      await sleep(400);
+      await sleep(200);
       const afterScroll = await strip.evaluate(e => e.scrollLeft);
       const stripOverflow = await strip.evaluate(e => e.scrollWidth > e.clientWidth + 2);
       if (stripOverflow && afterScroll <= beforeScroll) throw new Error(`${v.name}: next category arrow did not scroll`);
@@ -68,7 +68,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       let expectedPackSize = null;
       if (packCount > 1) {
         const packIndex = 1;
-        expectedPackSize = await p.evaluate((idx, pi) => allProducts[idx].packSizes[pi].size, cardIndex, packIndex);
+        expectedPackSize = await p.evaluate(({idx, pi}) => allProducts[idx].packSizes[pi].size, { idx: cardIndex, pi: packIndex });
         await packs.nth(packIndex).click();
         await sleep(100);
       }
