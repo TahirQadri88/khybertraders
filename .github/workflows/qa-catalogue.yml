@@ -111,7 +111,7 @@ jobs:
             } finally { await browser.close(); server.kill('SIGTERM'); }
           })().catch(e=>{ console.error(e.stack||e); process.exit(1); });
           NODE
-          node /tmp/qa.js
+          NODE_PATH="$PWD/node_modules" node /tmp/qa.js
       - name: Remove temporary QA workflow
         if: success()
         run: |
