@@ -67,23 +67,23 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       const packCount = await packs.count();
       let expectedPackSize = null;
       if (packCount > 1) {
-        const packIndex = 1;
-        expectedPackSize = await p.evaluate(({idx, pi}) => allProducts[idx].packSizes[pi].size, { idx: cardIndex, pi: packIndex });
-        await packs.nth(packIndex).click();
+        expectedPackSize = await p.evaluate(({idx, pi}) => allProducts[idx].packSizes[pi].size, { idx: cardIndex, pi: 1 });
+        await packs.nth(1).click();
         await sleep(100);
       }
       const moq = await cards.nth(cardIndex).locator('.kt-moq').count();
       const beforeOrder = await p.locator('#kt-order-bar').textContent();
       await cards.nth(cardIndex).locator('.kt-add').click();
-      await sleep(200);
-      const afterOrder = await p.locator('#kt-order-bar').textContent();
-      if (beforeOrder === afterOrder) throw new Error(`${v.name}: Add to Order did not update persistent bar`);
-      if (await p.locator('#cart-drawer').evaluate(e => e.classList.contains('open'))) throw new Error(`${v.name}: Add to Order opened cart drawer`);
-
+      await p.waitForFunction(() => { try { return JSON.parse(localStorage.getItem('kt_cart_v1') || '[]').length === 1; } catch(e) { return false; } }, { timeout: 3000 });
       const stored = await p.evaluate(() => JSON.parse(localStorage.getItem('kt_cart_v1') || '[]'));
       if (stored.length !== 1 || stored[0].qty < (stored[0].minQty || 1)) throw new Error(`${v.name}: stored cart/MOQ invalid`);
       if (expectedPackSize && stored[0].packSize?.size !== expectedPackSize) throw new Error(`${v.name}: selected pack was not carried into cart (${expectedPackSize} -> ${stored[0].packSize?.size || 'none'})`);
       const expectedQty = stored[0].qty;
+      await p.waitForFunction(qty => document.getElementById('kt-order-count')?.textContent?.trim() === `${qty} product${qty === 1 ? '' : 's'}`, expectedQty, { timeout: 3000 });
+      const afterOrder = await p.locator('#kt-order-bar').textContent();
+      if (beforeOrder === afterOrder) throw new Error(`${v.name}: Add to Order did not update persistent bar`);
+      if (await p.locator('#cart-drawer').evaluate(e => e.classList.contains('open'))) throw new Error(`${v.name}: Add to Order opened cart drawer`);
+
       await p.reload({ waitUntil: 'domcontentloaded' });
       await p.waitForFunction(() => typeof allProducts !== 'undefined' && allProducts.length > 0, { timeout: 30000 });
       await sleep(250);
