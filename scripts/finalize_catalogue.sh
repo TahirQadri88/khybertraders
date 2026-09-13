@@ -54,7 +54,7 @@ cat > assets/catalogue.js <<'EOF'
  const products=()=>typeof allProducts!=='undefined'?allProducts.filter(p=>!p.isResource):[];
  const countCart=()=>{try{return JSON.parse(localStorage.getItem('kt_cart_v1')||'[]').reduce((n,x)=>n+(Number(x.qty)||0),0)}catch(e){return 0}};
  const bar=()=>{const n=countCart(),e=document.getElementById('kt-order-count');if(e)e.textContent=`${n} product${n===1?'':'s'}`};
- const scrollCats=(dir)=>{const st=document.getElementById('kt-category-strip');if(!st)return;const max=Math.max(0,st.scrollWidth-st.clientWidth);st.scrollTo({left:Math.max(0,Math.min(max,st.scrollLeft+dir*st.clientWidth)),behavior:'smooth'});};
+ const scrollCats=(dir)=>{const st=document.getElementById('kt-category-strip');if(!st)return;const max=Math.max(0,st.scrollWidth-st.clientWidth);st.scrollLeft=Math.max(0,Math.min(max,st.scrollLeft+dir*st.clientWidth));};
  const render=()=>{const grid=document.getElementById('kt-catalogue-grid');if(!grid)return;const cats=[...new Set(products().map(p=>p.category))],strip=document.getElementById('kt-category-strip');strip.innerHTML=['',...cats].map(c=>`<button type="button" data-cat="${esc(c)}" class="${S.category===c?'active':''}">${esc(c||'All Products')}</button>`).join('');strip.querySelectorAll('button').forEach(b=>b.onclick=()=>{S.category=b.dataset.cat;render()});
  const q=S.search.trim().toLowerCase(), list=products().filter(p=>(!S.category||p.category===S.category)&&(!q||[p.name,p.category,p.desc].join(' ').toLowerCase().includes(q)));
  document.getElementById('kt-catalogue-count').textContent=`${list.length} product${list.length===1?'':'s'}`+(S.category?' · '+S.category:'')+(S.search?' · “'+S.search+'”':'');
