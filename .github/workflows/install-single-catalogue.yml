@@ -1,0 +1,57 @@
+name: Install single homepage catalogue
+
+on:
+  push:
+    branches:
+      - claude/website-improvements-tlKIS
+    paths:
+      - assets/home-catalogue.js
+      - .github/workflows/install-single-catalogue.yml
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/website-improvements-tlKIS
+          fetch-depth: 0
+
+      - name: Replace previous catalogue layer safely
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          cart = Path('assets/cart.js')
+          addon = Path('assets/home-catalogue.js')
+          text = cart.read_text(encoding='utf-8')
+          marker = '// ── Premium wholesale ordering layer'
+          addon_text = addon.read_text(encoding='utf-8').strip()
+          if marker in text:
+              text = text.split(marker, 1)[0].rstrip() + '\n\n' + addon_text + '\n'
+          else:
+              text = text.rstrip() + '\n\n' + addon_text + '\n'
+          cart.write_text(text, encoding='utf-8')
+          addon.unlink()
+          PY
+
+      - name: Validate JavaScript syntax
+        shell: bash
+        run: |
+          node --check assets/cart.js
+
+      - name: Remove temporary installer
+        shell: bash
+        run: rm -f .github/workflows/install-single-catalogue.yml
+
+      - name: Commit and push final source
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/cart.js assets/home-catalogue.js .github/workflows/install-single-catalogue.yml
+          git commit -m "Implement single homepage wholesale catalogue"
+          git push origin HEAD:claude/website-improvements-tlKIS
