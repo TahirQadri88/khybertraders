@@ -3,181 +3,40 @@ name: Final Single Catalogue QA
 on:
   push:
     branches: [claude/website-improvements-tlKIS]
-    paths: ['.github/workflows/catalogue-finalize.yml']
+    paths:
+      - '.github/workflows/catalogue-finalize.yml'
+      - 'scripts/finalize_catalogue.sh'
+      - 'scripts/catalogue_qa.js'
   workflow_dispatch:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 jobs:
-  finalize:
+  qa:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout exact branch
         uses: actions/checkout@v4
         with:
           ref: claude/website-improvements-tlKIS
-
-      - name: Apply single-catalogue implementation
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          p = Path('index.html')
-          s = p.read_text()
-          marker = '<!-- FINAL_SINGLE_CATALOGUE -->'
-          if marker not in s:
-              css = r'''\n<style id="kt-single-catalogue-css">
-#tiles-container,#search-results,#category-modal{display:none!important}
-#kt-home-catalogue{display:block}
-#kt-category-nav{display:flex;align-items:center;gap:.5rem;margin:.75rem auto;max-width:1100px}
-#kt-category-strip{display:flex;gap:.5rem;overflow-x:auto;scroll-behavior:smooth;scrollbar-width:none;flex:1;padding:.2rem 0}
-#kt-category-strip::-webkit-scrollbar{display:none}
-#kt-category-strip button{white-space:nowrap;border:1px solid #ddd;background:#fff;padding:.55rem .8rem;font-size:.72rem;font-weight:700;color:#333;cursor:pointer}
-#kt-category-strip button.active{background:#3b1118;color:#fff;border-color:#3b1118}
-#kt-cat-prev,#kt-cat-next{width:34px;height:34px;border:1px solid #ddd;background:#fff;font-weight:800;flex:0 0 auto;cursor:pointer}
-#kt-home-catalogue .kt-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}
-.kt-card{background:#fff;border:1px solid #e5e7eb;display:flex;flex-direction:column;min-width:0;overflow:hidden}
-.kt-card img{width:100%;aspect-ratio:1/1;object-fit:contain;background:#f8f8f8}
-.kt-card-body{padding:.7rem;display:flex;flex-direction:column;flex:1}
-.kt-card-name{font-weight:800;font-size:.85rem;line-height:1.25;color:#321016;margin-bottom:.25rem}
-.kt-card-cat{font-size:.62rem;text-transform:uppercase;letter-spacing:.06em;color:#7b1e2b;font-weight:800;margin-bottom:.35rem}
-.kt-moq{font-size:.66rem;color:#8a5a00;font-weight:800;background:#fff8e6;border:1px solid #f0d58a;padding:.25rem .4rem;margin-bottom:.45rem}
-.kt-packs{display:flex;flex-wrap:wrap;gap:.3rem;margin:.2rem 0 .55rem}
-.kt-pack{border:1px solid #d1d5db;background:#fff;padding:.32rem .45rem;font-size:.64rem;font-weight:800;cursor:pointer}
-.kt-pack.active{border-color:#7b1e2b;background:#fff3f5;color:#7b1e2b}
-.kt-add{margin-top:auto;width:100%;border:0;background:#7b1e2b;color:#fff;padding:.65rem .5rem;font-size:.68rem;font-weight:800;text-transform:uppercase;cursor:pointer}
-.kt-add:disabled{background:#ddd;color:#999;cursor:not-allowed}
-#kt-order-bar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:140;width:min(560px,calc(100% - 24px));background:#321016;color:#fff;border:1px solid #8a5a00;box-shadow:0 10px 30px rgba(0,0,0,.25);padding:.65rem .8rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem;border-radius:999px}
-#kt-order-bar button{border:0;background:#d6ad4d;color:#321016;font-weight:900;padding:.5rem .8rem;border-radius:999px;cursor:pointer}
-@media(max-width:700px){#kt-home-catalogue .kt-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}.kt-card-name{font-size:.74rem}.kt-card-body{padding:.55rem}.kt-add{padding:.6rem .35rem;font-size:.62rem}#kt-category-nav{margin:.6rem 0}}
-</style>'''
-              block = r'''\n<!-- FINAL_SINGLE_CATALOGUE -->
-<section id="kt-home-catalogue" aria-label="Wholesale product catalogue">
-  <div id="kt-category-nav">
-    <button id="kt-cat-prev" type="button" aria-label="Previous categories">‹</button>
-    <div id="kt-category-strip" role="tablist"></div>
-    <button id="kt-cat-next" type="button" aria-label="Next categories">›</button>
-  </div>
-  <div id="kt-catalogue-count" class="text-xs text-gray-500 mb-3 text-left"></div>
-  <div id="kt-catalogue-grid" class="kt-grid"></div>
-</section>
-<div id="kt-order-bar" aria-label="Your Order">
-  <span><strong id="kt-order-count">0 products</strong> selected</span>
-  <button type="button" onclick="openCart()">View Order</button>
-</div>
-'''
-              # Insert before the existing how-to-order details, leaving the original layout intact but hidden by CSS.
-              s = s.replace('<!-- How to Order note -- kept below the catalogue', css + block + '\n<!-- How to Order note -- kept below the catalogue', 1)
-              s = s.replace('</body>', '<script src="assets/catalogue.js"></script>\n</body>', 1)
-              p.write_text(s)
-          
-          c = Path('assets/cart.js')
-          cs = c.read_text()
-          cs = cs.replace('window.addToCart = function(name, packSize) {', 'window.addToCart = function(name, packSize, openDrawer = true) {', 1)
-          cs = cs.replace('    openCart();\n};', '    if (openDrawer) openCart();\n};', 1)
-          c.write_text(cs)
-          PY
-
-          cat > assets/catalogue.js <<'EOF'
-          (() => {
-            const state = { category: '', search: '', selectedPacks: new Map() };
-            const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-            const money = s => s || '';
-            const cartCount = () => {
-              try { const a=JSON.parse(localStorage.getItem('kt_cart_v1')||'[]'); return a.reduce((n,x)=>n+(Number(x.qty)||0),0); } catch(e){ return 0; }
-            };
-            const refreshBar = () => {
-              const n=cartCount(), el=document.getElementById('kt-order-count');
-              if(el) el.textContent=`${n} product${n===1?'':'s'}`;
-            };
-            const getProducts = () => (typeof allProducts !== 'undefined' ? allProducts.filter(p=>!p.isResource) : []);
-            const filtered = () => {
-              const q=state.search.trim().toLowerCase();
-              return getProducts().filter(p => (!state.category || p.category===state.category) && (!q || [p.name,p.category,p.desc].join(' ').toLowerCase().includes(q)));
-            };
-            const renderCats = () => {
-              const strip=document.getElementById('kt-category-strip'); if(!strip) return;
-              const cats=[...new Set(getProducts().map(p=>p.category))];
-              strip.innerHTML=['',...cats].map(cat=>`<button type="button" data-cat="${esc(cat)}" class="${state.category===cat?'active':''}">${esc(cat||'All Products')}</button>`).join('');
-              strip.querySelectorAll('button[data-cat]').forEach(b=>b.addEventListener('click',()=>{state.category=b.dataset.cat; render();}));
-            };
-            const render = () => {
-              const grid=document.getElementById('kt-catalogue-grid'), count=document.getElementById('kt-catalogue-count');
-              if(!grid) return;
-              renderCats();
-              const ps=filtered();
-              if(count) count.textContent=`${ps.length} product${ps.length===1?'':'s'}${state.category?' · '+state.category:''}${state.search?' · “'+state.search+'”':''}`;
-              grid.innerHTML=ps.map((p,i)=>{
-                const packs=p.packSizes||[];
-                const key=p.name;
-                const selected=state.selectedPacks.get(key) || packs[0] || null;
-                const packHtml=packs.length>0 ? `<div class="kt-packs">${packs.map((x,j)=>`<button type="button" class="kt-pack ${selected===x?'active':''}" data-name="${esc(p.name)}" data-pack="${j}">${esc(x.size)}${x.price?' · '+esc(money(x.price)):''}</button>`).join('')}</div>` : '';
-                const moq=(Number(p.minQty)||1)>1 ? `<div class="kt-moq">Minimum order: ${Number(p.minQty)} units</div>` : '';
-                const img=p.images&&p.images[0] ? p.images[0] : '';
-                return `<article class="kt-card" data-name="${esc(p.name)}" data-category="${esc(p.category)}"><img src="${esc(img)}" alt="${esc(p.name)}" loading="lazy"><div class="kt-card-body"><div class="kt-card-name">${esc(p.name)}</div><div class="kt-card-cat">${esc(p.category)}</div>${moq}${packHtml}<button type="button" class="kt-add" data-name="${esc(p.name)}" ${p.inStock===false?'disabled':''}>${p.inStock===false?'Out of Stock':'Add to Order'}</button></div></article>`;
-              }).join('');
-              grid.querySelectorAll('.kt-pack').forEach(b=>b.addEventListener('click',()=>{const p=getProducts().find(x=>x.name===b.dataset.name); if(p) state.selectedPacks.set(p.name,(p.packSizes||[])[Number(b.dataset.pack)]); render();}));
-              grid.querySelectorAll('.kt-add').forEach(b=>b.addEventListener('click',()=>{const p=getProducts().find(x=>x.name===b.dataset.name); if(!p) return; const pack=state.selectedPacks.get(p.name)||(p.packSizes||[])[0]||null; window.addToCart(p.name,pack,false); refreshBar(); b.textContent='Added ✓'; setTimeout(()=>{if(document.body.contains(b)) b.textContent='Add to Order';},900);}));
-            };
-            const init = () => {
-              const search=document.getElementById('product-search');
-              if(search){search.oninput=null; search.removeAttribute('oninput'); search.addEventListener('input',()=>{state.search=search.value;render();});}
-              const prev=document.getElementById('kt-cat-prev'), next=document.getElementById('kt-cat-next'), strip=document.getElementById('kt-category-strip');
-              if(prev) prev.onclick=()=>strip?.scrollBy({left:-220,behavior:'smooth'});
-              if(next) next.onclick=()=>strip?.scrollBy({left:220,behavior:'smooth'});
-              refreshBar();
-              const poll=setInterval(()=>{if(typeof allProducts!=='undefined' && allProducts.length){clearInterval(poll);render();}},200);
-            };
-            if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
-          })();
-          EOF
-
-          node --check assets/cart.js
-          node --check assets/catalogue.js
-
-      - name: Install browser test tools
+      - name: Apply final catalogue source changes
+        run: bash scripts/finalize_catalogue.sh
+      - name: Install Playwright
         run: |
           npm init -y >/dev/null
           npm install --no-save playwright >/dev/null
           npx playwright install --with-deps chromium >/dev/null
-
-      - name: Run actual rendered desktop/mobile QA
-        run: |
-          cat > /tmp/qa.js <<'NODE'
-          const {chromium}=require('playwright'); const {spawn}=require('child_process');
-          const server=spawn('python3',['-m','http.server','4173','--bind','127.0.0.1'],{stdio:'ignore'});
-          const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-          (async()=>{const browser=await chromium.launch({headless:true}); try{const out=[];
-            for(const v of [{name:'desktop',width:1440,height:1000},{name:'mobile',width:390,height:844}]){
-              const p=await browser.newPage({viewport:{width:v.width,height:v.height}}), errs=[]; p.on('console',m=>m.type()==='error'&&errs.push(m.text())); p.on('pageerror',e=>errs.push('PAGEERROR: '+e.message));
-              await p.goto('http://127.0.0.1:4173/index.html',{waitUntil:'domcontentloaded'}); await p.waitForFunction(()=>typeof allProducts!=='undefined'&&allProducts.length>0,{timeout:30000}); await p.waitForSelector('#kt-home-catalogue .kt-card',{timeout:30000});
-              const base=await p.locator('#kt-home-catalogue .kt-card').count(); if(base<20) throw Error(v.name+': only '+base+' cards');
-              if(await p.locator('#product-search').count()!==1) throw Error(v.name+': search count wrong'); if(await p.locator('#kt-order-bar').count()!==1) throw Error(v.name+': order bar count wrong');
-              if(await p.locator('#category-modal').evaluate(e=>getComputedStyle(e).display!=='none')) throw Error(v.name+': legacy modal visible');
-              if(await p.locator('#search-results').evaluate(e=>getComputedStyle(e).display!=='none')) throw Error(v.name+': legacy search visible');
-              const cols=(await p.locator('#kt-home-catalogue .kt-grid').evaluate(e=>getComputedStyle(e).gridTemplateColumns.split(' ').length)); if(cols!==(v.name==='mobile'?2:4)) throw Error(v.name+': grid columns '+cols);
-              const cats=p.locator('#kt-category-strip button[data-cat]'); if(await cats.count()<2) throw Error(v.name+': category filters missing');
-              const strip=p.locator('#kt-category-strip'); const beforeScroll=await strip.evaluate(e=>e.scrollLeft); await p.locator('#kt-cat-next').click(); await sleep(300); const afterScroll=await strip.evaluate(e=>e.scrollLeft); if(v.name==='mobile' && afterScroll<=beforeScroll) throw Error(v.name+': next category arrow did not scroll');
-              await cats.nth(1).click(); await sleep(150); const fc=await p.locator('#kt-home-catalogue .kt-card').count(); if(fc<1||fc>=base) throw Error(v.name+': category filter did not narrow');
-              await p.locator('#product-search').fill('milk'); await sleep(250); const sc=await p.locator('#kt-home-catalogue .kt-card').count(); if(sc<1||sc>=base) throw Error(v.name+': search did not narrow'); await p.locator('#product-search').fill(''); await sleep(150);
-              const card=p.locator('#kt-home-catalogue .kt-card').first(), packs=card.locator('.kt-pack'); if(await packs.count()>1) await packs.nth(1).click(); const moq=await card.locator('.kt-moq').count();
-              const before=await p.locator('#kt-order-bar').textContent(); await card.locator('.kt-add').click(); await sleep(200); const after=await p.locator('#kt-order-bar').textContent(); if(before===after) throw Error(v.name+': add did not update order bar'); if(await p.locator('#cart-drawer').evaluate(e=>e.classList.contains('open'))) throw Error(v.name+': add opened cart drawer');
-              await p.reload({waitUntil:'domcontentloaded'}); await p.waitForFunction(()=>typeof allProducts!=='undefined'&&allProducts.length>0,{timeout:30000}); await sleep(250); const persisted=await p.locator('#kt-order-bar').textContent(); if(!/\b[1-9]\d*\s+products?\b/i.test(persisted)) throw Error(v.name+': cart did not persist');
-              out.push({viewport:v.name,cards:base,categoryFiltered:fc,searchFiltered:sc,gridColumns:cols,moqVisible:moq>0,consoleErrors:errs}); await p.close();
-            }
-            const bad=out.flatMap(x=>x.consoleErrors).filter(e=>!/(ERR_BLOCKED_BY_CLIENT|404|animalhealth\.pk|cloudinary|fonts|fontawesome|tailwind|google-analytics)/i.test(e)); if(bad.length) throw Error('Unexpected console errors: '+bad.join('\n')); console.log(JSON.stringify({status:'PASS',out},null,2));
-          }finally{await browser.close();server.kill('SIGTERM')}})().catch(e=>{console.error(e.stack||e);process.exit(1)});
-          NODE
-          NODE_PATH="$PWD/node_modules" node /tmp/qa.js
-
-      - name: Remove temporary files and workflow
+      - name: Run genuine rendered desktop + mobile QA
+        run: node scripts/catalogue_qa.js
+      - name: Remove temporary QA files and commit certified source
         if: success()
         run: |
-          rm -rf node_modules package.json package-lock.json assets/catalogue.js .github/workflows/catalogue-finalize.yml
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -rf node_modules package.json package-lock.json
+          rm -f .github/workflows/catalogue-finalize.yml scripts/finalize_catalogue.sh scripts/catalogue_qa.js
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          git commit -m "Finalize single catalogue after rendered QA"
+          git diff --cached --quiet && exit 0
+          git commit -m 'Finalize single-catalogue UI after rendered QA'
           git push origin HEAD:claude/website-improvements-tlKIS
