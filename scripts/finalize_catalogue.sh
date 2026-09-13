@@ -36,10 +36,16 @@ if '<!-- FINAL_SINGLE_CATALOGUE -->' not in s:
 </section>
 <div id="kt-order-bar" aria-label="Your Order"><span><strong id="kt-order-count">0 products</strong> selected</span><button type="button" onclick="openCart()">View Order</button></div>
 '''
- s=s.replace('<!-- How to Order note -- kept below the catalogue',css+block+'<!-- How to Order note -- kept below the catalogue',1)
- s=s.replace('</body>','<script src="assets/catalogue.js"></script>\n</body>',1)
+ marker='<!-- How to Order note -- kept below the catalogue'
+ if marker not in s: raise SystemExit('catalogue insertion marker not found')
+ s=s.replace(marker,css+block+marker,1)
+ if 'assets/catalogue.js' not in s:
+  s=s.replace('</body>','<script src="assets/catalogue.js"></script>\n</body>',1)
  p.write_text(s)
-c=Path('assets/cart.js'); cs=c.read_text(); cs=cs.replace('window.addToCart = function(name, packSize) {','window.addToCart = function(name, packSize, openDrawer = true) {',1); cs=cs.replace('    openCart();\n};','    if (openDrawer) openCart();\n};',1); c.write_text(cs)
+c=Path('assets/cart.js'); cs=c.read_text()
+cs=cs.replace('window.addToCart = function(name, packSize) {','window.addToCart = function(name, packSize, openDrawer = true) {',1)
+cs=cs.replace('    openCart();\n};','    if (openDrawer) openCart();\n};',1)
+c.write_text(cs)
 PY
 cat > assets/catalogue.js <<'EOF'
 (() => {
