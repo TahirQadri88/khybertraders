@@ -527,12 +527,12 @@ updateCartBadge();
         s.textContent = `
           #tiles-container.kt-hidden-source{display:none!important}
           #kt-enhanced-catalog{max-width:1280px;margin:0 auto;padding:18px 24px 110px}
-          .kt-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+          .kt-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:start}
           .kt-card{background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;min-width:0;transition:box-shadow .16s,border-color .16s}
           .kt-card:hover{border-color:#cfd2d6;box-shadow:0 8px 24px rgba(0,0,0,.07)}
           .kt-card-img{width:100%;height:190px;object-fit:contain;background:#fff;display:block;padding:10px}
           .kt-no-image{display:flex;align-items:center;justify-content:center;color:#9ca3af;font:600 12px Manrope,sans-serif;background:#f8f8f8}
-          .kt-card-body{padding:12px;display:flex;flex-direction:column;flex:1}
+          .kt-card-body{padding:12px;display:flex;flex-direction:column}
           .kt-card-meta{display:flex;justify-content:space-between;gap:8px;font:700 9px Manrope,sans-serif;text-transform:uppercase;letter-spacing:.08em;color:#6b7280;margin-bottom:7px}
           .kt-stock{color:#166534}.kt-stock.out{color:#b91c1c}
           .kt-card h3{font:800 15px/1.2 Archivo,Manrope,sans-serif;color:#131313;margin:0;min-height:36px}
@@ -542,7 +542,7 @@ updateCartBadge();
           .kt-pack:hover,.kt-pack.selected{border-color:#131313;background:#f7f7f7}
           .kt-pack span{display:block;color:#6b7280;font-size:9px;margin-top:2px}
           .kt-pack-label{font:600 11px Manrope,sans-serif;color:#4b5563;margin-top:10px}
-          .kt-buy-row{display:flex;gap:7px;margin-top:auto;padding-top:12px}
+          .kt-buy-row{display:flex;gap:7px;margin-top:12px;padding-top:0}
           .kt-qty{display:flex;align-items:center;border:1px solid #d1d5db;border-radius:5px;overflow:hidden;height:38px}
           .kt-qty-btn{width:31px;height:100%;border:0;background:#f3f4f6;font-size:17px;font-weight:800;cursor:pointer}
           .kt-qty-value{min-width:31px;text-align:center;font:800 12px Manrope,sans-serif}
