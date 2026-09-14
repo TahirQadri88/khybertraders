@@ -165,6 +165,8 @@ jobs:
           .btn-outline { background: #fff; color: #131313; border: 1px solid #e5e7eb; }
           .btn-outline:hover { border-color: #131313; }
           .btn-loading { opacity: 0.6; pointer-events: none; }
+          .pagenav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+          .pagenav .btn { padding: 8px 14px; font-size: 11px; letter-spacing: 0.5px; }
           .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin: 24px 0 32px; }
           .card { background: #fff; border: 1px solid #e5e7eb; padding: 14px; display: block; }
           .card:hover { border-color: #FFF200; }
@@ -528,6 +530,10 @@ jobs:
               <body>
               {header_html_with_cart()}
               <div class="wrap">
+              <div class="pagenav">
+              <a href="{BASE_URL}/" class="btn btn-outline"><i class="fas fa-home"></i> Home</a>
+              <a href="{cat_link}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> {cat_e}</a>
+              </div>
               <div class="crumb"><a href="{BASE_URL}/">Home</a> &rsaquo; <a href="{cat_link}">{cat_e}</a> &rsaquo; {name_e}</div>
               <img class="product-img" id="main-img" src="{img}" alt="{alt_e}" loading="lazy">
               {thumbs_html}
