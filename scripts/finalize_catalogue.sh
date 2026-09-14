@@ -41,12 +41,6 @@ if '<!-- FINAL_SINGLE_CATALOGUE -->' not in s:
  s=s.replace(marker,css+block+marker,1)
  if 'assets/catalogue.js' not in s:s=s.replace('</body>','<script src="assets/catalogue.js"></script>\n</body>',1)
  p.write_text(s)
-c=Path('assets/cart.js'); cs=c.read_text(); sig='window.addToCart = function(name, packSize) {'
-if sig not in cs: raise SystemExit('expected cart addToCart signature not found')
-cs=cs.replace(sig,'window.addToCart = function(name, packSize, openDrawer = true) {',1); needle='    openCart();\n};'
-if needle not in cs: raise SystemExit('expected cart openCart tail not found')
-cs=cs.replace(needle,'    if (openDrawer) openCart();',1)
-c.write_text(cs)
 PY
 cat > assets/catalogue.js <<'EOF'
 (() => {
@@ -61,6 +55,5 @@ cat > assets/catalogue.js <<'EOF'
  const init=()=>{const s=document.getElementById('product-search');if(s){s.oninput=null;s.removeAttribute('oninput');s.addEventListener('input',()=>{S.search=s.value;render()})}document.getElementById('kt-cat-prev').onclick=()=>scrollCats(-1);document.getElementById('kt-cat-next').onclick=()=>scrollCats(1);bar();const t=setInterval(()=>{if(typeof allProducts!=='undefined'&&allProducts.length){clearInterval(t);render()}},200)};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 EOF
-node --check assets/cart.js
 node --check assets/catalogue.js
 rm -rf node_modules package.json package-lock.json
