@@ -174,16 +174,6 @@ function updateCartBadge() {
         badge.textContent = total > 9 ? '9+' : String(total);
         total > 0 ? badge.classList.remove('hidden') : badge.classList.add('hidden');
     }
-
-    const mobileBar = document.getElementById('mobile-cart-bar');
-    const mobileCount = document.getElementById('mobile-cart-count');
-    const mobilePlural = document.getElementById('mobile-cart-plural');
-    if (mobileBar) {
-        mobileBar.classList.toggle('hidden', total === 0);
-        mobileBar.classList.toggle('flex', total > 0);
-        if (mobileCount) mobileCount.textContent = total;
-        if (mobilePlural) mobilePlural.textContent = total === 1 ? '' : 's';
-    }
 }
 function updateCartScrollFade() {
     const list = document.getElementById('cart-items-list');
