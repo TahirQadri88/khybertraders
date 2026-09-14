@@ -65,6 +65,28 @@ jobs:
           def cat_title(cat):
               return cat.title().replace('And', 'and').replace('For', 'for').replace(' Of ', ' of ')
 
+          def truncate_meta(text, limit=157):
+              # Truncate on the raw string before HTML-escaping (escaping can
+              # expand length, e.g. " -> &quot;) and break at a word boundary
+              # instead of mid-word, so search/social snippets never end on a
+              # half-cut word.
+              if len(text) <= limit:
+                  return text
+              cut = text[:limit].rsplit(' ', 1)[0].rstrip('.,;:—-')
+              return cut + '…'
+
+          def cld_optimize(url, width):
+              # Cloudinary-hosted product photos are served at whatever
+              # resolution they were uploaded at, with no resize applied --
+              # pages were shipping full-size originals just to paint small
+              # thumbnails. Non-destructive: the original upload is untouched,
+              # this only requests a resized/compressed on-the-fly derivative.
+              # Non-Cloudinary images (plain files under /images/) pass
+              # through unchanged since there's no transform service for them.
+              if not url or 'res.cloudinary.com' not in url or '/upload/' not in url:
+                  return url
+              return url.replace('/upload/', f'/upload/w_{width},q_auto,f_auto,c_limit/', 1)
+
           # --- Firebase service account is required. The old Google Sheets ---
           # --- fallback was removed: it silently overwrote correct Firestore-
           # --- sourced content with years-stale data whenever this secret was
@@ -351,7 +373,12 @@ jobs:
               cat_link = f"{BASE_URL}/c/{cat_slug}.html"
               name_e = H.escape(name)
               cat_e = H.escape(cat_title(p['category']))
-              short_desc = H.escape((desc.split(chr(10))[0] if desc else f"{name} — wholesale veterinary supply from Khyber Traders, Karachi.")[:160])
+              desc_line = desc.split(chr(10))[0].replace('*', '').strip() if desc else ''
+              if desc_line.startswith('(') and desc_line.endswith(')'):
+                  desc_line = desc_line[1:-1].strip()
+              if desc_line.lower() == name.lower():
+                  desc_line = ''
+              short_desc = H.escape(truncate_meta(f"{name} — {desc_line}. Wholesale from Khyber Traders, Karachi." if desc_line else f"{name} — wholesale veterinary supply from Khyber Traders, Karachi."))
               pack_sizes = p.get('packSizes') or []
               price_num = parse_price_num(p['priceDisplay'])
               availability = "https://schema.org/InStock" if p['inStock'] else "https://schema.org/OutOfStock"
@@ -362,7 +389,7 @@ jobs:
                   "@type": "Product",
                   "name": name,
                   "image": imgs if imgs else [img],
-                  "description": (desc or short_desc)[:500],
+                  "description": (desc.replace('*', '') if desc else short_desc)[:500],
                   "sku": slug,
                   "category": cat_title(p['category']),
                   "brand": {"@type": "Brand", "name": "Khyber Traders"},
@@ -438,7 +465,7 @@ jobs:
               thumbs_html = ''
               if len(imgs) > 1:
                   thumbs_html = '<div class="thumbs">' + ''.join(
-                      f'<img src="{im}" alt="{alt_e}" loading="lazy" onclick="document.getElementById(\'main-img\').src=this.src">'
+                      f'<img src="{cld_optimize(im, 150)}" data-full="{cld_optimize(im, 700)}" alt="{alt_e}" loading="lazy" onclick="document.getElementById(\'main-img\').src=this.dataset.full">'
                       for im in imgs
                   ) + '</div>'
 
@@ -513,13 +540,13 @@ jobs:
               <link rel="canonical" href="{page_url}">
               <meta property="og:title" content="{name_e}">
               <meta property="og:description" content="{short_desc}">
-              <meta property="og:image" content="{img}">
+              <meta property="og:image" content="{cld_optimize(img, 1000)}">
               <meta property="og:url" content="{page_url}">
               <meta property="og:type" content="product">
               <meta name="twitter:card" content="summary_large_image">
               <meta name="twitter:title" content="{name_e}">
               <meta name="twitter:description" content="{short_desc}">
-              <meta name="twitter:image" content="{img}">
+              <meta name="twitter:image" content="{cld_optimize(img, 1000)}">
               <link rel="icon" type="image/png" sizes="32x32" href="{BASE_URL}/images/favicon-32.png">
               <link rel="icon" type="image/png" sizes="64x64" href="{BASE_URL}/images/favicon-64.png">
               {ld_json_script}
@@ -535,7 +562,7 @@ jobs:
               <a href="{cat_link}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> {cat_e}</a>
               </div>
               <div class="crumb"><a href="{BASE_URL}/">Home</a> &rsaquo; <a href="{cat_link}">{cat_e}</a> &rsaquo; {name_e}</div>
-              <img class="product-img" id="main-img" src="{img}" alt="{alt_e}" loading="lazy">
+              <img class="product-img" id="main-img" src="{cld_optimize(img, 700)}" alt="{alt_e}" loading="lazy">
               {thumbs_html}
               <h1>{name_e}</h1>
               {price_html}
@@ -805,7 +832,7 @@ jobs:
                       price_tag = ''
                   card_alt = f'{H.escape(p["name"])} — {cat_e} | Khyber Traders'
                   cards.append(f'''<a class="card" href="{BASE_URL}/s/{p['slug']}.html">
-              <img src="{pimg}" alt="{card_alt}" loading="lazy">
+              <img src="{cld_optimize(pimg, 450)}" alt="{card_alt}" loading="lazy">
               <h3>{H.escape(p['name'])}</h3>
               {price_tag}
               </a>''')

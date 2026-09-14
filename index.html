@@ -233,7 +233,7 @@
 
     <!-- Restored Top Bar -->
     <div class="bg-brand-dark text-gray-300 text-[11px] uppercase tracking-widest py-3 border-b border-gray-900 font-mono">
-        <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-2">
+        <div class="container mx-auto px-6 flex flex-row justify-between items-center gap-2">
             <div class="flex gap-6">
                 <span><i class="fas fa-phone-alt text-brand-goldBright mr-2"></i> +92 335 2999006</span>
                 <span class="hidden md:inline"><i class="fas fa-map-marker-alt text-brand-goldBright mr-2"></i> Medicine Market, Karachi</span>
@@ -291,7 +291,7 @@
                     <span class="text-brand-dark text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em]">A Legacy of Three Generations</span>
                 </div>
                 <h1 class="text-3xl sm:text-4xl md:text-5xl xl:text-6xl font-serif font-bold text-white mb-3 sm:mb-5 leading-tight">
-                    The Gold Standard in <br>
+                    The Gold Standard&nbsp;in <br>
                     <span class="italic text-brand-gold">Veterinary Health</span>
                 </h1>
                 <p class="text-white text-sm sm:text-lg font-light leading-relaxed mb-5 sm:mb-8 max-w-2xl mx-auto lg:mx-0">
@@ -782,7 +782,7 @@
                 <div class="bg-white border border-brand-gold/40 hover:shadow-lg rounded-lg transition-all duration-300 flex flex-col overflow-hidden">
                     <div class="h-1.5 w-full flex-shrink-0 bg-brand-dark"></div>
                     <div class="bg-gray-100 aspect-[3/4] flex items-center justify-center">
-                        ${img ? `<img src="${img}" alt="${p.name.replace(/"/g,'&quot;')}" class="w-full h-full object-contain cursor-zoom-in" onclick="openLightbox('${img}')" loading="lazy">`
+                        ${img ? `<img src="${cldOptimize(img,400)}" alt="${p.name.replace(/"/g,'&quot;')}" class="w-full h-full object-contain cursor-zoom-in" onclick="openLightbox('${img}')" loading="lazy">`
                               : `<i class="fas fa-file-download text-gray-300 text-3xl"></i>`}
                     </div>
                     <div class="p-4 flex flex-col flex-grow">
@@ -936,12 +936,12 @@
             const firstImg = product.images[0] || '';
             const galleryHtml = product.images.length
                 ? `<div>
-                    <img id="pdp-main-img" src="${firstImg}" alt="${product.name}"
+                    <img id="pdp-main-img" src="${cldOptimize(firstImg,1000)}" alt="${product.name}"
                         class="w-full aspect-square sm:aspect-[4/3] object-contain bg-gray-50 border cursor-zoom-in"
-                        onclick="openLightbox(this.src)">
+                        onclick="openLightbox('${firstImg}')">
                     ${product.images.length > 1
                         ? `<div class="flex gap-2 mt-3 flex-wrap">${product.images.map((img, i) =>
-                            `<img src="${img}" alt="${product.name.replace(/"/g,'&quot;')}" class="product-thumb w-16 h-16 sm:w-20 sm:h-20 object-cover bg-gray-50 ${i===0?'active':''}"
+                            `<img src="${cldOptimize(img,200)}" alt="${product.name.replace(/"/g,'&quot;')}" class="product-thumb w-16 h-16 sm:w-20 sm:h-20 object-cover bg-gray-50 ${i===0?'active':''}"
                                 onclick="pdpSetImage('${img}',this)" loading="${i===0?'eager':'lazy'}">`
                           ).join('')}</div>`
                         : ''}
@@ -1044,7 +1044,7 @@
 
         window.pdpSetImage = function(src, thumbEl) {
             const mainImg = document.getElementById('pdp-main-img');
-            if (mainImg) { mainImg.src = src; mainImg.onclick = function() { openLightbox(src); }; }
+            if (mainImg) { mainImg.src = cldOptimize(src, 1000); mainImg.onclick = function() { openLightbox(src); }; }
             document.querySelectorAll('.product-thumb').forEach(t => t.classList.remove('active'));
             if (thumbEl) thumbEl.classList.add('active');
         };

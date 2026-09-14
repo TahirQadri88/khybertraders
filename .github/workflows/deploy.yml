@@ -22,6 +22,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache-bust assets/cart.js for this deploy
+        # index.html and every generated /s/ page load assets/cart.js with
+        # no version string, so browsers (and GitHub Pages' own CDN cache)
+        # can keep serving a stale cached copy for a while after a push --
+        # producing exactly the kind of "looks slightly different/broken
+        # right after a deploy" symptom a plain hard-refresh shouldn't be
+        # needed to fix. Stamping the deploy commit's SHA onto the URL here
+        # (not committed to the repo -- this only touches the runner's
+        # checkout before it's packaged) forces a fresh fetch on every
+        # deploy with zero ongoing maintenance.
+        run: |
+          set -euo pipefail
+          SHA_SHORT=$(git rev-parse --short HEAD)
+          sed -i "s|assets/cart\.js\"|assets/cart.js?v=${SHA_SHORT}\"|g" index.html
+          for f in s/*.html; do
+            [ -f "$f" ] && sed -i "s|assets/cart\.js\"|assets/cart.js?v=${SHA_SHORT}\"|g" "$f"
+          done
+
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
