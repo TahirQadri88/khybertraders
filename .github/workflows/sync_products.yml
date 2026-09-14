@@ -65,6 +65,16 @@ jobs:
           def cat_title(cat):
               return cat.title().replace('And', 'and').replace('For', 'for').replace(' Of ', ' of ')
 
+          def truncate_meta(text, limit=157):
+              # Truncate on the raw string before HTML-escaping (escaping can
+              # expand length, e.g. " -> &quot;) and break at a word boundary
+              # instead of mid-word, so search/social snippets never end on a
+              # half-cut word.
+              if len(text) <= limit:
+                  return text
+              cut = text[:limit].rsplit(' ', 1)[0].rstrip('.,;:—-')
+              return cut + '…'
+
           # --- Firebase service account is required. The old Google Sheets ---
           # --- fallback was removed: it silently overwrote correct Firestore-
           # --- sourced content with years-stale data whenever this secret was
@@ -351,7 +361,12 @@ jobs:
               cat_link = f"{BASE_URL}/c/{cat_slug}.html"
               name_e = H.escape(name)
               cat_e = H.escape(cat_title(p['category']))
-              short_desc = H.escape((desc.split(chr(10))[0] if desc else f"{name} — wholesale veterinary supply from Khyber Traders, Karachi.")[:160])
+              desc_line = desc.split(chr(10))[0].replace('*', '').strip() if desc else ''
+              if desc_line.startswith('(') and desc_line.endswith(')'):
+                  desc_line = desc_line[1:-1].strip()
+              if desc_line.lower() == name.lower():
+                  desc_line = ''
+              short_desc = H.escape(truncate_meta(f"{name} — {desc_line}. Wholesale from Khyber Traders, Karachi." if desc_line else f"{name} — wholesale veterinary supply from Khyber Traders, Karachi."))
               pack_sizes = p.get('packSizes') or []
               price_num = parse_price_num(p['priceDisplay'])
               availability = "https://schema.org/InStock" if p['inStock'] else "https://schema.org/OutOfStock"
@@ -362,7 +377,7 @@ jobs:
                   "@type": "Product",
                   "name": name,
                   "image": imgs if imgs else [img],
-                  "description": (desc or short_desc)[:500],
+                  "description": (desc.replace('*', '') if desc else short_desc)[:500],
                   "sku": slug,
                   "category": cat_title(p['category']),
                   "brand": {"@type": "Brand", "name": "Khyber Traders"},
