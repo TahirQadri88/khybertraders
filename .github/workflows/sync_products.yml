@@ -222,7 +222,7 @@ jobs:
           def footer_html():
               return f'''<div class="footer">
           <p>Khyber Traders &middot; Katchi Gali, Karachi &middot; <a href="tel:+923352999006">0335-2999006</a></p>
-          <p style="margin-top:6px"><a href="{BASE_URL}/">Home</a> &middot; <a href="{BASE_URL}/sitemap.html">Full Catalog</a></p>
+          <p style="margin-top:6px"><a href="{BASE_URL}/">Home</a> &middot; <a href="{BASE_URL}/sitemap.html">Full Catalog</a> &middot; <a href="{BASE_URL}/policy.html">Returns &amp; Delivery Policy</a></p>
           </div>'''
 
           # ── Extra chrome for /s/ product pages only (category & sitemap pages ──
@@ -406,7 +406,14 @@ jobs:
                           "priceCurrency": "PKR",
                           "price": pn.replace(',', ''),
                           "availability": availability,
-                          "seller": {"@type": "Organization", "name": "Khyber Traders"}
+                          "seller": {"@type": "Organization", "name": "Khyber Traders"},
+                          "hasMerchantReturnPolicy": {
+                              "@type": "MerchantReturnPolicy",
+                              "applicableCountry": "PK",
+                              "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                              "merchantReturnDays": 7,
+                              "returnPolicyUrl": f"{BASE_URL}/policy.html"
+                          }
                       })
                   if offers:
                       ld["offers"] = offers
@@ -417,7 +424,14 @@ jobs:
                       "priceCurrency": "PKR",
                       "price": price_num.replace(',', ''),
                       "availability": availability,
-                      "seller": {"@type": "Organization", "name": "Khyber Traders"}
+                      "seller": {"@type": "Organization", "name": "Khyber Traders"},
+                      "hasMerchantReturnPolicy": {
+                          "@type": "MerchantReturnPolicy",
+                          "applicableCountry": "PK",
+                          "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                          "merchantReturnDays": 7,
+                          "returnPolicyUrl": f"{BASE_URL}/policy.html"
+                      }
                   }
               # Google's Product structured data requires offers, review, or
               # aggregateRating to be present -- a Product block with none of
@@ -899,7 +913,7 @@ jobs:
           print(f"Generated {len(live_slugs)} category pages.")
 
           # ── Generate sitemap.xml and sitemap.html ──
-          sm_urls = [f"{BASE_URL}/"]
+          sm_urls = [f"{BASE_URL}/", f"{BASE_URL}/policy.html"]
           sm_urls += [f"{BASE_URL}/c/{get_clean_slug(c)}.html" for c in live_categories]
           sm_urls += [f"{BASE_URL}/s/{get_clean_slug(p['name'])}.html" for p in rows]
           sm_items = ''.join(f'<url><loc>{u}</loc><lastmod>{TODAY}</lastmod></url>\n' for u in sm_urls)
