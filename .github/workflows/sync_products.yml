@@ -406,7 +406,14 @@ jobs:
                           "priceCurrency": "PKR",
                           "price": pn.replace(',', ''),
                           "availability": availability,
-                          "seller": {"@type": "Organization", "name": "Khyber Traders"}
+                          "seller": {"@type": "Organization", "name": "Khyber Traders"},
+                          "hasMerchantReturnPolicy": {
+                              "@type": "MerchantReturnPolicy",
+                              "applicableCountry": "PK",
+                              "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                              "merchantReturnDays": 7,
+                              "returnPolicyUrl": f"{BASE_URL}/#returns-policy"
+                          }
                       })
                   if offers:
                       ld["offers"] = offers
@@ -417,7 +424,14 @@ jobs:
                       "priceCurrency": "PKR",
                       "price": price_num.replace(',', ''),
                       "availability": availability,
-                      "seller": {"@type": "Organization", "name": "Khyber Traders"}
+                      "seller": {"@type": "Organization", "name": "Khyber Traders"},
+                      "hasMerchantReturnPolicy": {
+                          "@type": "MerchantReturnPolicy",
+                          "applicableCountry": "PK",
+                          "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                          "merchantReturnDays": 7,
+                          "returnPolicyUrl": f"{BASE_URL}/#returns-policy"
+                      }
                   }
               # Google's Product structured data requires offers, review, or
               # aggregateRating to be present -- a Product block with none of
