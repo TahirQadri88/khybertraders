@@ -340,16 +340,29 @@ window.shareProductNative = async (event, name) => {
     const slug = getCleanSlug(name);
     const shareLink = `https://animalhealth.pk/s/${slug}.html`;
     const imgUrl = (p.images && p.images[0]) || '';
-    const cleanDesc = (p.desc || '').replace(/<[^>]*>?/gm, '').trim();
+    // Strip WhatsApp's own markup characters from dynamic text so a stray
+    // asterisk/underscore in a product name or description can't break the
+    // bold formatting we apply ourselves below.
+    const waSafe = s => (s || '').replace(/[*_~`]/g, '').trim();
+    const cleanName = waSafe(name);
+    let cleanDesc = waSafe((p.desc || '').replace(/<[^>]*>?/gm, ''));
+    if (cleanDesc.length > 160) cleanDesc = cleanDesc.slice(0, 157).trimEnd() + '…';
     if (typeof gtag !== 'undefined') gtag('event', 'share', { method: 'whatsapp', content_type: 'product', content_id: name });
     const btn = event.currentTarget;
+    const outOfStock = p.inStock === false;
+    const minQty = Math.max(1, Number(p.minQty) || 1);
     const priceLine = (p.packSizes && p.packSizes.length)
-        ? `\n💰 ${p.packSizes.map(ps => `${ps.size}: ${ps.price}`).join(', ')}`
-        : p.priceDisplay ? `\n💰 ${p.priceDisplay}` : '';
+        ? `\n💰 ${p.packSizes.map(ps => `${waSafe(ps.size)}: ${waSafe(ps.price)}`).join(', ')}`
+        : p.priceDisplay ? `\n💰 ${waSafe(p.priceDisplay)}` : '';
+    const stockLine = outOfStock ? `\n⚠️ *Currently out of stock*` : '';
+    const moqLine = (!outOfStock && minQty > 1) ? `\n📦 Minimum order: ${minQty} units` : '';
     const descLine = cleanDesc ? `\n📝 ${cleanDesc}` : '';
+    const ctaLine = outOfStock
+        ? `📲 Ask us for the restock date:\n${shareLink}`
+        : `🛒 Order now at wholesale rates:\n${shareLink}`;
     const caption = p.isResource
         ? `📄 *${name.replace('Useful Information - ', '')}*\nFree downloadable reference chart\n\n📥 ${shareLink}\n\n_Khyber Traders — Wholesale Veterinary Pharmacy, Karachi_`
-        : `📦 *${name}*\n📂 ${catTitle(p.category)}${priceLine}${descLine}\n\n🔗 ${shareLink}\n\n_Khyber Traders — Wholesale Veterinary Pharmacy, Karachi_`;
+        : `📦 *${cleanName}*\n📂 ${catTitle(p.category)}${stockLine}${priceLine}${moqLine}${descLine}\n\n${ctaLine}\n\n_Khyber Traders — Wholesale Veterinary Pharmacy, Karachi_`;
     btn.classList.add('btn-loading');
     try {
         if (imgUrl && navigator.canShare && navigator.share) {
