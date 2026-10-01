@@ -148,8 +148,8 @@
   },
   {
     "category": "feed premix & minerals mixture",
-    "name": "Lactosol 4 in 1 -  25 kg",
-    "slug": "lactosol-4-in-1---25-kg",
+    "name": "Lactosol 4 in 1 –20 kg",
+    "slug": "lactosol-4-in-1-20-kg",
     "inStock": true,
     "priceDisplay": "Rs 11,000"
   },
@@ -236,6 +236,13 @@
     "slug": "useful-information---protocol-of-artificial-insemination-ai",
     "inStock": true,
     "priceDisplay": "Free to Download"
+  },
+  {
+    "category": "some basics for fattening & qurbani animals",
+    "name": "Useful Information for Fattening & Qurbani Animals",
+    "slug": "useful-information-for-fattening-and-qurbani-animals",
+    "inStock": true,
+    "priceDisplay": ""
   },
   {
     "category": "steel needles and reusable injectors for vet use",
