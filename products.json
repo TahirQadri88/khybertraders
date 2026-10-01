@@ -147,6 +147,13 @@
     "priceDisplay": "Rs. 13000"
   },
   {
+    "category": "feed premix & minerals mixture",
+    "name": "Lactosol 4 in 1 -  25 kg",
+    "slug": "lactosol-4-in-1---25-kg",
+    "inStock": true,
+    "priceDisplay": "Rs 11,000"
+  },
+  {
     "category": "feeders and nipples",
     "name": "Feeder",
     "slug": "feeder",
