@@ -129,7 +129,7 @@
     "category": "feed premix & minerals mixture",
     "name": "HEAVY GOLD 5 in 1 Powder 20kg",
     "slug": "heavy-gold-5-in-1-powder-20kg",
-    "inStock": true,
+    "inStock": false,
     "priceDisplay": "Rs. 13000"
   },
   {
@@ -143,7 +143,7 @@
     "category": "feed premix & minerals mixture",
     "name": "FATTY VIT 6 IN 1 Powder 20kg",
     "slug": "fatty-vit-6-in-1-powder-20kg",
-    "inStock": true,
+    "inStock": false,
     "priceDisplay": "Rs. 13000"
   },
   {
@@ -339,7 +339,7 @@
     "category": "vaccines",
     "name": "PPR Vaccine Turkey (100 dose)",
     "slug": "ppr-vaccine-turkey-100-dose",
-    "inStock": false,
+    "inStock": true,
     "priceDisplay": "Rs 3500"
   },
   {
