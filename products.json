@@ -323,13 +323,6 @@
   },
   {
     "category": "vaccines",
-    "name": "HS AND PASTURELLA VACCINE",
-    "slug": "hs-and-pasturella-vaccine",
-    "inStock": false,
-    "priceDisplay": ""
-  },
-  {
-    "category": "vaccines",
     "name": "TOXIPRA S7 100ML (Spain)",
     "slug": "toxipra-s7-100ml-spain",
     "inStock": false,
@@ -346,7 +339,7 @@
     "category": "vaccines",
     "name": "ANTOX 9 100ml (Russia)",
     "slug": "antox-9-100ml-russia",
-    "inStock": true,
+    "inStock": false,
     "priceDisplay": "7500"
   },
   {
@@ -355,5 +348,19 @@
     "slug": "fmd-foot-and-mouth-disease-vaccine-russian-aqua--jel-base",
     "inStock": false,
     "priceDisplay": "Rs 9500"
+  },
+  {
+    "category": "vaccines",
+    "name": "Aftodoll 50ml (FMD Vaccine) Turkey 🇹🇷",
+    "slug": "aftodoll-50ml-fmd-vaccine-turkey-",
+    "inStock": true,
+    "priceDisplay": "Rs 7500"
+  },
+  {
+    "category": "vaccines",
+    "name": "Dilphes (HS Vaccine) 100ml Spain 🇪🇸",
+    "slug": "dilphes-hs-vaccine-100ml-spain-",
+    "inStock": true,
+    "priceDisplay": "Rs 7500"
   }
 ]
