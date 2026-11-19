@@ -38,7 +38,7 @@
     "category": "dewromer drenches",
     "name": "Proven Drench 1000ml Mylab",
     "slug": "proven-drench-1000ml-mylab",
-    "inStock": true,
+    "inStock": false,
     "priceDisplay": "Rs. 4000"
   },
   {
@@ -200,7 +200,7 @@
     "name": "IVOMEC (Merial/Boehringer, Brazil) 50 ML",
     "slug": "ivomec-merialboehringer-brazil-50-ml",
     "inStock": true,
-    "priceDisplay": "Rs. 7500"
+    "priceDisplay": "Rs. 7800"
   },
   {
     "category": "ivomec & other skin inj.",
@@ -221,7 +221,7 @@
     "name": "IVOMEC (Merial/Boehringer, Brazil) 500 ML",
     "slug": "ivomec-merialboehringer-brazil-500-ml",
     "inStock": true,
-    "priceDisplay": "Rs.32500"
+    "priceDisplay": "Rs.36000"
   },
   {
     "category": "liver tonic / growth promoter / digestive support",
