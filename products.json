@@ -199,8 +199,8 @@
     "category": "ivomec & other skin inj.",
     "name": "IVOMEC (Merial/Boehringer, Brazil) 50 ML",
     "slug": "ivomec-merialboehringer-brazil-50-ml",
-    "inStock": true,
-    "priceDisplay": "Rs. 7800"
+    "inStock": false,
+    "priceDisplay": "Rs. 8000"
   },
   {
     "category": "ivomec & other skin inj.",
@@ -220,8 +220,8 @@
     "category": "ivomec & other skin inj.",
     "name": "IVOMEC (Merial/Boehringer, Brazil) 500 ML",
     "slug": "ivomec-merialboehringer-brazil-500-ml",
-    "inStock": true,
-    "priceDisplay": "Rs.36000"
+    "inStock": false,
+    "priceDisplay": "Rs.40000"
   },
   {
     "category": "liver tonic / growth promoter / digestive support",
